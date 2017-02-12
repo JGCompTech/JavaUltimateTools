@@ -1,5 +1,7 @@
 package com.jgcomptech.tools.securitytools;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -11,7 +13,7 @@ public class PasswordHashes {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[size];
         sr.nextBytes(salt);
-        for(int i = 0; i<16; i++) {
+        for(int i = 0; i < 16; i++) {
             System.out.print(salt[i] & 0x00FF);
             System.out.print(" ");
         }
@@ -20,6 +22,7 @@ public class PasswordHashes {
         return Base64.getEncoder().encodeToString(salt);
     }
 
+    @Nullable
     public static SecureRandom createSecureRandom() {
         try {
             return SecureRandom.getInstance("SHA1PRNG", "SUN");
@@ -53,8 +56,7 @@ public class PasswordHashes {
                 sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
             }
             generatedPassword = sb.toString();
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch(NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return generatedPassword;
@@ -75,8 +77,7 @@ public class PasswordHashes {
                 sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
             }
             generatedPassword = sb.toString();
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch(NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return generatedPassword;
@@ -85,9 +86,9 @@ public class PasswordHashes {
     /**
      * Checks if login hashes match
      *
-     * @param enteredPassword Password to validate.
+     * @param enteredPassword  Password to validate.
      * @param databasePassword Password from database to check against.
-     * @param databaseSalt Password salt from database.
+     * @param databaseSalt     Password salt from database.
      * @return True if hashes match.
      */
     public static boolean checkHashesMatch(String enteredPassword, String databasePassword, String databaseSalt) {

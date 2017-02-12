@@ -5,22 +5,11 @@ import com.sun.jna.platform.win32.WinReg;
 import org.jetbrains.annotations.NotNull;
 
 public class RegistryInfo {
-    public enum HKEY
-    {
-        CLASSES_ROOT,
-        CURRENT_USER,
-        LOCAL_MACHINE,
-        USERS,
-        PERFORMANCE_DATA,
-        CURRENT_CONFIG
-    }
-
     @NotNull
     public static String getStringValue(HKEY hkey, String key, String value) {
         WinReg.HKEY keyobj = null;
 
-        switch (hkey)
-        {
+        switch(hkey) {
             case CLASSES_ROOT:
                 keyobj = WinReg.HKEY_CLASSES_ROOT;
                 break;
@@ -41,10 +30,18 @@ public class RegistryInfo {
                 break;
         }
 
-        if(Advapi32Util.registryValueExists(keyobj, key, value))
-        {
+        if(Advapi32Util.registryValueExists(keyobj, key, value)) {
             return Advapi32Util.registryGetStringValue(keyobj, key, value);
         }
         return "";
+    }
+
+    public enum HKEY {
+        CLASSES_ROOT,
+        CURRENT_USER,
+        LOCAL_MACHINE,
+        USERS,
+        PERFORMANCE_DATA,
+        CURRENT_CONFIG
     }
 }

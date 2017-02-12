@@ -12,6 +12,6 @@ public class RAM {
     public static String GetTotalRam() {
         long memorySize = ((com.sun.management.OperatingSystemMXBean)
                 java.lang.management.ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
-        return ConvertBytes((double)memorySize);
+        return ConvertBytes((double) memorySize);
     }
 }

@@ -34,11 +34,11 @@ public class Storage {
         return getDriveSize(getSystemDrivePath().replace(":/", "").charAt(0));
     }
 
-    /** Returns the drive size of the specified drive by drive letter. Returns "N/A" if drive doesn't exist.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              */
+    /** Returns the drive size of the specified drive by drive letter. Returns "N/A" if drive doesn't exist. */
     @NotNull
     public static String getDriveSize(char driveLetter) {
         File aDrive = new File(driveLetter + ":");
-        if(aDrive.exists()) return ConvertBytes((double)aDrive.getTotalSpace());
+        if(aDrive.exists()) return ConvertBytes((double) aDrive.getTotalSpace());
         return "N/A";
     }
 
@@ -56,7 +56,7 @@ public class Storage {
     @NotNull
     public static String getDriveFreeSpace(char driveLetter) {
         File aDrive = new File(driveLetter + ":");
-        if(aDrive.exists()) return ConvertBytes((double)aDrive.getUsableSpace());
+        if(aDrive.exists()) return ConvertBytes((double) aDrive.getUsableSpace());
         return "N/A";
     }
 }

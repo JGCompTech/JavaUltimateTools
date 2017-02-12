@@ -14,13 +14,14 @@ public class CheckIf {
      * @return True if OS is a 32 Bit OS.
      */
     public static boolean is32BitOS() { return !is64BitOS(); }
+
     /**
      * Identifies if OS is a 64 Bit OS.
      *
      * @return True if OS is a 64 Bit OS.
      */
     public static boolean is64BitOS() {
-        if (OS.contains("Windows")) {
+        if(OS.contains("Windows")) {
             return (System.getenv("ProgramFiles(x86)") != null);
         } else {
             return (OS.contains("64"));

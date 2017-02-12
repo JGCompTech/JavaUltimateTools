@@ -13,27 +13,23 @@ public class Network {
      * Returns the Internal IP Address.
      */
     public static String getInternalIPAddress() {
-        try
-        {
+        try {
             String ip = (InetAddress.getLocalHost().getHostAddress()).trim();
             if(ip.equals("127.0.0.1")) return "N/A";
             return ip;
-        }
-        catch(Exception ex) { return "ERROR"; }
+        } catch(Exception ex) { return "ERROR"; }
     }
 
     /**
      * Returns the External IP Address by connecting to "http://api.ipify.org".
-     *
      */
     public static String getExternalIPAddress() {
         try {
             URL url = new URL("http://api.ipify.org");
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             return (in.readLine()).trim();
-        }
-        catch (Exception ex) {
-            if (ex.toString().contains("java.net.UnknownHostException:")) { return "N/A"; }
+        } catch(Exception ex) {
+            if(ex.toString().contains("java.net.UnknownHostException:")) { return "N/A"; }
             return ex.toString();
         }
     }

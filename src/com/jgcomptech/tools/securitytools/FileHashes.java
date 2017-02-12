@@ -10,28 +10,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class FileHashes {
-    public enum HashTypes {
-        MD5,
-        SHA1,
-        SHA256,
-        SHA384,
-        SHA512
-    }
-
     /**
-     * Read the file and calculate the MD5 checksum
+     * Read the file and calculate the checksum
      *
-     * @param filename
-     *            the file to read
-     * @return the hex representation of the MD5 using uppercase chars
-     * @throws FileNotFoundException
-     *             if the file does not exist, is a directory rather than a
-     *             regular file, or for some other reason cannot be opened for
-     *             reading
-     * @throws IOException
-     *             if an I/O error occurs
+     * @param type     the hash type to use
+     * @param filename the file to read
+     * @return the hex representation of the hash using uppercase chars
+     * @throws FileNotFoundException if the file does not exist, is a directory rather than a regular file, or for some
+     *                               other reason cannot be opened for reading
+     * @throws IOException           if an I/O error occurs
      */
-    public static String getFileHash(HashTypes type, String filename) throws IOException {
+    public static String getFileHash(HashType type, String filename) throws IOException {
 
         MessageDigest md = null;
         try {
@@ -39,12 +28,12 @@ public class FileHashes {
         } catch(NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        try (InputStream input = new FileInputStream(filename)) {
+        try(InputStream input = new FileInputStream(filename)) {
 
             byte[] buffer = new byte[8192];
             int len = input.read(buffer);
 
-            while (len != -1) {
+            while(len != -1) {
                 assert md != null;
                 md.update(buffer, 0, len);
                 len = input.read(buffer);
@@ -93,5 +82,13 @@ public class FileHashes {
         }
 
         return null;
+    }
+
+    public enum HashType {
+        MD5,
+        SHA1,
+        SHA256,
+        SHA384,
+        SHA512
     }
 }

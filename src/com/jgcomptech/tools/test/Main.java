@@ -6,8 +6,11 @@ import java.security.KeyPair;
 
 class Main {
     private static void Print(String str) { System.out.println(str); }
+
     private static void Print(Boolean str) { System.out.println(str); }
+
     private static void Print(Integer str) { System.out.println(str); }
+
     private static void Print(KeyPair keyPair) {
         System.out.println("Private Key: " + keyPair.getPrivate());
         System.out.println("Public Key: " + keyPair.getPublic());
@@ -32,7 +35,7 @@ class Main {
 //        Print(HardwareInfo.Processor.Name());
 //        Print(HardwareInfo.RAM.GetTotalRam());
         //Print(Windows.CheckIf.isActivated());
-        //String hash = FileHashes.getFileHash(FileHashes.HashTypes.SHA1, "H:\\Programing\\Java\\Current Projects\\OSInfo.zip");
+        //String hash = FileHashes.getFileHash(FileHashes.HashType.SHA1, "H:\\Programing\\Java\\Current Projects\\OSInfo.zip");
         //Print(hash);
         //Print(RSAHashes.testRSA());
         //FileHashes.saveToFile(hash, "hash");

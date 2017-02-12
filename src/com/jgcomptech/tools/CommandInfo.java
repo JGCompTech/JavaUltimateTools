@@ -5,32 +5,17 @@ import com.sun.jna.platform.win32.WinDef;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class CommandInfo {
-    /** Output object that is returned after the command has completed */
-    public static class Output {
-        /** Returns the text result of the command. */
-        public final ArrayList<String> Result = new ArrayList<>();
-
-        /** Returns the exit code. Returns 0 if no error occurred. */
-        public int ExitCode = 0;
-
-        public void print() {
-            for(String line : this.Result) {
-                System.out.println(line);
-            }
-        }
-    }
-
     /**
      * Runs command and returns results to ArrayList in Output object.
+     *
      * @param command Command to run.
-     * @param args Arguments to pass to command.
+     * @param args    Arguments to pass to command.
      * @return Output object
      */
-    public static Output Run(String command, String args)
-    {
+    public static Output Run(String command, String args) {
         return Run(command, args, false, true, false);
     }
 
@@ -38,13 +23,13 @@ public class CommandInfo {
      * Runs command elevated, shows cmd window and pauses window when command is complete.
      * If "elevate" parameter is false, it is ignored and and results will be saved to Output object.
      * If OS is not Windows, "elevate" parameter is ignored and results will be saved to Output object.
+     *
      * @param command Command to run.
-     * @param args Arguments to pass to command.
+     * @param args    Arguments to pass to command.
      * @param elevate Boolean to set if command should be run elevated. If true Output object will be empty.
      * @return Output object
      */
-    public static Output Run(String command, String args, boolean elevate)
-    {
+    public static Output Run(String command, String args, boolean elevate) {
         if(elevate) {
             return Run(command, args, true, false, true);
         }
@@ -54,17 +39,17 @@ public class CommandInfo {
     /**
      * Runs command according to parameters. Will only open cmd window if OS is Windows.
      * If OS is not Windows, all boolean parameters are ignored and results will be saved to Output object.
-     * @param command Command to run.
-     * @param args Arguments to pass to command.
-     * @param elevate Boolean to set if command should be run elevated.
-     *                If true Output object will be empty.
-     * @param hideWindow If true, cmd window will be hidden.
-     *                   If true, and elevate is false, results will be saved to Output object.
-     * @param keepWindowOpen If true, pauses cmd window and forces it to stay open after command is completed.
-     *                       If false and "elevate" is true, cmd window will close after command is completed.
      *
-     *                       This parameter is ignored if "hidewindow" is true.
-     *                       This prevents cmd window from staying open when hidden and unnecessarily using RAM.
+     * @param command        Command to run.
+     * @param args           Arguments to pass to command.
+     * @param elevate        Boolean to set if command should be run elevated. If true Output object will be empty.
+     * @param hideWindow     If true, cmd window will be hidden. If true, and elevate is false, results will be saved to
+     *                       Output object.
+     * @param keepWindowOpen If true, pauses cmd window and forces it to stay open after command is completed. If false
+     *                       and "elevate" is true, cmd window will close after command is completed.
+     *                       <p>
+     *                       This parameter is ignored if "hidewindow" is true. This prevents cmd window from staying
+     *                       open when hidden and unnecessarily using RAM.
      * @return Output object
      */
     @Nullable
@@ -72,9 +57,8 @@ public class CommandInfo {
         Output newOutput = new Output();
 
         if((elevate || !hideWindow) && CheckIf.isWindows()) {
-            ShellExecute(command, args, elevate, hideWindow, keepWindowOpen );
-        }
-        else {
+            ShellExecute(command, args, elevate, hideWindow, keepWindowOpen);
+        } else {
             final Process process;
             try {
                 if(CheckIf.isWindows()) {
@@ -126,5 +110,20 @@ public class CommandInfo {
         }
         File file = new File("my.bat");
         file.delete();
+    }
+
+    /** Output object that is returned after the command has completed */
+    public static class Output {
+        /** Returns the text result of the command. */
+        public final ArrayList<String> Result = new ArrayList<>();
+
+        /** Returns the exit code. Returns 0 if no error occurred. */
+        public int ExitCode = 0;
+
+        public void print() {
+            for(String line : this.Result) {
+                System.out.println(line);
+            }
+        }
     }
 }

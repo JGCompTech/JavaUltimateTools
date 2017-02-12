@@ -215,16 +215,16 @@ public enum ProductEdition implements BaseEnum {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static ProductEdition parse(int value) {
-        for (ProductEdition type : ProductEdition.values()) {
-            if (type.getValue() == value) {
+        for(ProductEdition type : ProductEdition.values()) {
+            if(type.getValue() == value) {
                 return type;
             }
         }
         return Undefined;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

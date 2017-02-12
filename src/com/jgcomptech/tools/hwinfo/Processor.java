@@ -49,23 +49,23 @@ public class Processor {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
 
-            while ((line = reader.readLine()) != null) {
+            while((line = reader.readLine()) != null) {
                 if(CheckIf.isMac()) {
                     numberOfCores = line.length() > 0 ? Integer.parseInt(line) : 0;
-                } else if (CheckIf.isLinux()) {
-                    if (line.contains("Core(s) per socket:")) {
+                } else if(CheckIf.isLinux()) {
+                    if(line.contains("Core(s) per socket:")) {
                         numberOfCores = Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
                     }
                     if(line.contains("Socket(s):")) {
                         sockets = Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
                     }
-                } else if (CheckIf.isWindows()) {
-                    if (line.contains("NumberOfCores")) {
+                } else if(CheckIf.isWindows()) {
+                    if(line.contains("NumberOfCores")) {
                         numberOfCores = Integer.parseInt(line.split("=")[1]);
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 

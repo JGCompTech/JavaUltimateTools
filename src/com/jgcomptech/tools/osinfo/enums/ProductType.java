@@ -23,16 +23,16 @@ public enum ProductType implements BaseEnum {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static ProductType parse(int value) {
-        for (ProductType type : ProductType.values()) {
-            if (type.getValue() == value) {
+        for(ProductType type : ProductType.values()) {
+            if(type.getValue() == value) {
                 return type;
             }
         }
         return null;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

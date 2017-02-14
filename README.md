@@ -21,4 +21,5 @@ This project is currently at version 1.0 - **[Download v1.0](https://github.com/
 License
 ----
 
-**[Apache 2.0](https://github.com/JGCompTech/JavaUltimateTools/blob/master/LICENSE)**
+[![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](http://creativecommons.org/licenses/by/4.0/)  
+This work is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).

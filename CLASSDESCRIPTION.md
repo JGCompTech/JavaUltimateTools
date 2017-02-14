@@ -21,9 +21,6 @@ The HWInfo namespace includes many classes that return information about the cur
 - RAM (Total Installed Ram Size)
 - Storage (System Drive Total Size, System Drive Free Space)
 
-# ComputerInfo
-This class is an instantiated class that contains all the info in the OSInfo and HWInfo classes. It extends the HWInfo.Storage class to contain all reconized drives not just the system drive.
-
 # SecurityTools
 The SecurityTools class contains methods surrounding hashing and encryption. This includes the following:
 - createSecureRandom() - Secure Random Number Generator

@@ -9,6 +9,8 @@ JavaUltimateTools is a large repository of scripts for use in any Java program. 
 
 If you would like a more details check out the [CLASSDESCRIPTION.md](https://github.com/JGCompTech/JavaUltimateTools/blob/master/CLASSDESCRIPTION.md) file. I will be updating this with more documentation soon.
 
+If you would like to view the JavaDoc info it is hosted at [https://jgcomptech.github.io/JavaUltimateTools/](https://jgcomptech.github.io/JavaUltimateTools/). This is what is stored in the doc folder in the project.
+
 # Development
 Want to contribute? Great!
 Any help with development is greatly appreciated. If you want to add something or fix any typos please submit a pull request and if it is helpful it may be merged.

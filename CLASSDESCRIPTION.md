@@ -3,7 +3,7 @@ The OSInfo namespace includes many classes that return information about the cur
 - Architecture (String and Int representation)
 - Name (If OS is Windows, MacOSX, Linux or Solaris)
 
-# OSInfo.Winndows
+# OSInfo.Windows
 The OSInfo.Windows namespace includes many classes that return information about the current Windows installation. This includes the following:
 - Edition (String representation)
 - Name (String, ExpandedString and Enum representation) Also contains methods that will return the current and pending Computer Name.

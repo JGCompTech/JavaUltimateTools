@@ -16,7 +16,7 @@ Want to contribute? Great!
 Any help with development is greatly appreciated. If you want to add something or fix any typos please submit a pull request and if it is helpful it may be merged. Please check out our [Code of Conduct for Contributors](https://github.com/JGCompTech/JavaUltimateTools/blob/master/code-of-conduct.md).
 
 # Download
-This project is currently at version 1.0 - **[Download v1.0](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.0)**
+This project is currently at version 1.1 - **[Download v1.1](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.1)**
 
 License
 ----

@@ -1,4 +1,3 @@
-import com.jgcomptech.tools.CommandInfo;
 import com.jgcomptech.tools.OSInfo;
 
 import java.security.KeyPair;
@@ -17,6 +16,6 @@ public class Main {
 
     public static void main(String[] args) {
         Print(OSInfo.Name.StringExpandedFromRegistry());
-        Print(CommandInfo.Run("ipconfig", "/all").Result.toString());
+        //Print(CommandInfo.Run("ipconfig", "/all").Result.toString());
     }
 }

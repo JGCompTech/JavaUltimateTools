@@ -1,6 +1,9 @@
 package com.jgcomptech.tools.enums;
 
-/** A list of Product Editions according to ( http://msdn.microsoft.com/en-us/library/ms724358(VS.85).aspx ) */
+/**
+ * A list of Product Editions according to <a href="http://msdn.microsoft.com/en-us/library/ms724358(VS.85).aspx">Microsoft
+ * Documentation</a>
+ */
 public enum ProductEdition implements BaseEnum {
     /** Business */
     Business(6),

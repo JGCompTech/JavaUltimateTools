@@ -4,7 +4,16 @@ import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 import org.jetbrains.annotations.NotNull;
 
+/** Registry tools for handling registry keys and values */
 public class RegistryInfo {
+    /**
+     * Gets string value from a registry key
+     *
+     * @param hkey  Root key to use to access key
+     * @param key   Key path to access
+     * @param value Value name to access
+     * @return Key value as string
+     */
     @NotNull
     public static String getStringValue(HKEY hkey, String key, String value) {
         WinReg.HKEY keyobj = null;

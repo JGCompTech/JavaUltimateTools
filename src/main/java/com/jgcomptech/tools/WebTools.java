@@ -6,8 +6,16 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
 
+/** Web tools for completing tasks dealing with websites */
 public class WebTools {
+    /** HTML tools for handling html source code */
     public static class HTML {
+        /**
+         * Gets HTML source code from specified URL
+         *
+         * @param url URL to download from
+         * @return HTML source code as string
+         */
         @NotNull
         public static String getHTML(String url) {
             try {

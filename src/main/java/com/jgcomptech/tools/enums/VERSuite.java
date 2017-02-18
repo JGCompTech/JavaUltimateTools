@@ -5,7 +5,10 @@ import com.sun.jna.platform.win32.WinDef;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A list of WindowsVersion Suite Masks according to ( http://msdn.microsoft.com/en-us/library/ms724833(VS.85).aspx ) */
+/**
+ * A list of WindowsVersion Suite Masks according to <a href="http://msdn.microsoft.com/en-us/library/ms724833(VS.85).aspx">Microsoft
+ * Documentation</a>
+ */
 public enum VERSuite implements BaseEnum {
     Unknown(0),
     //SmallBusiness(1),

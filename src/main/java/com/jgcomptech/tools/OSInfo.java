@@ -13,35 +13,44 @@ import static com.jgcomptech.tools.OSInfo.CheckIf.*;
 import static com.jgcomptech.tools.OSInfo.Windows.CheckIf.isWin8OrLater;
 import static com.jgcomptech.tools.OSInfo.Windows.CheckIf.isWindowsServer;
 
+/** Returns information about the operating system */
 public class OSInfo {
     /**
-     * Determines if the current application is 32 or 64-bit.
+     * Determines if the current application is 32 or 64-bit
      */
     public static class Architecture {
-        /** Determines if the current application is 32 or 64-bit. */
+        /**
+         * Determines if the current application is 32 or 64-bit
+         *
+         * @return if computer is 32 bit or 64 bit as string
+         */
         public static String String() { return is64BitOS() ? "64 bit" : "32 bit"; }
 
-        /** Determines if the current application is 32 or 64-bit. */
+        /**
+         * Determines if the current application is 32 or 64-bit
+         *
+         * @return if computer is 32 bit or 64 bit as int
+         */
         public static int Number() { return is64BitOS() ? 64 : 32; }
     }
 
     /**
-     * Runs different checks against the OS and returns a Boolean value.
+     * Runs different checks against the OS and returns a boolean value
      */
     public static class CheckIf {
         private static final String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
         /**
-         * Identifies if OS is a 32 Bit OS.
+         * Identifies if OS is a 32 Bit OS
          *
-         * @return True if OS is a 32 Bit OS.
+         * @return True if OS is a 32 Bit OS
          */
         public static boolean is32BitOS() { return !is64BitOS(); }
 
         /**
-         * Identifies if OS is a 64 Bit OS.
+         * Identifies if OS is a 64 Bit OS
          *
-         * @return True if OS is a 64 Bit OS.
+         * @return True if OS is a 64 Bit OS
          */
         public static boolean is64BitOS() {
             if(isWindows()) {
@@ -52,44 +61,44 @@ public class OSInfo {
         }
 
         /**
-         * Identifies if OS is Windows.
+         * Identifies if OS is Windows
          *
-         * @return True if OS is Windows.
+         * @return True if OS is Windows
          */
         public static boolean isWindows() { return (OS.contains("win")); }
 
         /**
-         * Identifies if OS is MacOSX.
+         * Identifies if OS is MacOSX
          *
-         * @return True if OS is MacOSX.
+         * @return True if OS is MacOSX
          */
         public static boolean isMac() { return (OS.contains("mac")) || (OS.contains("darwin")); }
 
         /**
-         * Identifies if OS is a distro of Linux.
+         * Identifies if OS is a distro of Linux
          *
-         * @return True if OS is Linux.
+         * @return True if OS is Linux
          */
         public static boolean isLinux() { return ((OS.contains("nix") || OS.contains("nux")) && !OS.contains("aix")); }
 
         /**
-         * Identifies if OS is Solaris.
+         * Identifies if OS is Solaris
          *
-         * @return True if OS is Solaris.
+         * @return True if OS is Solaris
          */
         public static boolean isSolaris() { return (OS.contains("sunos")); }
     }
 
     /**
-     * Gets the different names provided by the operating system.
+     * Returns the different names provided by the operating system
      */
     public static class Name {
         private static final String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
         /**
-         * Return a full version String, ex.: "Windows XP Service Pack 2 (32 Bit)".
+         * Returns a full version String, ex.: "Windows XP Service Pack 2 (32 Bit)"
          *
-         * @return String representing a fully displayable version as stored in WMI.
+         * @return String representing a fully displayable version as stored in WMI
          */
         public static String StringExpanded() {
             if(isWindows()) {
@@ -102,9 +111,9 @@ public class OSInfo {
         }
 
         /**
-         * Return a full version String, ex.: "Windows XP Service Pack 2 (32 Bit)".
+         * Returns a full version String, ex.: "Windows XP Service Pack 2 (32 Bit)"
          *
-         * @return String representing a fully displayable version as stored in Windows Registry.
+         * @return String representing a fully displayable version as stored in Windows Registry
          */
         public static String StringExpandedFromRegistry() {
             if(isWindows()) {
@@ -120,9 +129,9 @@ public class OSInfo {
         }
 
         /**
-         * Returns the name of the operating system running on this Computer.
+         * Returns the name of the operating system running on this Computer
          *
-         * @return Enum value containing the the operating system name.
+         * @return Enum value containing the the operating system name
          */
         public static OSList Enum() {
             if(isWindows()) return Name.Enum();
@@ -133,9 +142,9 @@ public class OSInfo {
         }
 
         /**
-         * Returns the name of the operating system running on this computer.
+         * Returns the name of the operating system running on this computer
          *
-         * @return String value containing the the operating system name.
+         * @return String value containing the the operating system name
          */
         public static String String() {
             if(isWindows()) return Name.String();
@@ -146,9 +155,9 @@ public class OSInfo {
         }
 
         /**
-         * Gets the current computer name.
+         * Returns the current computer name
          *
-         * @return String value of current computer name.
+         * @return String value of current computer name
          */
         @NotNull
         public static String ComputerNameActive() {
@@ -158,9 +167,9 @@ public class OSInfo {
         }
 
         /**
-         * Gets the pending computer name that it will update to on reboot.
+         * Returns the pending computer name that it will update to on reboot
          *
-         * @return String value of the pending computer name.
+         * @return String value of the pending computer name
          */
         @NotNull
         public static String ComputerNamePending() {
@@ -171,9 +180,10 @@ public class OSInfo {
         }
     }
 
+    /** Returns information about the Windows installation */
     public static class Windows {
         /**
-         * Gets information about the Windows activation status.
+         * Returns information about the Windows activation status
          */
         public static class Activation {
             /**
@@ -181,9 +191,15 @@ public class OSInfo {
              *
              * @return true if activated, false if not activated
              */
-            public static boolean isActivated() { return Activation.getStatus().equals(Activation.Status.Licensed); }
+            public static boolean isActivated() { return Activation.getStatusAsEnum().equals(Activation.Status.Licensed); }
 
-            public static Status getStatus() {
+            /**
+             * Identifies If Windows is Activated, uses the Software Licensing Manager Script, this is the quicker
+             * method
+             *
+             * @return "Licensed" If Genuinely Activated as enum
+             */
+            public static Status getStatusAsEnum() {
                 switch(getStatusFromSLMGR()) {
                     case "Unlicensed":
                         return Status.Unlicensed;
@@ -212,17 +228,16 @@ public class OSInfo {
             }
 
             /**
-             * Checks If Windows is Activated. Uses the Software Licensing Manager Script.
-             * This is the quicker method.
-             * <p>
-             * <returns>Licensed If Genuinely Activated</returns>
+             * Identifies If Windows is Activated, uses the Software Licensing Manager Script, this is the quicker method
+             *
+             * @return "Licensed" If Genuinely Activated
              */
             public static String getStatusString() { return getStatusFromSLMGR(); }
 
             /**
-             * Checks If Windows is Activated. Uses WMI.
-             * <p>
-             * <returns>Licensed If Genuinely Activated</returns>
+             * Identifies If Windows is Activated, uses WMI
+             *
+             * @return Licensed If Genuinely Activated
              */
             public static String getStatusFromWMI() {
                 final String ComputerName = "localhost";
@@ -273,10 +288,9 @@ public class OSInfo {
             }
 
             /**
-             * Checks If Windows is Activated. Uses the Software Licensing Manager Script.
-             * This is the quicker method.
-             * <p>
-             * <returns>Licensed If Genuinely Activated</returns>
+             * Identifies If Windows is Activated, uses the Software Licensing Manager Script, this is the quicker method
+             *
+             * @return Licensed If Genuinely Activated
              */
             public static String getStatusFromSLMGR() {
                 try {
@@ -420,11 +434,11 @@ public class OSInfo {
         }
 
         /**
-         * Gets the product type of the operating system running on this Computer.
+         * Returns the product type of the operating system running on this Computer
          */
         public static class Edition {
             /**
-             * Gets the product type of the OS as an integer
+             * Returns the product type of the OS as an integer
              *
              * @return integer equivalent of the operating system product type
              */
@@ -435,7 +449,7 @@ public class OSInfo {
             }
 
             /**
-             * Gets the product type of the OS as a string
+             * Returns the product type of the OS as a string
              *
              * @return string containing the the operating system product type
              */
@@ -597,9 +611,14 @@ public class OSInfo {
         }
 
         /**
-         * Gets the different names provided by the operating system.
+         * Returns the different names provided by the operating system
          */
         public static class Name {
+            /**
+             * Returns the OS name
+             *
+             * @return OS name as enum
+             */
             public static OSList Enum() {
                 switch(Version.Number()) {
                     case 51:
@@ -625,6 +644,11 @@ public class OSInfo {
                 return OSList.Windows2000AndPrevious;
             }
 
+            /**
+             * Returns the OS name
+             *
+             * @return OS name as string
+             */
             public static String String() {
                 switch(Version.Major()) {
                     case 5: {
@@ -662,13 +686,13 @@ public class OSInfo {
         }
 
         /**
-         * Gets the service pack information of the operating system running on this Computer.
+         * Returns the service pack information of the operating system running on this Computer
          */
         public static class ServicePack {
             /**
-             * Returns the service pack information of the operating system running on this Computer.
+             * Returns the service pack information of the operating system running on this Computer
              *
-             * @return A String containing the operating system service pack inFormation.
+             * @return A String containing the operating system service pack information
              */
             public static String String() {
                 String sp = Integer.toString(Number());
@@ -676,9 +700,9 @@ public class OSInfo {
             }
 
             /**
-             * Returns the service pack information of the operating system running on this Computer.
+             * Returns the service pack information of the operating system running on this Computer
              *
-             * @return A int containing the operating system service pack number.
+             * @return A int containing the operating system service pack number
              */
             public static int Number() {
                 WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
@@ -687,13 +711,14 @@ public class OSInfo {
         }
 
         /**
-         * Gets information about the current Windows installation
+         * Returns information about the current Windows installation
          */
         public static class SystemInformation {
             /**
-             * Gets information about the current Windows installation as text
+             * Returns information about the current Windows installation as text
              *
-             * @return string
+             * @return Information as string
+             * @throws IOException if command cannot be run
              */
             @NotNull
             public static String getInfo() throws IOException {
@@ -713,9 +738,9 @@ public class OSInfo {
             }
 
             /**
-             * Gets current system time
+             * Returns current system time
              *
-             * @return string
+             * @return Current time as string
              */
             public static String getTime() {
                 WinBase.SYSTEMTIME time = new WinBase.SYSTEMTIME();
@@ -725,11 +750,13 @@ public class OSInfo {
         }
 
         /**
-         * Gets info about the currently logged in user account.
+         * Returns info about the currently logged in user account
          */
         public static class UserInfo {
             /**
-             * Gets the current Registered Organization.
+             * Returns the current Registered Organization
+             *
+             * @return Registered Organization as string
              */
             @NotNull
             public static String RegisteredOrganization() {
@@ -739,7 +766,9 @@ public class OSInfo {
             }
 
             /**
-             * Gets the current Registered Owner.
+             * Returns the current Registered Owner
+             *
+             * @return Registered Owner as string
              */
             @NotNull
             public static String RegisteredOwner() {
@@ -749,7 +778,9 @@ public class OSInfo {
             }
 
             /**
-             * Gets the user name of the person who is currently logged on to the Windows operating system.
+             * Returns the user name of the person who is currently logged on to the Windows operating system
+             *
+             * @return Logged in username as string
              */
             @NotNull
             public static String LoggedInUserName() {
@@ -766,9 +797,9 @@ public class OSInfo {
             }
 
             /**
-             * Gets the network domain name associated with the current user.
-             * <p>
-             * <exception cref="IllegalStateException">The network domain name cannot be retrieved.</exception>
+             * Returns the network domain name associated with the current user
+             *
+             * @return Current domain name as string
              */
             public static String CurrentDomainName() {
                 char[] userNameBuf = new char[10000];
@@ -783,6 +814,11 @@ public class OSInfo {
                 return username[0];
             }
 
+            /**
+             * Returns the current host name for the system
+             *
+             * @return Current domain name as string
+             */
             @NotNull
             public static String CurrentMachineName() {
                 try {
@@ -796,38 +832,48 @@ public class OSInfo {
         }
 
         /**
-         * Gets the full version of the operating system running on this Computer.
+         * Returns the full version of the operating system running on this Computer
          */
         public static class Version {
             /**
-             * Gets the full version of the operating system running on this Computer.
+             * Returns the full version of the operating system running on this Computer
+             *
+             * @return Full version as string
              */
             public static String Main() { return getVersionInfo(Type.Main); }
 
             /**
-             * Gets the major version of the operating system running on this Computer.
+             * Returns the major version of the operating system running on this Computer
+             *
+             * @return Major version as int
              */
             public static int Major() { return Integer.parseInt(getVersionInfo(Type.Major)); }
 
             /**
-             * Gets the minor version of the operating system running on this Computer.
+             * Returns the minor version of the operating system running on this Computer
+             *
+             * @return Minor version as int
              */
             public static int Minor() { return Integer.parseInt(getVersionInfo(Type.Minor)); }
 
             /**
-             * Gets the build version of the operating system running on this Computer.
+             * Returns the build version of the operating system running on this Computer
+             *
+             * @return Build version as int
              */
             public static int Build() { return Integer.parseInt(getVersionInfo(Type.Build)); }
 
             /**
-             * Gets the revision version of the operating system running on this Computer.
+             * Returns the revision version of the operating system running on this Computer
+             *
+             * @return Build Revision as int
              */
             public static int Revision() { return Integer.parseInt(getVersionInfo(Type.Revision)); }
 
             /**
-             * Return a numeric value representing OS version.
-             * <p>
-             * <returns>(OSMajorVersion * 10 + OSMinorVersion)</returns>
+             * Returns a numeric value representing OS version.
+             *
+             * @return OSMajorVersion times 10 plus OSMinorVersion
              */
             public static int Number() { return (Major() * 10 + Minor()); }
 
@@ -890,6 +936,7 @@ public class OSInfo {
             }
         }
 
+        /** Returns information from WMI */
         public static class WMI {
             private static final String CRLF = "\r\n";
 

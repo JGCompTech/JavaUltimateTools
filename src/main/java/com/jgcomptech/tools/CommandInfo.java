@@ -9,14 +9,15 @@ import java.util.ArrayList;
 
 import static com.jgcomptech.tools.OSInfo.CheckIf.isWindows;
 
+/** Allows you to run console commands and either run them elevated or not and return the result to a string */
 public class CommandInfo {
     private static final String CRLF = "\r\n";
 
     /**
-     * Runs command and returns results to ArrayList in Output object.
+     * Runs command and returns results to ArrayList in Output object
      *
-     * @param command Command to run.
-     * @param args    Arguments to pass to command.
+     * @param command Command to run
+     * @param args    Arguments to pass to command
      * @return Output object
      */
     public static Output Run(String command, String args) {
@@ -24,13 +25,13 @@ public class CommandInfo {
     }
 
     /**
-     * Runs command elevated, shows cmd window and pauses window when command is complete.
-     * If "elevate" parameter is false, it is ignored and and results will be saved to Output object.
-     * If OS is not Windows, "elevate" parameter is ignored and results will be saved to Output object.
+     * Runs command elevated, shows cmd window and pauses window when command is complete <p>
+     * If "elevate" parameter is false, it is ignored and and results will be saved to Output object <p>
+     * If OS is not Windows, "elevate" parameter is ignored and results will be saved to Output object
      *
-     * @param command Command to run.
-     * @param args    Arguments to pass to command.
-     * @param elevate Boolean to set if command should be run elevated. If true Output object will be empty.
+     * @param command Command to run
+     * @param args    Arguments to pass to command
+     * @param elevate Boolean to set if command should be run elevated, if true Output object will be empty
      * @return Output object
      */
     public static Output Run(String command, String args, boolean elevate) {
@@ -41,19 +42,19 @@ public class CommandInfo {
     }
 
     /**
-     * Runs command according to parameters. Will only open cmd window if OS is Windows.
-     * If OS is not Windows, all boolean parameters are ignored and results will be saved to Output object.
+     * Runs command according to parameters, will only open cmd window if OS is Windows <p>
+     * If OS is not Windows, all boolean parameters are ignored and results will be saved to Output object
      *
-     * @param command        Command to run.
-     * @param args           Arguments to pass to command.
-     * @param elevate        Boolean to set if command should be run elevated. If true Output object will be empty.
-     * @param hideWindow     If true, cmd window will be hidden. If true, and elevate is false, results will be saved to
-     *                       Output object.
-     * @param keepWindowOpen If true, pauses cmd window and forces it to stay open after command is completed. If false
-     *                       and "elevate" is true, cmd window will close after command is completed.
+     * @param command        Command to run
+     * @param args           Arguments to pass to command
+     * @param elevate        Boolean to set if command should be run elevated, if true Output object will be empty <p>
+     * @param hideWindow     If true, cmd window will be hidden, if true, and elevate is false, results will be saved to
+     *                       Output object
+     * @param keepWindowOpen If true, pauses cmd window and forces it to stay open after command is completed <p>
+     *                       If false and "elevate" is true, cmd window will close after command is completed
      *                       <p>
-     *                       This parameter is ignored if "hidewindow" is true. This prevents cmd window from staying
-     *                       open when hidden and unnecessarily using RAM.
+     *                       This parameter is ignored if "hidewindow" is true, this prevents cmd window from staying
+     *                       open when hidden and unnecessarily using RAM
      * @return Output object
      */
     @Nullable
@@ -119,7 +120,7 @@ public class CommandInfo {
 
     /** Output object that is returned after the command has completed */
     public static class Output {
-        /** Returns the text result of the command. */
+        /** Returns the text result of the command */
         public final ArrayList<String> Result = new ArrayList<String>() {
             @NotNull
             @Override
@@ -135,7 +136,7 @@ public class CommandInfo {
             }
         };
 
-        /** Returns the exit code. Returns 0 if no error occurred. */
+        /** Returns the exit code, returns 0 if no error occurred */
         public int ExitCode = 0;
 
         public void print() {

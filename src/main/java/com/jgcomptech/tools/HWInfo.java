@@ -19,7 +19,11 @@ import static com.jgcomptech.tools.OSInfo.CheckIf.*;
 public class HWInfo {
     /** Returns information about the system BIOS */
     public static class BIOS {
-        /** Returns the system BIOS release date stored in the registry. */
+        /**
+         * Returns the system BIOS release date stored in the registry
+         *
+         * @return BIOS date as string
+         */
         @NotNull
         public static String getReleaseDate() {
             if(isWindows()) {
@@ -30,7 +34,11 @@ public class HWInfo {
             return "Unknown";
         }
 
-        /** Returns the system BIOS version stored in the registry. */
+        /**
+         * Returns the system BIOS version stored in the registry
+         *
+         * @return BIOS version as string
+         */
         @NotNull
         public static String getVersion() {
             if(isWindows()) {
@@ -41,7 +49,11 @@ public class HWInfo {
             return "Unknown";
         }
 
-        /** Returns the system BIOS vendor name stored in the registry. */
+        /**
+         * Returns the system BIOS vendor name stored in the registry
+         *
+         * @return BIOS vendor name as string
+         */
         @NotNull
         public static String getVendor() {
             if(isWindows()) {
@@ -55,7 +67,11 @@ public class HWInfo {
 
     /** Returns information about the current network */
     public static class Network {
-        /** Returns the Internal IP Address */
+        /**
+         * Returns the Internal IP Address
+         *
+         * @return Internal IP Address as string
+         */
         public static String getInternalIPAddress() {
             try {
                 String ip = (InetAddress.getLocalHost().getHostAddress()).trim();
@@ -64,7 +80,11 @@ public class HWInfo {
             } catch(Exception ex) { return "ERROR"; }
         }
 
-        /** Returns the External IP Address by connecting to "http://api.ipify.org" */
+        /**
+         * Returns the External IP Address by connecting to "http://api.ipify.org"
+         *
+         * @return External IP address as string
+         */
         public static String getExternalIPAddress() {
             try {
                 URL url = new URL("http://api.ipify.org");
@@ -76,13 +96,21 @@ public class HWInfo {
             }
         }
 
-        /** Returns status of internet connection */
+        /**
+         * Returns status of internet connection
+         *
+         * @return Internet connection status as boolean
+         * */
         public static boolean isConnectedToInternet() { return !getExternalIPAddress().equals("N/A"); }
     }
 
     /** Returns information about the system manufacturer */
     public static class OEM {
-        /** Returns the system manufacturer name that is stored in the registry */
+        /**
+         * Returns the system manufacturer name that is stored in the registry
+         *
+         * @return OEM name as string
+         * */
         public static String Name() {
             String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
             String value = "SystemManufacturer";
@@ -95,7 +123,11 @@ public class HWInfo {
             return text;
         }
 
-        /** Returns the system product name that is stored in the registry */
+        /**
+         * Returns the system product name that is stored in the registry
+         *
+         * @return Product name as string
+         * */
         public static String ProductName() {
             String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
             String value = "SystemProductName";
@@ -111,7 +143,11 @@ public class HWInfo {
 
     /** Returns information about the system processor */
     public static class Processor {
-        /** Returns the system processor name that is stored in the registry */
+        /**
+         * Returns the system processor name that is stored in the registry
+         *
+         * @return Processor name as string
+         * */
         @NotNull
         public static String Name() {
             String key = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
@@ -119,7 +155,11 @@ public class HWInfo {
             return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
         }
 
-        /** Returns the number of cores available on the system processor */
+        /**
+         * Returns the number of cores available on the system processor
+         *
+         * @return Number of cores as int
+         * */
         public static int Cores() {
             String command = "";
 
@@ -167,7 +207,11 @@ public class HWInfo {
 
     /** Returns information about the system RAM */
     public static class RAM {
-        /** Returns the total ram installed on the system */
+        /**
+         * Returns the total ram installed on the system
+         *
+         * @return Total Ram as string
+         * */
         public static String GetTotalRam() {
             long memorySize = ((com.sun.management.OperatingSystemMXBean)
                     java.lang.management.ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
@@ -177,7 +221,11 @@ public class HWInfo {
 
     /** Returns information about the system storage */
     public static class Storage {
-        /** Returns the file path to the root of the drive Windows is installed on */
+        /**
+         * Returns the file path to the root of the drive Windows is installed on
+         *
+         * @return System drive file path as string
+         * */
         @NotNull
         public static String getSystemDrivePath() {
             char[] pszPath = new char[WinDef.MAX_PATH];
@@ -186,7 +234,11 @@ public class HWInfo {
             return Native.toString(pszPath).replace("WINDOWS", "");
         }
 
-        /** Returns the file path to the Windows directory */
+        /**
+         * Returns the file path to the Windows directory
+         *
+         * @return Windows directory file path as string
+         * */
         @NotNull
         public static String getWindowsPath() {
             char[] pszPath = new char[WinDef.MAX_PATH];
@@ -195,13 +247,22 @@ public class HWInfo {
             return Native.toString(pszPath);
         }
 
-        /** Returns the drive size of the drive Windows is installed on */
+        /**
+         * Returns the drive size of the drive Windows is installed on
+         *
+         * @return System drive size as string
+         * */
         @NotNull
         public static String getSystemDriveSize() {
             return getDriveSize(getSystemDrivePath().replace(":/", "").charAt(0));
         }
 
-        /** Returns the drive size of the specified drive by drive letter. Returns "N/A" if drive doesn't exist */
+        /**
+         * Returns the drive size of the specified drive by drive letter, returns "N/A" if drive doesn't exist
+         *
+         * @param driveLetter Drive letter of drive to get the size of
+         * @return Drive size of the specified drive letter
+         * */
         @NotNull
         public static String getDriveSize(char driveLetter) {
             File aDrive = new File(driveLetter + ":");
@@ -209,13 +270,22 @@ public class HWInfo {
             return "N/A";
         }
 
-        /** Returns the free space of drive of the drive Windows is installed on */
+        /**
+         * Returns the free space of drive of the drive Windows is installed on
+         *
+         * @return System drive free space as string
+         * */
         @NotNull
         public static String getSystemDriveFreeSpace() {
             return getDriveFreeSpace(getSystemDrivePath().replace(":/", "").charAt(0));
         }
 
-        /** Returns the free space of the specified drive by drive letter. Returns "N/A" if drive doesn't exist */
+        /**
+         * Returns the free space of the specified drive by drive letter, returns "N/A" if drive doesn't exist
+         *
+         * @param driveLetter Drive letter of drive to get the free space of
+         * @return Drive free space of the specified drive letter
+         * */
         @NotNull
         public static String getDriveFreeSpace(char driveLetter) {
             File aDrive = new File(driveLetter + ":");

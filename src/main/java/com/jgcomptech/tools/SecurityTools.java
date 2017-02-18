@@ -14,6 +14,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+/** Contains methods dealing with encryption and hashing */
 public class SecurityTools {
     public enum HashType {
         MD5,
@@ -23,6 +24,7 @@ public class SecurityTools {
         SHA512
     }
 
+    /** Contains methods dealing with hashing files */
     public static class FileHashes {
         /**
          * Read the file and calculate the checksum
@@ -58,6 +60,12 @@ public class SecurityTools {
             }
         }
 
+        /**
+         * Save generated hash to the specified file
+         *
+         * @param fileName Filename to be saved to
+         * @param hash     Hash to be saved
+         */
         public static void saveToFile(String hash, String fileName) {
             byte[] encoded = hash.getBytes(StandardCharsets.UTF_8);
             FileOutputStream out;
@@ -70,6 +78,12 @@ public class SecurityTools {
             }
         }
 
+        /**
+         * Save generated Key to the specified file
+         *
+         * @param fileName Filename to be saved to
+         * @param key Key to be saved
+         */
         public static void saveToFile(Key key, String fileName) {
             byte[] encoded = key.getEncoded();
             FileOutputStream out;
@@ -82,6 +96,12 @@ public class SecurityTools {
             }
         }
 
+        /**
+         * Read saved hash file to byte array
+         *
+         * @param fileName Filename to be read from
+         * @return File contents as string
+         */
         @Nullable
         public static byte[] readFromFile(String fileName) {
             FileInputStream in;
@@ -99,20 +119,37 @@ public class SecurityTools {
         }
     }
 
+    /** Contains methods dealing with hashing passwords */
     public static class PasswordHashes {
-        public static String createSaltString(int size) throws NoSuchAlgorithmException {
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            byte[] salt = new byte[size];
-            sr.nextBytes(salt);
-            for(int i = 0; i < 16; i++) {
-                System.out.print(salt[i] & 255);
-                System.out.print(" ");
-            }
+        /**
+         * Creates a Secure Random salt to use for hashing
+         *
+         * @param size Size as int to use as length of salt
+         * @return Salt as string
+         */
+        public static String createSaltString(int size) {
+            try {
+                SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+                byte[] salt = new byte[size];
+                sr.nextBytes(salt);
+                for(int i = 0; i < 16; i++) {
+                    System.out.print(salt[i] & 255);
+                    System.out.print(" ");
+                }
 
-            // Return a Base64 string representation of the random number.
-            return Base64.getEncoder().encodeToString(salt);
+                // Return a Base64 string representation of the random number.
+                return Base64.getEncoder().encodeToString(salt);
+            } catch(NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            return "";
         }
 
+        /**
+         * Creates a Secure Random number
+         *
+         * @return Secure random number as a SecureRandom object
+         * */
         @Nullable
         public static SecureRandom createSecureRandom() {
             try {
@@ -124,6 +161,12 @@ public class SecurityTools {
             return null;
         }
 
+        /**
+         * Creates a Secure Random salt to use for hashing
+         *
+         * @param size Size as int to use as length of salt
+         * @return Salt as byte array
+         * */
         public static byte[] createSaltByte(int size) {
             byte[] salt = new byte[size];
             createSecureRandom().nextBytes(salt);
@@ -132,7 +175,13 @@ public class SecurityTools {
             return salt;
         }
 
-        /** Creates a SHA512 Hash */
+        /**
+         * Creates a SHA512 Hash
+         *
+         * @param passwordToHash Password to hash
+         * @param salt Salt as byte array to use for hashing
+         * @return Hashed password as string
+         * */
         public static String createHash(String passwordToHash, byte[] salt) {
             String generatedPassword = null;
             try {
@@ -151,7 +200,13 @@ public class SecurityTools {
             return generatedPassword;
         }
 
-        /** Creates a SHA512 Hash */
+        /**
+         * Creates a SHA512 Hash
+         *
+         * @param passwordToHash Password to hash
+         * @param salt Salt as string to use for hashing
+         * @return Hashed password as string
+         * */
         public static String createHash(String passwordToHash, String salt) {
             String generatedPassword = null;
             try {
@@ -183,26 +238,60 @@ public class SecurityTools {
         }
     }
 
+    /** Contains methods dealing with RSA key files */
     public static class RSAFiles {
+        /**
+         * Saves specified key pair to filename
+         *
+         * @param pair Key pair to save
+         * @param filename Filename to save to
+         * */
         public static void saveKeyPairToFile(KeyPair pair, String filename) {
             FileHashes.saveToFile(pair.getPrivate(), filename + "");
             FileHashes.saveToFile(pair.getPublic(), filename + ".pub");
         }
 
-        public static PublicKey readPublicKeyFromFile(String fileName) throws GeneralSecurityException {
-            return RSAHashes.readPublicKeyFromBytes(FileHashes.readFromFile(fileName));
+        /**
+         * Reads a public key from a filename
+         *
+         * @param filename Filename to save to
+         * @return Public key as PublicKey object
+         * @throws GeneralSecurityException on failure
+         */
+        public static PublicKey readPublicKeyFromFile(String filename) throws GeneralSecurityException {
+            return RSAHashes.readPublicKeyFromBytes(FileHashes.readFromFile(filename));
         }
 
-        public static PrivateKey readPrivateKeyFromFile(String fileName) throws GeneralSecurityException {
-            return RSAHashes.readPrivateKeyFromBytes(FileHashes.readFromFile(fileName));
+        /**
+         * Reads a private key from a filename
+         *
+         * @param filename Filename to save to
+         * @return Private key as PrivateKey object
+         * @throws GeneralSecurityException on failure
+         */
+        public static PrivateKey readPrivateKeyFromFile(String filename) throws GeneralSecurityException {
+            return RSAHashes.readPrivateKeyFromBytes(FileHashes.readFromFile(filename));
         }
     }
 
+    /** Contains methods dealing with RSA encryption and decryption */
     public static class RSAHashes {
+        /**
+         * Generates a key pair
+         *
+         * @return Key pair as a KeyPair object
+         */
         public static KeyPair generateKeyPair() {
             return generateKeyPair(false, "");
         }
 
+        /**
+         * Generates a key pair and saves them to files matching the specified filename
+         *
+         * @param saveToFiles If true KeyPair will be saved to two separate files
+         * @param filename    File name to use to save files
+         * @return Key pair as a KeyPair object
+         */
         public static KeyPair generateKeyPair(boolean saveToFiles, String filename) {
             KeyPairGenerator keyGen = null;
             try {
@@ -220,18 +309,39 @@ public class SecurityTools {
             return pair;
         }
 
+        /**
+         * Converts a byte array to a PublicKey object
+         *
+         * @param bytes To read from
+         * @return Converted public key as PublicKey object
+         * @throws GeneralSecurityException on failure
+         */
         public static PublicKey readPublicKeyFromBytes(byte[] bytes) throws GeneralSecurityException {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(keySpec);
         }
 
+        /**
+         * Converts a byte array to a PrivateKey object
+         *
+         * @param bytes To read from
+         * @return Converted public key as PrivateKey object
+         * @throws GeneralSecurityException on failure
+         */
         public static PrivateKey readPrivateKeyFromBytes(byte[] bytes) throws GeneralSecurityException {
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(keySpec);
         }
 
+        /**
+         * Encrypts specified text with public key
+         *
+         * @param key       Public key to encrypt with
+         * @param plaintext String to encrypt
+         * @return Encrypted text as byte array
+         */
         @Nullable
         public static byte[] encrypt(PublicKey key, String plaintext) {
             Cipher cipher;
@@ -246,10 +356,24 @@ public class SecurityTools {
             return null;
         }
 
+        /**
+         * Encrypts specified text with public key
+         *
+         * @param key       Public key to encrypt with
+         * @param plaintext String to encrypt
+         * @return Encrypted text as string
+         */
         public static String encryptToString(PublicKey key, String plaintext) {
             return Base64.getEncoder().encodeToString(encrypt(key, plaintext));
         }
 
+        /**
+         * Decrypts specified text with private key
+         *
+         * @param key Private key to decrypt with
+         * @param ciphertext String to decrypt
+         * @return Decrypted text as byte array
+         * */
         @Nullable
         public static byte[] decrypt(PrivateKey key, byte[] ciphertext) {
             Cipher cipher;
@@ -264,10 +388,22 @@ public class SecurityTools {
             return null;
         }
 
+        /**
+         * Decrypts specified text with private key
+         *
+         * @param key Private key to decrypt with
+         * @param ciphertext String to decrypt
+         * @return Decrypted text as string
+         * */
         public static byte[] decryptFromString(PrivateKey key, String ciphertext) {
             return decrypt(key, Base64.getDecoder().decode(ciphertext));
         }
 
+        /**
+         * Tests encryption and decryption methods
+         *
+         * @return String "Hello World"
+         * */
         public static String testRSA() {
             KeyPair pair;
             pair = generateKeyPair();

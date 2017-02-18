@@ -1,7 +1,3 @@
+
 com.jgcomptech.tools
-com.jgcomptech.tools.hwinfo
-com.jgcomptech.tools.osinfo
-com.jgcomptech.tools.osinfo.enums
-com.jgcomptech.tools.osinfo.windows
-com.jgcomptech.tools.securitytools
-com.jgcomptech.tools.test
+com.jgcomptech.tools.enums

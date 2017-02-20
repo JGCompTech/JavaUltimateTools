@@ -1,5 +1,6 @@
 package com.jgcomptech.tools;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /** Contains methods to do misc tasks */
@@ -12,14 +13,16 @@ public class Misc {
      */
     public static String ConvertBytes(Double input) {
         DecimalFormat df = new DecimalFormat("#.##");
-        if(input >= 1024) {
-            input = input / 1024;
-            if(input >= 1024) {
-                input = input / 1024;
-                if(input >= 1024) {
-                    input = input / 1024;
-                    if(input >= 1024) {
-                        input = input / 1024;
+        df.setRoundingMode(RoundingMode.DOWN);
+        Double factor = 1024d;
+        if(input >= factor) {
+            input = input / factor;
+            if(input >= factor) {
+                input = input / factor;
+                if(input >= factor) {
+                    input = input / factor;
+                    if(input >= factor) {
+                        input = input / factor;
                         return df.format(input) + " TB";
                     }
                     return df.format(input) + " GB";

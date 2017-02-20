@@ -304,7 +304,9 @@ public class SecurityTools {
             assert keyGen != null;
             KeyPair pair = keyGen.generateKeyPair();
 
-            RSAFiles.saveKeyPairToFile(pair, filename);
+            if(saveToFiles) {
+                RSAFiles.saveKeyPairToFile(pair, filename);
+            }
 
             return pair;
         }
@@ -397,23 +399,6 @@ public class SecurityTools {
          * */
         public static byte[] decryptFromString(PrivateKey key, String ciphertext) {
             return decrypt(key, Base64.getDecoder().decode(ciphertext));
-        }
-
-        /**
-         * Tests encryption and decryption methods
-         *
-         * @return String "Hello World"
-         * */
-        public static String testRSA() {
-            KeyPair pair;
-            pair = generateKeyPair();
-            PublicKey publicKey = pair.getPublic();
-            PrivateKey privateKey = pair.getPrivate();
-            String message = "Hello World";
-            String secret = encryptToString(publicKey, message);
-            System.out.println(secret);
-            byte[] recovered_message = decryptFromString(privateKey, secret);
-            return new String(recovered_message, StandardCharsets.UTF_8);
         }
     }
 }

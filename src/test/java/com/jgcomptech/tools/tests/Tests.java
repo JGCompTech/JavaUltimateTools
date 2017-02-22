@@ -1,3 +1,5 @@
+package com.jgcomptech.tools.tests;
+
 import com.jgcomptech.tools.Misc;
 import org.junit.Assert;
 import org.junit.Test;

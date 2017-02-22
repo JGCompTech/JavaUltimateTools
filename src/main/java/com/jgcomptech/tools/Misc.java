@@ -2,6 +2,8 @@ package com.jgcomptech.tools;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /** Contains methods to do misc tasks */
 public class Misc {
@@ -32,5 +34,18 @@ public class Misc {
             return df.format(input) + " KB";
         }
         return df.format(input) + " Bytes";
+    }
+
+    public static class Init<T> {
+        private T object;
+
+        public Init(Supplier<T> supplier) { object = supplier.get(); }
+
+        public Init(T object) { this.object = object; }
+
+        public T set(Consumer<T> setter) {
+            setter.accept(object);
+            return object;
+        }
     }
 }

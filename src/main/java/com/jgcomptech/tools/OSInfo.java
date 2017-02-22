@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Locale;
 
 import static com.jgcomptech.tools.OSInfo.CheckIf.*;
@@ -134,7 +136,7 @@ public class OSInfo {
          * @return Enum value containing the the operating system name
          */
         public static OSList Enum() {
-            if(isWindows()) return Name.Enum();
+            if(isWindows()) return Windows.Name.Enum();
             else if(isMac()) return OSList.MacOSX;
             else if(isLinux()) return OSList.Linux;
             else if(isSolaris()) return OSList.Solaris;
@@ -147,7 +149,7 @@ public class OSInfo {
          * @return String value containing the the operating system name
          */
         public static String String() {
-            if(isWindows()) return Name.String();
+            if(isWindows()) return Windows.Name.String();
             else if(isMac()) return "Mac OSX";
             else if(isLinux()) return "Linux";
             else if(isSolaris()) return "Solaris";
@@ -162,7 +164,7 @@ public class OSInfo {
         @NotNull
         public static String ComputerNameActive() {
             String key = "System\\ControlSet001\\Control\\ComputerName\\ActiveComputerName";
-            String value = "ComputerNameActive";
+            String value = "ComputerName";
             return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
         }
 
@@ -173,8 +175,8 @@ public class OSInfo {
          */
         @NotNull
         public static String ComputerNamePending() {
-            String key = "System\\ControlSet001\\Control\\ComputerName\\ActiveComputerName";
-            String value = "ComputerNameActive";
+            String key = "System\\ControlSet001\\Control\\ComputerName\\ComputerName";
+            String value = "ComputerName";
             String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             return text.equals("") ? "N/A" : text;
         }
@@ -1011,7 +1013,11 @@ public class OSInfo {
                 String tmpFileName = getEnvironmentVar("TEMP").trim() + File.separator + "javawmi.vbs";
                 writeStringToFile(tmpFileName, getVBScript(wmiQueryStr, wmiCommaSeparatedFieldName));
                 String output = CommandInfo.Run("cmd.exe", "/C cscript.exe " + tmpFileName).Result.toString();
-                new File(tmpFileName).delete();
+                try {
+                    Files.delete(Paths.get(tmpFileName));
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
 
                 return output.trim();
             }
@@ -1034,5 +1040,77 @@ public class OSInfo {
                 }
             }
         }
+    }
+
+    public static class InstallInfoObject {
+        String ActivationStatus = "";
+        String Architecture = "";
+        String NameExpanded = "";
+        String NameExpandedFromRegistry = "";
+        String Name = "";
+        String ServicePack = "";
+        int ServicePackNumber = 0;
+        VersionObject Version = new VersionObject();
+
+        public String ActivationStatus() { return ActivationStatus; }
+
+        public String Architecture() { return Architecture; }
+
+        public String NameExpanded() { return NameExpanded; }
+
+        public String NameExpandedFromRegistry() { return NameExpandedFromRegistry; }
+
+        public String Name() { return Name; }
+
+        public String ServicePack() { return ServicePack; }
+
+        public int ServicePackNumber() { return ServicePackNumber; }
+
+        public VersionObject Version() { return Version; }
+    }
+
+    public static class VersionObject {
+        String Main;
+        int Major;
+        int Minor;
+        int Build;
+        int Revision;
+        int Number;
+
+        public String Main() { return Main; }
+
+        public int Major() { return Major; }
+
+        public int Minor() { return Minor; }
+
+        public int Build() { return Build; }
+
+        public int Revision() { return Revision; }
+
+        public int Number() { return Number; }
+    }
+
+    public static class OSObject {
+        String ComputerName;
+        String ComputerNamePending;
+        InstallInfoObject InstallInfo;
+        String RegisteredOrganization;
+        String RegisteredOwner;
+        String LoggedInUserName;
+        String DomainName;
+
+        public String ComputerName() { return ComputerName; }
+
+        public String ComputerNamePending() { return ComputerNamePending; }
+
+        public InstallInfoObject InstallInfo() { return InstallInfo; }
+
+        public String RegisteredOrganization() { return RegisteredOrganization; }
+
+        public String RegisteredOwner() { return RegisteredOwner; }
+
+        public String LoggedInUserName() { return LoggedInUserName; }
+
+        public String DomainName() { return DomainName; }
     }
 }

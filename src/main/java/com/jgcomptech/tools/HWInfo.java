@@ -293,4 +293,102 @@ public class HWInfo {
             return "N/A";
         }
     }
+
+    public static class HWObject {
+        String SystemOEM;
+        String ProductName;
+        BIOSObject BIOS;
+        NetworkObject Network;
+        ProcessorObject Processor;
+        RAMObject RAM;
+        StorageObject Storage;
+
+        public String SystemOEM() { return SystemOEM; }
+
+        public String ProductName() { return ProductName; }
+
+        public BIOSObject BIOS() { return BIOS; }
+
+        public NetworkObject Network() { return Network; }
+
+        public ProcessorObject Processor() { return Processor; }
+
+        public RAMObject RAM() { return RAM; }
+
+        public StorageObject Storage() { return Storage; }
+    }
+
+    public static class BIOSObject {
+        String Name;
+        String ReleaseDate;
+        String Vendor;
+        String Version;
+
+        public String Name() { return Name; }
+
+        public String ReleaseDate() { return ReleaseDate; }
+
+        public String Vendor() { return Vendor; }
+
+        public String Version() { return Version; }
+    }
+
+    public static class DriveObject {
+        //String Name;
+        //String Format;
+        //String Label;
+        String DriveType;
+        String TotalSize;
+        String TotalFree;
+
+        //public String Name() { return Name; }
+        //public String Format() { return Format; }
+        //public String Label() { return Label; }
+        public String DriveType() { return DriveType; }
+
+        public String TotalSize() { return TotalSize; }
+
+        public String TotalFree() { return TotalFree; }
+    }
+
+    public static class NetworkObject {
+        String InternalIPAddress;
+        String ExternalIPAddress;
+        Boolean ConnectionStatus;
+
+        public String InternalIPAddress() { return InternalIPAddress; }
+
+        public String ExternalIPAddress() { return ExternalIPAddress; }
+
+        public Boolean ConnectionStatus() { return ConnectionStatus; }
+    }
+
+    public static class ProcessorObject {
+        String Name;
+        int Cores;
+
+        public String Name() { return Name; }
+
+        public int Cores() { return Cores; }
+    }
+
+    public static class RAMObject {
+        String TotalInstalled;
+
+        public String TotalInstalled() { return TotalInstalled; }
+    }
+
+    public static class StorageObject {
+        //List<DriveObject> InstalledDrives;
+        DriveObject SystemDrive;
+
+        //public List<DriveObject> InstalledDrives() { return InstalledDrives; }
+        public DriveObject SystemDrive() { return SystemDrive; }
+    }
+
+
+
+
+
+
 }

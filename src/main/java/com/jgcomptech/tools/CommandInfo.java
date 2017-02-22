@@ -4,7 +4,12 @@ import com.sun.jna.platform.win32.WinDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static com.jgcomptech.tools.OSInfo.CheckIf.isWindows;
@@ -114,8 +119,11 @@ public class CommandInfo {
         } catch(InterruptedException e) {
             e.printStackTrace();
         }
-        File file = new File("my.bat");
-        file.delete();
+        try {
+            Files.delete(Paths.get("my.bat"));
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /** Output object that is returned after the command has completed */

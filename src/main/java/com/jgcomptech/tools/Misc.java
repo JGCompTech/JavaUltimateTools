@@ -37,7 +37,7 @@ public class Misc {
     }
 
     public static class Init<T> {
-        private T object;
+        private final T object;
 
         public Init(Supplier<T> supplier) { object = supplier.get(); }
 

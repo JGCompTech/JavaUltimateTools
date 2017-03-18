@@ -2,8 +2,8 @@ package com.jgcomptech.tools;
 
 /** Returns Information about the current OS and Hardware on the current system */
 public class ComputerInfo {
-    public OSInfo.OSObject OS;
-    public HWInfo.HWObject HW;
+    public final OSInfo.OSObject OS;
+    public final HWInfo.HWObject HW;
 
     public ComputerInfo() {
         HW = ReinitalizeHW();

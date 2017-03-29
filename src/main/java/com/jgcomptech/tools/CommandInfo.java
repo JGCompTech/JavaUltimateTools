@@ -2,7 +2,6 @@ package com.jgcomptech.tools;
 
 import com.sun.jna.platform.win32.WinDef;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -58,11 +57,11 @@ public class CommandInfo {
      * @param keepWindowOpen If true, pauses cmd window and forces it to stay open after command is completed <p>
      *                       If false and "elevate" is true, cmd window will close after command is completed
      *                       <p>
-     *                       This parameter is ignored if "hidewindow" is true, this prevents cmd window from staying
+     *                       This parameter is ignored if "hideWindow" is true, this prevents cmd window from staying
      *                       open when hidden and unnecessarily using RAM
      * @return Output object
      */
-    @Nullable
+    @NotNull
     public static Output Run(String command, String args, boolean elevate, boolean hideWindow, boolean keepWindowOpen) {
         Output newOutput = new Output();
 
@@ -153,4 +152,7 @@ public class CommandInfo {
             }
         }
     }
+
+    // This class should only be called statically
+    private CommandInfo() { super(); }
 }

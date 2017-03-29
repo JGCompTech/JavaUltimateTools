@@ -35,5 +35,11 @@ public class WebTools {
             }
             return "";
         }
+
+        // This class should only be called statically
+        private HTML() { super(); }
     }
+
+    // This class should only be called statically
+    private WebTools() { super(); }
 }

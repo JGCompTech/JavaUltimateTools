@@ -53,4 +53,7 @@ public class RegistryInfo {
         PERFORMANCE_DATA,
         CURRENT_CONFIG
     }
+
+    // This class should only be called statically
+    private RegistryInfo() { super(); }
 }

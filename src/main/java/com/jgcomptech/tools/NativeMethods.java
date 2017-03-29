@@ -79,4 +79,7 @@ public class NativeMethods {
         Secur32 INSTANCE = (Secur32)
                 Native.loadLibrary("secur32", Secur32.class, W32APIOptions.DEFAULT_OPTIONS);
     }
+
+    // This class should only be called statically
+    private NativeMethods() { super(); }
 }

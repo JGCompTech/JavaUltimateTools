@@ -117,6 +117,9 @@ public class SecurityTools {
 
             return null;
         }
+
+        // This class should only be called statically
+        private FileHashes() { super(); }
     }
 
     /** Contains methods dealing with hashing passwords */
@@ -132,10 +135,10 @@ public class SecurityTools {
                 SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
                 byte[] salt = new byte[size];
                 sr.nextBytes(salt);
-                for(int i = 0; i < 16; i++) {
+                /*for(int i = 0; i < 16; i++) {
                     System.out.print(salt[i] & 255);
                     System.out.print(" ");
-                }
+                }*/
 
                 // Return a Base64 string representation of the random number.
                 return Base64.getEncoder().encodeToString(salt);
@@ -236,6 +239,9 @@ public class SecurityTools {
         public static boolean checkHashesMatch(String enteredPassword, String databasePassword, String databaseSalt) {
             return (databasePassword.equals(createHash(enteredPassword, databaseSalt)));
         }
+
+        // This class should only be called statically
+        private PasswordHashes() { super(); }
     }
 
     /** Contains methods dealing with RSA key files */
@@ -272,6 +278,9 @@ public class SecurityTools {
         public static PrivateKey readPrivateKeyFromFile(String filename) throws GeneralSecurityException {
             return RSAHashes.readPrivateKeyFromBytes(FileHashes.readFromFile(filename));
         }
+
+        // This class should only be called statically
+        private RSAFiles() { super(); }
     }
 
     /** Contains methods dealing with RSA encryption and decryption */
@@ -400,5 +409,11 @@ public class SecurityTools {
         public static byte[] decryptFromString(PrivateKey key, String ciphertext) {
             return decrypt(key, Base64.getDecoder().decode(ciphertext));
         }
+
+        // This class should only be called statically
+        private RSAHashes() { super(); }
     }
+
+    // This class should only be called statically
+    private SecurityTools() { super(); }
 }

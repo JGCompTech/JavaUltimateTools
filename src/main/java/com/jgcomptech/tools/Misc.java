@@ -48,4 +48,7 @@ public class Misc {
             return object;
         }
     }
+
+    // This class should only be called statically
+    private Misc() { super(); }
 }

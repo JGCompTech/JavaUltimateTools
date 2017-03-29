@@ -34,6 +34,9 @@ public class OSInfo {
          * @return if computer is 32 bit or 64 bit as int
          */
         public static int Number() { return is64BitOS() ? 64 : 32; }
+
+        // This class should only be called statically
+        private Architecture() { super(); }
     }
 
     /**
@@ -89,6 +92,9 @@ public class OSInfo {
          * @return True if OS is Solaris
          */
         public static boolean isSolaris() { return (OS.contains("sunos")); }
+
+        // This class should only be called statically
+        private CheckIf() { super(); }
     }
 
     /**
@@ -180,6 +186,9 @@ public class OSInfo {
             String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             return text.equals("") ? "N/A" : text;
         }
+
+        // This class should only be called statically
+        private Name() { super(); }
     }
 
     /** Returns information about the Windows installation */
@@ -323,6 +332,9 @@ public class OSInfo {
                 ExtendedGrace,
                 Unknown
             }
+
+            // This class should only be called statically
+            private Activation() { super(); }
         }
 
         /**
@@ -433,6 +445,9 @@ public class OSInfo {
              * @return true if Windows 10 or later, false if Windows 10 or previous
              */
             public static boolean isWin10OrLater() { return Version.Number() >= 100; }
+
+            // This class should only be called statically
+            private CheckIf() { super(); }
         }
 
         /**
@@ -610,6 +625,9 @@ public class OSInfo {
             private static int getProductInfo() {
                 return NativeMethods.getProductInfo(Version.Major(), Version.Minor());
             }
+
+            // This class should only be called statically
+            private Edition() { super(); }
         }
 
         /**
@@ -685,6 +703,9 @@ public class OSInfo {
                 }
                 return "UNKNOWN";
             }
+
+            // This class should only be called statically
+            private Name() { super(); }
         }
 
         /**
@@ -710,6 +731,9 @@ public class OSInfo {
                 WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 return NativeMethods.getVersionInfoFailed(osVersionInfo) ? -1 : osVersionInfo.wServicePackMajor.intValue();
             }
+
+            // This class should only be called statically
+            private ServicePack() { super(); }
         }
 
         /**
@@ -749,6 +773,9 @@ public class OSInfo {
                 NativeMethods.Kernel32.INSTANCE.GetSystemTime(time);
                 return time.wMonth + "/" + time.wDay + "/" + time.wYear + " " + time.wHour + ":" + time.wMinute;
             }
+
+            // This class should only be called statically
+            private SystemInformation() { super(); }
         }
 
         /**
@@ -831,6 +858,9 @@ public class OSInfo {
                 }
                 return "Error";
             }
+
+            // This class should only be called statically
+            private UserInfo() { super(); }
         }
 
         /**
@@ -936,6 +966,9 @@ public class OSInfo {
                 Build,
                 Revision
             }
+
+            // This class should only be called statically
+            private Version() { super(); }
         }
 
         /** Returns information from WMI */
@@ -1039,7 +1072,13 @@ public class OSInfo {
                     e.printStackTrace();
                 }
             }
+
+            // This class should only be called statically
+            private WMI() { super(); }
         }
+
+        // This class should only be called statically
+        private Windows() { super(); }
     }
 
     public static class InstallInfoObject {
@@ -1113,4 +1152,7 @@ public class OSInfo {
 
         public String DomainName() { return DomainName; }
     }
+
+    // This class should only be called statically
+    private OSInfo() { super(); }
 }

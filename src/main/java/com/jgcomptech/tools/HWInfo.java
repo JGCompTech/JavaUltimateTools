@@ -63,6 +63,9 @@ public class HWInfo {
             }
             return "Unknown";
         }
+
+        // This class should only be called statically
+        private BIOS() { super(); }
     }
 
     /** Returns information about the current network */
@@ -102,6 +105,9 @@ public class HWInfo {
          * @return Internet connection status as boolean
          * */
         public static boolean isConnectedToInternet() { return !getExternalIPAddress().equals("N/A"); }
+
+        // This class should only be called statically
+        private Network() { super(); }
     }
 
     /** Returns information about the system manufacturer */
@@ -139,6 +145,9 @@ public class HWInfo {
             }
             return text;
         }
+
+        // This class should only be called statically
+        private OEM() { super(); }
     }
 
     /** Returns information about the system processor */
@@ -203,6 +212,9 @@ public class HWInfo {
             if(isLinux()) return numberOfCores * sockets;
             return numberOfCores;
         }
+
+        // This class should only be called statically
+        private Processor() { super(); }
     }
 
     /** Returns information about the system RAM */
@@ -217,6 +229,9 @@ public class HWInfo {
                     java.lang.management.ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
             return ConvertBytes((double) memorySize);
         }
+
+        // This class should only be called statically
+        private RAM() { super(); }
     }
 
     /** Returns information about the system storage */
@@ -292,6 +307,9 @@ public class HWInfo {
             if(aDrive.exists()) return ConvertBytes((double) aDrive.getUsableSpace());
             return "N/A";
         }
+
+        // This class should only be called statically
+        private Storage() { super(); }
     }
 
     public static class HWObject {
@@ -386,9 +404,6 @@ public class HWInfo {
         public DriveObject SystemDrive() { return SystemDrive; }
     }
 
-
-
-
-
-
+    // This class should only be called statically
+    private HWInfo() { super(); }
 }

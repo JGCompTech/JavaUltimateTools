@@ -30,7 +30,7 @@ The SecurityTools class contains methods surrounding hashing and encryption. Thi
 - readFromFile(String fileName) - Reads a hash or RSA key from a text file.
 - CreateSalt(int size) - Creates a RNG salt for use in password hashing using the supplied length.
 - CreateHash(String passwordToHash, String salt) - Creates a SHA512 password hash with the supplied password and salt.
-- CheckHashesMatch(String enteredPassword, String databasePassword, String databaseSalt) - Checks if the supplied password matches the supplied database password and salt. This can be used to verifiy passwords for a login system.
+- CheckHashesMatch(String enteredPassword, String databasePassword, String databaseSalt) - Checks if the supplied password matches the supplied database password and salt. This can be used to verify passwords for a login system.
 - generateRSAKeyPair() - Generates a RSA key pair for use in encryption.
 - generateKeyPair(boolean saveToFiles, String filename) - Generates a RSA key pair for use in encryption and saves to file.
 - encrypt(PublicKey key, String plaintext) - Encrypts a string using a RSA public key. Returns byte array.

@@ -74,4 +74,7 @@ public class MessageBoxButtonType {
     public static final ButtonType SUBMIT = new ButtonType("Submit", ButtonBar.ButtonData.APPLY);
 
     public static final ButtonType NONE = new ButtonType("");
+
+    // This class should only be called statically
+    private MessageBoxButtonType() { super(); }
 }

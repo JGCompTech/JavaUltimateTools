@@ -175,9 +175,6 @@ public class Users {
                 } catch(SQLException e) {
                     MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
                 }
-            } else {
-                MessageBox.show("\"" + username + "\" User Not Found!", "Database Alert",
-                        "Database Alert", MessageBoxIcon.ERROR);
             }
         } else {
             MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",

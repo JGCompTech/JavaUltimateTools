@@ -1,0 +1,11 @@
+#txtUsername {
+  -fx-background-image:url('/img/User-Login.png');
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: 180px center;
+}
+
+#txtPassword {
+  -fx-background-image:url('/img/Key.png');
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: 180px center;
+}

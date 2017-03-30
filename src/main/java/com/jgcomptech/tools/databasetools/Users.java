@@ -15,8 +15,9 @@ public class Users {
      * Creates a Users table in the specified database
      * @param db the database to create the table in
      * @param suppressExistsError if true suppresses error if the table already exists
+     * @throws SQLException if error occurs
      */
-    public static void createTable(Database db, boolean suppressExistsError) {
+    public static void createTable(Database db, boolean suppressExistsError) throws SQLException {
         final String TABLE_NAME = "Users";
         final String INDEX_NAME = "login_index";
         final String ID_FIELD = "Id";
@@ -51,23 +52,20 @@ public class Users {
      * @param password the password for the new user
      * @param type the user type for the new user
      * @return true if user creation is successful
+     * @throws SQLException if error occurs
      */
-    public static boolean create(Database db, String username, String password, String type) {
+    public static boolean create(Database db, String username, String password, String type) throws SQLException {
         final String TABLE_NAME = "Users";
 
         if(db.TableExists(TABLE_NAME)) {
-            try {
-                if(!exists(db, username)) {
-                    String salt = SecurityTools.PasswordHashes.createSaltString(16);
-                    password = SecurityTools.PasswordHashes.createHash(password, salt);
+            if(!exists(db, username)) {
+                String salt = SecurityTools.PasswordHashes.createSaltString(16);
+                password = SecurityTools.PasswordHashes.createHash(password, salt);
 
-                    String UsersSeedQuery = "INSERT INTO " + TABLE_NAME + " (username, password, salt, type)\n" +
-                            "VALUES (\'" + username + "\', \'" + password + "\', \'" + salt + "\', \'" + type + "\')";
-                    db.executeUpdate(UsersSeedQuery);
-                    return true;
-                }
-            } catch(SQLException e) {
-                MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
+                String UsersSeedQuery = "INSERT INTO " + TABLE_NAME + " (username, password, salt, type)\n" +
+                        "VALUES (\'" + username + "\', \'" + password + "\', \'" + salt + "\', \'" + type + "\')";
+                db.executeUpdate(UsersSeedQuery);
+                return true;
             }
         } else {
             MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
@@ -82,22 +80,19 @@ public class Users {
      * @param db database that contains the users table
      * @param username the username to check
      * @return true if the user exists
+     * @throws SQLException if error occurs
      */
-    public static boolean exists(Database db, String username) {
+    public static boolean exists(Database db, String username) throws SQLException {
         final String TABLE_NAME = "Users";
         String USERNAME_COLUMN_NAME = "Username";
 
         if(db.getDbType() == DatabaseType.H2) USERNAME_COLUMN_NAME = "USERNAME";
 
         if(db.TableExists(TABLE_NAME)) {
-            try {
-                try (ResultSet result = db.executeQuery("SELECT * FROM " + TABLE_NAME)) {
-                    while(result.next()) {
-                        if(result.getString(USERNAME_COLUMN_NAME).toLowerCase().equals(username)) return true;
-                    }
+            try (ResultSet result = db.executeQuery("SELECT * FROM " + TABLE_NAME)) {
+                while(result.next()) {
+                    if(result.getString(USERNAME_COLUMN_NAME).toLowerCase().equals(username)) return true;
                 }
-            } catch(SQLException e) {
-                MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
             }
         } else {
             MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
@@ -113,31 +108,28 @@ public class Users {
      * @param username the username to change
      * @param password the new password
      * @return true if password is changed successfully
+     * @throws SQLException if error occurs
      */
-    public static boolean setPassword(Database db, String username, String password) {
+    public static boolean setPassword(Database db, String username, String password) throws SQLException {
         final String TABLE_NAME = "Users";
         final String USERNAME_FIELD = "Username";
         final String PASSWORD_FIELD = "Password";
         final String SALT_FIELD = "Salt";
 
         if(db.TableExists(TABLE_NAME)) {
-            try {
-                if(exists(db, username)) {
-                    String salt = SecurityTools.PasswordHashes.createSaltString(16);
-                    password = SecurityTools.PasswordHashes.createHash(password, salt);
+            if(exists(db, username)) {
+                String salt = SecurityTools.PasswordHashes.createSaltString(16);
+                password = SecurityTools.PasswordHashes.createHash(password, salt);
 
-                    String query = "UPDATE " + TABLE_NAME + " " +
-                            "SET " + PASSWORD_FIELD + " = '" + password + "', "
-                            + SALT_FIELD + " = '" + salt + "' " +
-                            "WHERE " + USERNAME_FIELD + " = '" + username + "'";
-                    db.executeUpdate(query);
-                    return true;
-                } else {
-                    MessageBox.show("\"" + username + "\" User Not Found!", "Database Alert",
-                            "Database Alert", MessageBoxIcon.ERROR);
-                }
-            } catch(SQLException e) {
-                MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
+                String query = "UPDATE " + TABLE_NAME + " " +
+                        "SET " + PASSWORD_FIELD + " = '" + password + "', "
+                        + SALT_FIELD + " = '" + salt + "' " +
+                        "WHERE " + USERNAME_FIELD + " = '" + username + "'";
+                db.executeUpdate(query);
+                return true;
+            } else {
+                MessageBox.show("\"" + username + "\" User Not Found!", "Database Alert",
+                        "Database Alert", MessageBoxIcon.ERROR);
             }
         } else {
             MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
@@ -153,8 +145,9 @@ public class Users {
      * @param username the username to check against
      * @param password the password to check against
      * @return true if the passwords match
+     * @throws SQLException if error occurs
      */
-    public static boolean checkPasswordMatches(Database db, String username, String password) {
+    public static boolean checkPasswordMatches(Database db, String username, String password) throws SQLException {
         final String TABLE_NAME = "Users";
         final String USERNAME_FIELD = "Username";
         final String PASSWORD_FIELD = "Password";
@@ -165,16 +158,12 @@ public class Users {
                 String query = "SELECT * FROM " + TABLE_NAME +
                         " WHERE " + USERNAME_FIELD + " = '" + username + "'";
 
-                try {
-                    ResultSet result = db.executeQuery(query);
+                ResultSet result = db.executeQuery(query);
 
-                    result.next();
-                    String salt = result.getString(SALT_FIELD);
-                    String databasePass = result.getString(PASSWORD_FIELD);
-                    return SecurityTools.PasswordHashes.checkHashesMatch(password, databasePass, salt);
-                } catch(SQLException e) {
-                    MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-                }
+                result.next();
+                String salt = result.getString(SALT_FIELD);
+                String databasePass = result.getString(PASSWORD_FIELD);
+                return SecurityTools.PasswordHashes.checkHashesMatch(password, databasePass, salt);
             }
         } else {
             MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
@@ -182,6 +171,36 @@ public class Users {
         }
 
         return false;
+    }
+
+    /**
+     * Returns userType for the specified username
+     * @param db database that contains the users table
+     * @param username the username to retrieve info from
+     * @return the userType
+     * @throws SQLException if error occurs
+     */
+    public static String getUserType(Database db, String username) throws SQLException {
+        final String TABLE_NAME = "Users";
+        final String USERNAME_FIELD = "Username";
+        final String TYPE_FIELD = "Type";
+
+        if(db.TableExists(TABLE_NAME)) {
+            if(exists(db, username)) {
+                String query = "SELECT " + TYPE_FIELD + " FROM " + TABLE_NAME +
+                        " WHERE " + USERNAME_FIELD + " = '" + username + "'";
+
+                ResultSet result = db.executeQuery(query);
+
+                result.next();
+                return result.getString(TYPE_FIELD);
+            }
+        } else {
+            MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
+                    "Database Alert", MessageBoxIcon.ERROR);
+        }
+
+        return "ERROR";
     }
 
     // This class should only be called statically

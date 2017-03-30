@@ -76,14 +76,16 @@ public class Database implements AutoCloseable {
 
     /**
      * Connects to the database and shows a message box if the connection succeeds
+     * @throws SQLException if error occurs
      */
-    public void connect() { connect(false); }
+    public void connect() throws SQLException { connect(false); }
 
     /**
      * Connects to the database and if parameter is true, shows a message box if the connection succeeds
      * @param showStatusAlert Specifies if message box should be shown
+     * @throws SQLException if error occurs
      */
-    public void connect(boolean showStatusAlert) {
+    public void connect(boolean showStatusAlert) throws SQLException{
         try {
             conn = DriverManager.getConnection(connString, username, password);
 
@@ -95,10 +97,11 @@ public class Database implements AutoCloseable {
                     DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!\nPlease Close any open connections!",
                             "Error!", "Database Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.ERROR);
                     if(result.equals(DialogResult.RETRY)) connect(showStatusAlert);
+                    if(result.equals(DialogResult.CANCEL)) throw e;
                 }
-                else MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
+                else throw e;
             }
-            else MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
+            else throw e;
         }
     }
 
@@ -108,13 +111,10 @@ public class Database implements AutoCloseable {
      * It is generally good practice to release resources as soon as
      * you are finished with them to avoid tying up database
      * resources, shows message box on error
+     * @throws SQLException if error occurs
      */
-    public void disconnect() {
-        try{
-            if(conn != null) if(!conn.isClosed()) conn.close();
-        } catch (SQLException e) {
-            MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-        }
+    public void disconnect() throws SQLException {
+        if(conn != null) if(!conn.isClosed()) conn.close();
     }
 
     /**
@@ -190,20 +190,18 @@ public class Database implements AutoCloseable {
      * @param query sql query to be used to create the table
      * @param suppressExistsError if true suppresses error if the table already exists
      * @return true if created successfully
+     * @throws SQLException if error occurs
      */
-    public boolean createTable(String tableName, String query, boolean suppressExistsError) {
+    public boolean createTable(String tableName, String query, boolean suppressExistsError) throws SQLException {
         if(!TableExists(tableName)) {
             try (Statement stmt = conn.createStatement()) {
                 // create a new table
                 stmt.execute(query);
                 return true;
-            } catch(SQLException e) {
-                MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-                return false;
             }
         } else {
             if(!suppressExistsError) MessageBox.show("\"" + tableName + "\" Table Already Exists!", "Error!", "Database Error", MessageBoxIcon.ERROR);
-            return true;
+            return false;
         }
     }
 
@@ -213,8 +211,9 @@ public class Database implements AutoCloseable {
      * @param query sql query to be used to create the table index
      * @param suppressExistsError if true suppresses error if the table index already exists
      * @return true if created successfully
+     * @throws SQLException if error occurs
      */
-    public boolean createIndex(String indexName, String query, boolean suppressExistsError) {
+    public boolean createIndex(String indexName, String query, boolean suppressExistsError) throws SQLException {
         try (Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(query);
@@ -223,7 +222,7 @@ public class Database implements AutoCloseable {
             if(e.getMessage().contains(indexName) &&  e.getMessage().contains("already exists")) {
                 if(!suppressExistsError) MessageBox.show("\"" + indexName + "\" Index Already Exists!", "Error!", "Database Error", MessageBoxIcon.ERROR);
             } else {
-                MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
+                throw e;
             }
             return false;
         }
@@ -251,42 +250,32 @@ public class Database implements AutoCloseable {
     /**
      * Checks if a connection is open to the database
      * @return true if connected
+     * @throws SQLException if error occurs
      */
-    public boolean isConnected() {
-        if(conn == null) return false;
-        try {
-            if(conn.isClosed()) return false;
-        } catch(SQLException e) {
-            MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-        }
-
-        return true;
+    public boolean isConnected() throws SQLException {
+        return !(conn == null && conn.isClosed());
     }
 
     /**
      * Checks to see if the specified table exists and is not a system table
      * @param tableName table name to check
      * @return true if exists
+     * @throws SQLException if error occurs
      */
-    public boolean TableExists(String tableName) {
-        try {
-            boolean tExists = false;
-            if(dbType == DatabaseType.H2) tableName = tableName.toUpperCase();
-            final String[] TYPES = {"TABLE"};
-            try (ResultSet rs = conn.getMetaData().getTables(null, null, null, TYPES)) {
-                while (rs.next()) {
-                    String tName = rs.getString("TABLE_NAME");
-                    if (tName != null && tName.equalsIgnoreCase(tableName)) {
-                        tExists = true;
-                        break;
-                    }
+    public boolean TableExists(String tableName) throws SQLException {
+        boolean tExists = false;
+        if(dbType == DatabaseType.H2) tableName = tableName.toUpperCase();
+        final String[] TYPES = {"TABLE"};
+        try (ResultSet rs = conn.getMetaData().getTables(null, null, null, TYPES)) {
+            while (rs.next()) {
+                String tName = rs.getString("TABLE_NAME");
+                if (tName != null && tName.equalsIgnoreCase(tableName)) {
+                    tExists = true;
+                    break;
                 }
             }
-            return tExists;
-        } catch(SQLException e) {
-            MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
         }
-        return false;
+        return tExists;
     }
 
     /**
@@ -298,6 +287,6 @@ public class Database implements AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        if(conn != null) if(!conn.isClosed()) conn.close();
+        if(conn != null && !conn.isClosed()) conn.close();
     }
 }

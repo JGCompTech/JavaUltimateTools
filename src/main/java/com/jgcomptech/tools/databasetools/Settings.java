@@ -1,9 +1,5 @@
 package com.jgcomptech.tools.databasetools;
 
-import com.jgcomptech.tools.dialogs.MessageBox;
-import com.jgcomptech.tools.dialogs.MessageBoxIcon;
-import com.jgcomptech.tools.enums.WMIClasses;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -15,8 +11,9 @@ public class Settings {
      * Creates a Settings table in the specified database
      * @param db the database to create the table in
      * @param suppressExistsError if true suppresses error if the table already exists
+     * @throws SQLException if error occurs
      */
-    public static void createTable(Database db, boolean suppressExistsError) {
+    public static void createTable(Database db, boolean suppressExistsError) throws SQLException {
         final String TABLE_NAME = "Settings";
         final String ID_FIELD = "Id";
         final String NAME_FIELD = "Name";
@@ -38,8 +35,9 @@ public class Settings {
      * @param db database that contains the settings table
      * @param settingName name of the setting to return a value
      * @return value of the specified setting
+     * @throws SQLException if error occurs
      */
-    public static String getValue(Database db, String settingName) {
+    public static String getValue(Database db, String settingName) throws SQLException {
         final String TABLE_NAME = "Settings";
         final String NAME_FIELD = "Name";
         final String VALUE_FIELD = "Value";
@@ -52,14 +50,10 @@ public class Settings {
             String searchTableQuery = "SELECT " + VALUE_FIELD + " FROM " + TABLE_NAME +
                     " WHERE " + NAME_FIELD + " = '" + settingName + "'";
 
-            try {
-                ResultSet result = db.executeQuery(searchTableQuery);
+            ResultSet result = db.executeQuery(searchTableQuery);
 
-                result.next();
-                value = result.getString(VALUE_FIELD);
-            } catch(SQLException e) {
-                MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-            }
+            result.next();
+            value = result.getString(VALUE_FIELD);
         }
 
         return value;
@@ -71,8 +65,9 @@ public class Settings {
      * @param settingName name of the setting to set its value
      * @param settingValue value to set
      * @return true if setting is set successfully
+     * @throws SQLException if error occurs
      */
-    public static boolean setValue(Database db, String settingName, String settingValue) {
+    public static boolean setValue(Database db, String settingName, String settingValue) throws SQLException {
         final String TABLE_NAME = "Settings";
         final String NAME_FIELD = "Name";
         final String VALUE_FIELD = "Value";
@@ -91,14 +86,8 @@ public class Settings {
                     "VALUES ('" + settingName + "', '" + settingValue + "')";
         }
 
-        try {
-            int result = db.executeUpdate(updateSettingQuery);
-            if(result == 1) return true;
-        } catch(SQLException e) {
-            MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-        }
-
-        return false;
+        int result = db.executeUpdate(updateSettingQuery);
+        return result == 1;
     }
 
     /**
@@ -107,8 +96,9 @@ public class Settings {
      * @param settingName setting to check for
      * @return true if setting exists
      * @throws IllegalStateException if a setting is defined multiple times
+     * @throws SQLException if error occurs
      */
-    public static boolean exists(Database db, String settingName) {
+    public static boolean exists(Database db, String settingName) throws SQLException {
         final String TABLE_NAME = "Settings";
         final String NAME_FIELD = "Name";
         final String VALUE_FIELD = "Value";
@@ -118,12 +108,7 @@ public class Settings {
         String searchTableQuery = "SELECT " + VALUE_FIELD + " FROM " + TABLE_NAME +
                 " WHERE " + NAME_FIELD + " = '" + settingName + "'";
 
-        int rows = 0;
-        try {
-            rows = Database.getResultRows(db.executeQuery(searchTableQuery));
-        } catch(SQLException e) {
-            MessageBox.show(e.getMessage(), "Error!", MessageBoxIcon.ERROR);
-        }
+        int rows = Database.getResultRows(db.executeQuery(searchTableQuery));
 
         if(rows == 1) {
             return true;

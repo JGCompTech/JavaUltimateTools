@@ -7,6 +7,7 @@ import com.jgcomptech.tools.dialogs.MessageBoxButtons;
 import com.jgcomptech.tools.dialogs.MessageBoxIcon;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Database object that allows communication with a SQL database
@@ -186,6 +187,27 @@ public class Database implements AutoCloseable {
                 }
             }
             return tExists;
+        }
+
+        /**
+         * Returns an ArrayList of all tables in the database
+         * @return ArrayList of tables
+         * @throws SQLException if error occurs
+         */
+        public ArrayList getTablesList() throws SQLException {
+
+            ArrayList<String> listOfTables = new ArrayList<String>();
+
+            DatabaseMetaData md = conn.getMetaData();
+
+            ResultSet rs = md.getTables(null, null, "%", null);
+
+            while (rs.next()) {
+                if (rs.getString(4).equalsIgnoreCase("TABLE")) {
+                    listOfTables.add(rs.getString(3));
+                }
+            }
+            return listOfTables;
         }
     }
 

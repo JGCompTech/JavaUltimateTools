@@ -74,7 +74,15 @@ public class Database implements AutoCloseable {
         }
         return connection;
     }
-    private class Connection {
+    /**
+     * The object that stores tasks related to the connection,
+     * use <code>getConnection</code> to access methods
+     */
+    public class Connection {
+        /**
+         * Returns the raw <code>java.sql.Connection</code> object
+         * @return the Connection object
+         */
         public java.sql.Connection getObject() { return conn; }
 
         /**
@@ -140,7 +148,11 @@ public class Database implements AutoCloseable {
         }
         return info;
     }
-    private class Info {
+    /**
+     * The object that stores the database info,
+     * use <code>getInfo</code> to access methods
+     */
+    public class Info {
 
         /**
          * Returns the name of the database
@@ -187,7 +199,11 @@ public class Database implements AutoCloseable {
         }
         return tasks;
     }
-    private class Tasks {
+    /**
+     * The object that stores methods to complete database tasks,
+     * use <code>getTasks</code> to access methods
+     */
+    public class Tasks {
         /**
          * Executes the given SQL statement, which returns a single
          * <code>ResultSet</code> object, auto-closes statement object when ResultSet object is closed

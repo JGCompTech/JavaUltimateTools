@@ -5,7 +5,13 @@ import com.jgcomptech.tools.dialogs.DialogResult;
 import com.jgcomptech.tools.dialogs.MessageBox;
 import com.jgcomptech.tools.dialogs.MessageBoxButtons;
 import com.jgcomptech.tools.dialogs.MessageBoxIcon;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS;
+import org.apache.commons.dbcp2.datasources.SharedPoolDataSource;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -13,15 +19,16 @@ import java.util.ArrayList;
  * Database object that allows communication with a SQL database
  */
 public class Database implements AutoCloseable {
-    private java.sql.Connection conn = null;
-    private String connString = "";
+    private java.sql.Connection conn;
+    private String connString;
     final private String username;
     final private String password;
     final private String dbName;
     final private DatabaseType dbType;
-    private Info info = null;
-    private Connection connection = null;
-    private Tasks tasks = null;
+    private String dbDriver;
+    private Info info;
+    private Connection connection;
+    private Tasks tasks;
 
     /**
      * Creates a database object with the specified parameters
@@ -36,9 +43,11 @@ public class Database implements AutoCloseable {
 
             case H2:
                 connString = "jdbc:h2:" + dbFilePath;
+                dbDriver = "org.h2.Driver";
                 break;
             case SQLite:
                 connString = "jdbc:sqlite:" + dbFilePath;
+                dbDriver = "org.sqlite.JDBC";
                 break;
         }
 
@@ -97,16 +106,21 @@ public class Database implements AutoCloseable {
          * @param showStatusAlert Specifies if message box should be shown
          * @throws SQLException if error occurs
          */
-        public void connect(boolean showStatusAlert) throws SQLException{
-            try {
-                conn = DriverManager.getConnection(connString, username, password);
+        public void connect(boolean showStatusAlert) throws SQLException {
+            try(final BasicDataSource ds = new BasicDataSource()) {
+                ds.setDriverClassName(dbDriver);
+                ds.setUrl(connString);
+                ds.setUsername(username);
+                ds.setPassword(password);
+
+                conn = ds.getConnection();
 
                 if(showStatusAlert) MessageBox.show("Connection to database has been established.", "Database Alert",
                         "Database Alert", MessageBoxIcon.INFORMATION);
             } catch (SQLException e) {
                 if(showStatusAlert) {
                     if(e.getMessage().contains("Database may be already in use")) {
-                        DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!\nPlease Close any open connections!",
+                        final DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!\nPlease Close any open connections!",
                                 "Error!", "Database Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.ERROR);
                         if(result.equals(DialogResult.RETRY)) connect(showStatusAlert);
                         if(result.equals(DialogResult.CANCEL)) throw e;
@@ -196,7 +210,7 @@ public class Database implements AutoCloseable {
          */
         public ArrayList getTablesList() throws SQLException {
 
-            ArrayList<String> listOfTables = new ArrayList<String>();
+            ArrayList<String> listOfTables = new ArrayList<>();
 
             DatabaseMetaData md = conn.getMetaData();
 

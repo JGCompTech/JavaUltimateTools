@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
         Print("------------------------------------");
         Print("------Java Ultimate Tools v1.2------");
-        Print("-------Created by J&G CompTech-------");
+        Print("-------Created by J&G CompTech------");
         Print("------------------------------------");
         Print("Loading Computer Info Please Wait...");
         ComputerInfo compinfo = new ComputerInfo();

@@ -1,0 +1,24 @@
+Version 1.3.0.0 changes (3/31/2017):
+* Added MessageBox and Login dialog objects
+* Added Static Class Instantiation Protection
+* Added Database Tools classes (Includes SQLite and H2 databases)
+* All dependencies are now included in jar file
+* JavaDocs documentation is improved
+
+Version 1.2.0.0 changes (02/22/2017):
+* Fixed ComputerNameActive and ComputerNamePending not returning accurate value
+* Added ComputerInfo Class
+* Fixed a naming bug since version 1.1 that caused an infinite loop
+* Fixed the java.IO.File.delete calls to now use the java.nio.file.Files.delete
+* Created a demo if the library is run directly
+* Fixed error with RSA generate key pair, it didn't check if save to files was true
+* Fixed error with ConvertBytes function not returning accurate value
+
+Version 1.1.0.0 changes (02/18/2017):
+* Created OSInfo, HWInfo, SecurityTools and WebTools classes instead of packages to improve importing.
+* Renamed StringExpanded2 to StringExpandedFromRegistry.
+* Moved tools.osinfo.Enums to just tools.Enums.
+* Finalized JavaDocs. Everything is documented correctly now.
+
+Version 1.0.0.0 changes (02/13/2017):
+* Initial Release

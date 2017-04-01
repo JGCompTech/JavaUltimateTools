@@ -1,10 +1,12 @@
-# JavaUltimateTools [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome) [![Build Status](https://travis-ci.org/JGCompTech/JavaUltimateTools.svg?branch=master)](https://travis-ci.org/JGCompTech/JavaUltimateTools)
+# JavaUltimateTools v1.3 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome) [![Build Status](https://travis-ci.org/JGCompTech/JavaUltimateTools.svg?branch=master)](https://travis-ci.org/JGCompTech/JavaUltimateTools)
 
 JavaUltimateTools is a large repository of scripts for use in any Java program. It contains the following:
 - OSInfo - Contains many classes that return information about the current Windows installation. This includes Architecture, Edition, Name, Product Key, Service Pack, User Info and Version.
 - HWInfo - Contains many classes that return information about the current computer hardware. This includes BIOS, Network, OEM, Processor, RAM and Storage.
 - SecurityTools - Contains methods surrounding hashing and encryption. Includes methods using MD5, SHA1, SHA256, SHA384 and SHA512. Also includes encryption/decryption with RSA.
 - CommandInfo - Allows you to run any console command and will return the result to a string to use within your program. You can also run the command elevated and it will open in a new cmd window and show the results. Note: If elevated, result cannot be returned as a string.
+- MessageBox and Login dialogs - Dialogs to use in JavaFX applications
+- DatabaseTools - Allows communication with SQLite and H2 databases
 - And Much More!
 
 If you would like a more details check out the [CLASSDESCRIPTION.md](https://github.com/JGCompTech/JavaUltimateTools/blob/master/CLASSDESCRIPTION.md) file. I will be updating this with more documentation soon.
@@ -16,11 +18,13 @@ Want to contribute? Great!
 Any help with development is greatly appreciated. If you want to add something or fix any typos please submit a pull request and if it is helpful it may be merged. Please check out our [Code of Conduct for Contributors](https://github.com/JGCompTech/JavaUltimateTools/blob/master/code-of-conduct.md).
 
 # Download
-This project is currently at version 1.2 - **[Download v1.2](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.2)**
+This project is currently at version 1.3 - **[Download v1.3](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.3)**
+
+The changelog can be found [here](https://github.com/JGCompTech/JavaUltimateTools/blob/master/Changelog.txt)
 
 License
 ----
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](http://creativecommons.org/licenses/by/4.0/)
 
-<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">JavaUltimateTools</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">J&G CompTech</span> is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
+JavaUltimateTools by J&G CompTech is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).

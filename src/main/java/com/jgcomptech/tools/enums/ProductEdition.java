@@ -123,7 +123,7 @@ public enum ProductEdition implements BaseEnum {
     }
 
     public static ProductEdition parse(int value) {
-        for(ProductEdition type : ProductEdition.values()) {
+        for(final ProductEdition type : ProductEdition.values()) {
             if(type.getValue() == value) {
                 return type;
             }
@@ -131,7 +131,6 @@ public enum ProductEdition implements BaseEnum {
         return Undefined;
     }
 
-    public int getValue() {
-        return value;
-    }
+    @Override
+    public int getValue() { return value; }
 }

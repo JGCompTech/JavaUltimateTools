@@ -6,7 +6,7 @@
 
     <groupId>JavaUltimateTools</groupId>
     <artifactId>JavaUltimateTools</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
     <build>
         <plugins>
             <plugin>
@@ -34,7 +34,7 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Main-Class>com.jgcomptech.tools.demo.Main</Main-Class>
-                                        <Build-Number>1.2</Build-Number>
+                                        <Build-Number>1.3</Build-Number>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -57,11 +57,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations-java5</artifactId>
             <version>RELEASE</version>
         </dependency>
         <dependency>

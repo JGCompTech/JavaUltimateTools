@@ -1,11 +1,6 @@
 package com.jgcomptech.tools;
 
-import org.jetbrains.annotations.Nullable;
-
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +11,10 @@ import java.util.Base64;
 
 /** Contains methods dealing with encryption and hashing */
 public class SecurityTools {
+
+    /**
+     * A list of the Hash Types to be used for hashing string values in the {@link SecurityTools} class
+     */
     public enum HashType {
         MD5,
         SHA1,
@@ -46,7 +45,7 @@ public class SecurityTools {
             }
             try(InputStream input = new FileInputStream(filename)) {
 
-                byte[] buffer = new byte[8192];
+                final byte[] buffer = new byte[8192];
                 int len = input.read(buffer);
 
                 while(len != -1) {
@@ -65,16 +64,15 @@ public class SecurityTools {
          *
          * @param fileName Filename to be saved to
          * @param hash     Hash to be saved
+         * @throws FileNotFoundException if the file is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for writing
+         * @throws IOException           if an I/O error occurs
          */
-        public static void saveToFile(String hash, String fileName) {
-            byte[] encoded = hash.getBytes(StandardCharsets.UTF_8);
-            FileOutputStream out;
-            try {
-                out = new FileOutputStream(fileName);
+        public static void saveToFile(String hash, String fileName) throws IOException {
+            final byte[] encoded = hash.getBytes(StandardCharsets.UTF_8);
+
+            try(final FileOutputStream out = new FileOutputStream(fileName)) {
                 out.write(encoded);
-                out.close();
-            } catch(IOException e) {
-                e.printStackTrace();
             }
         }
 
@@ -83,16 +81,15 @@ public class SecurityTools {
          *
          * @param fileName Filename to be saved to
          * @param key Key to be saved
+         * @throws FileNotFoundException if the file is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for writing
+         * @throws IOException           if an I/O error occurs
          */
-        public static void saveToFile(Key key, String fileName) {
-            byte[] encoded = key.getEncoded();
-            FileOutputStream out;
-            try {
-                out = new FileOutputStream(fileName);
+        public static void saveToFile(Key key, String fileName) throws IOException {
+            final byte[] encoded = key.getEncoded();
+
+            try(FileOutputStream out = new FileOutputStream(fileName)) {
                 out.write(encoded);
-                out.close();
-            } catch(IOException e) {
-                e.printStackTrace();
             }
         }
 
@@ -101,21 +98,17 @@ public class SecurityTools {
          *
          * @param fileName Filename to be read from
          * @return File contents as string
+         * @throws FileNotFoundException if the file does not exist, is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for reading
+         * @throws IOException           if an I/O error occurs
          */
-        @Nullable
-        public static byte[] readFromFile(String fileName) {
-            FileInputStream in;
-            try {
-                in = new FileInputStream(fileName);
-                byte[] bytes = new byte[in.available()];
-                in.read(bytes);
-                in.close();
-                return bytes;
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
+        public static byte[] readFromFile(String fileName) throws IOException {
 
-            return null;
+            try(FileInputStream in = new FileInputStream(fileName)) {
+                final byte[] bytes = new byte[in.available()];
+                in.read(bytes);
+                return bytes;
+            }
         }
 
         // This class should only be called statically
@@ -129,39 +122,29 @@ public class SecurityTools {
          *
          * @param size Size as int to use as length of salt
          * @return Salt as string
+         * @throws GeneralSecurityException if error occurs
          */
-        public static String createSaltString(int size) {
-            try {
-                SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-                byte[] salt = new byte[size];
-                sr.nextBytes(salt);
+        public static String createSaltString(int size) throws GeneralSecurityException {
+            final SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            final byte[] salt = new byte[size];
+            sr.nextBytes(salt);
                 /*for(int i = 0; i < 16; i++) {
                     System.out.print(salt[i] & 255);
                     System.out.print(" ");
                 }*/
 
-                // Return a Base64 string representation of the random number.
-                return Base64.getEncoder().encodeToString(salt);
-            } catch(NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-            return "";
+            // Return a Base64 string representation of the random number.
+            return Base64.getEncoder().encodeToString(salt);
         }
 
         /**
          * Creates a Secure Random number
          *
          * @return Secure random number as a SecureRandom object
+         * @throws GeneralSecurityException if error occurs
          * */
-        @Nullable
-        public static SecureRandom createSecureRandom() {
-            try {
-                return SecureRandom.getInstance("SHA1PRNG", "SUN");
-            } catch(NoSuchAlgorithmException | NoSuchProviderException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+        public static SecureRandom createSecureRandom() throws GeneralSecurityException {
+            return SecureRandom.getInstance("SHA1PRNG", "SUN");
         }
 
         /**
@@ -169,9 +152,10 @@ public class SecurityTools {
          *
          * @param size Size as int to use as length of salt
          * @return Salt as byte array
+         * @throws GeneralSecurityException if error occurs
          * */
-        public static byte[] createSaltByte(int size) {
-            byte[] salt = new byte[size];
+        public static byte[] createSaltByte(int size) throws GeneralSecurityException {
+            final byte[] salt = new byte[size];
             createSecureRandom().nextBytes(salt);
 
             // Return a Base64 string representation of the random number.
@@ -184,23 +168,18 @@ public class SecurityTools {
          * @param passwordToHash Password to hash
          * @param salt Salt as byte array to use for hashing
          * @return Hashed password as string
+         * @throws GeneralSecurityException if error occurs
          * */
-        public static String createHash(String passwordToHash, byte[] salt) {
-            String generatedPassword = null;
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA-512");
-                md.update(salt);
-                byte[] bytes = md.digest(passwordToHash.getBytes());
-                StringBuilder sb = new StringBuilder();
+        public static String createHash(String passwordToHash, byte[] salt) throws GeneralSecurityException {
+            final MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt);
+            final byte[] bytes = md.digest(passwordToHash.getBytes());
+            final StringBuilder sb = new StringBuilder();
 
-                for(byte aByte : bytes) {
-                    sb.append(Integer.toString((aByte & 255) + 256, 16).substring(1));
-                }
-                generatedPassword = sb.toString();
-            } catch(NoSuchAlgorithmException e) {
-                e.printStackTrace();
+            for(final byte aByte : bytes) {
+                sb.append(Integer.toString((aByte & 255) + 256, 16).substring(1));
             }
-            return generatedPassword;
+            return sb.toString();
         }
 
         /**
@@ -209,23 +188,18 @@ public class SecurityTools {
          * @param passwordToHash Password to hash
          * @param salt Salt as string to use for hashing
          * @return Hashed password as string
+         * @throws GeneralSecurityException if error occurs
          * */
-        public static String createHash(String passwordToHash, String salt) {
-            String generatedPassword = null;
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA-512");
-                md.update(Base64.getDecoder().decode(salt));
-                byte[] bytes = md.digest(passwordToHash.getBytes());
-                StringBuilder sb = new StringBuilder();
+        public static String createHash(String passwordToHash, String salt) throws GeneralSecurityException {
+            final MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(Base64.getDecoder().decode(salt));
+            final byte[] bytes = md.digest(passwordToHash.getBytes());
+            final StringBuilder sb = new StringBuilder();
 
-                for(byte aByte : bytes) {
-                    sb.append(Integer.toString((aByte & 255) + 256, 16).substring(1));
-                }
-                generatedPassword = sb.toString();
-            } catch(NoSuchAlgorithmException e) {
-                e.printStackTrace();
+            for(final byte aByte : bytes) {
+                sb.append(Integer.toString((aByte & 255) + 256, 16).substring(1));
             }
-            return generatedPassword;
+            return sb.toString();
         }
 
         /**
@@ -235,8 +209,10 @@ public class SecurityTools {
          * @param databasePassword Password from database to check against.
          * @param databaseSalt     Password salt from database.
          * @return True if hashes match.
+         * @throws GeneralSecurityException if error occurs
          */
-        public static boolean checkHashesMatch(String enteredPassword, String databasePassword, String databaseSalt) {
+        public static boolean checkHashesMatch(String enteredPassword, String databasePassword, String databaseSalt)
+                throws GeneralSecurityException {
             return (databasePassword.equals(createHash(enteredPassword, databaseSalt)));
         }
 
@@ -251,8 +227,11 @@ public class SecurityTools {
          *
          * @param pair Key pair to save
          * @param filename Filename to save to
+         * @throws FileNotFoundException if the file is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for writing
+         * @throws IOException           if an I/O error occurs
          * */
-        public static void saveKeyPairToFile(KeyPair pair, String filename) {
+        public static void saveKeyPairToFile(KeyPair pair, String filename) throws IOException {
             FileHashes.saveToFile(pair.getPrivate(), filename + "");
             FileHashes.saveToFile(pair.getPublic(), filename + ".pub");
         }
@@ -262,9 +241,12 @@ public class SecurityTools {
          *
          * @param filename Filename to save to
          * @return Public key as PublicKey object
-         * @throws GeneralSecurityException on failure
+         * @throws GeneralSecurityException if error occurs
+         * @throws FileNotFoundException if the file does not exist, is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for reading
+         * @throws IOException           if an I/O error occurs
          */
-        public static PublicKey readPublicKeyFromFile(String filename) throws GeneralSecurityException {
+        public static PublicKey readPublicKeyFromFile(String filename) throws GeneralSecurityException, IOException {
             return RSAHashes.readPublicKeyFromBytes(FileHashes.readFromFile(filename));
         }
 
@@ -273,9 +255,12 @@ public class SecurityTools {
          *
          * @param filename Filename to save to
          * @return Private key as PrivateKey object
-         * @throws GeneralSecurityException on failure
+         * @throws GeneralSecurityException if error occurs
+         * @throws FileNotFoundException if the file does not exist, is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for reading
+         * @throws IOException           if an I/O error occurs
          */
-        public static PrivateKey readPrivateKeyFromFile(String filename) throws GeneralSecurityException {
+        public static PrivateKey readPrivateKeyFromFile(String filename) throws GeneralSecurityException, IOException {
             return RSAHashes.readPrivateKeyFromBytes(FileHashes.readFromFile(filename));
         }
 
@@ -289,32 +274,33 @@ public class SecurityTools {
          * Generates a key pair
          *
          * @return Key pair as a KeyPair object
+         * @throws FileNotFoundException if the file is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for writing
+         * @throws IOException           if an I/O error occurs
+         * @throws GeneralSecurityException if error occurs
          */
-        public static KeyPair generateKeyPair() {
-            return generateKeyPair(false, "");
-        }
+        public static KeyPair generateKeyPair() throws IOException, GeneralSecurityException { return generateKeyPair(false, ""); }
 
         /**
          * Generates a key pair and saves them to files matching the specified filename
          *
          * @param saveToFiles If true KeyPair will be saved to two separate files
-         * @param filename    File name to use to save files
+         * @param fileName    File name to use to save files
          * @return Key pair as a KeyPair object
+         * @throws FileNotFoundException if the file is a directory rather than a regular file, or for
+         *                               some other reason cannot be opened for writing
+         * @throws IOException           if an I/O error occurs
+         * @throws GeneralSecurityException if error occurs
          */
-        public static KeyPair generateKeyPair(boolean saveToFiles, String filename) {
-            KeyPairGenerator keyGen = null;
-            try {
-                keyGen = KeyPairGenerator.getInstance("RSA");
-                keyGen.initialize(2048, PasswordHashes.createSecureRandom());
-            } catch(NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
+        public static KeyPair generateKeyPair(boolean saveToFiles, String fileName)
+                throws IOException, GeneralSecurityException {
+            final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            keyGen.initialize(2048, PasswordHashes.createSecureRandom());
 
-            assert keyGen != null;
-            KeyPair pair = keyGen.generateKeyPair();
+            final KeyPair pair = keyGen.generateKeyPair();
 
             if(saveToFiles) {
-                RSAFiles.saveKeyPairToFile(pair, filename);
+                RSAFiles.saveKeyPairToFile(pair, fileName);
             }
 
             return pair;
@@ -325,11 +311,11 @@ public class SecurityTools {
          *
          * @param bytes To read from
          * @return Converted public key as PublicKey object
-         * @throws GeneralSecurityException on failure
+         * @throws GeneralSecurityException if error occurs
          */
         public static PublicKey readPublicKeyFromBytes(byte[] bytes) throws GeneralSecurityException {
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
+            final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(keySpec);
         }
 
@@ -338,11 +324,11 @@ public class SecurityTools {
          *
          * @param bytes To read from
          * @return Converted public key as PrivateKey object
-         * @throws GeneralSecurityException on failure
+         * @throws GeneralSecurityException if error occurs
          */
         public static PrivateKey readPrivateKeyFromBytes(byte[] bytes) throws GeneralSecurityException {
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
+            final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(keySpec);
         }
 
@@ -350,64 +336,52 @@ public class SecurityTools {
          * Encrypts specified text with public key
          *
          * @param key       Public key to encrypt with
-         * @param plaintext String to encrypt
+         * @param plainText String to encrypt
          * @return Encrypted text as byte array
+         * @throws GeneralSecurityException if error occurs
          */
-        @Nullable
-        public static byte[] encrypt(PublicKey key, String plaintext) {
-            Cipher cipher;
-            try {
-                cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-                cipher.init(Cipher.ENCRYPT_MODE, key);
-                return cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
-            } catch(NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+        public static byte[] encrypt(PublicKey key, String plainText) throws GeneralSecurityException {
+            final Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
         }
 
         /**
          * Encrypts specified text with public key
          *
          * @param key       Public key to encrypt with
-         * @param plaintext String to encrypt
+         * @param plainText String to encrypt
          * @return Encrypted text as string
+         * @throws GeneralSecurityException if error occurs
          */
-        public static String encryptToString(PublicKey key, String plaintext) {
-            return Base64.getEncoder().encodeToString(encrypt(key, plaintext));
+        public static String encryptToString(PublicKey key, String plainText) throws GeneralSecurityException {
+            return Base64.getEncoder().encodeToString(encrypt(key, plainText));
         }
 
         /**
          * Decrypts specified text with private key
          *
          * @param key Private key to decrypt with
-         * @param ciphertext String to decrypt
+         * @param cipherText String to decrypt
          * @return Decrypted text as byte array
+         * @throws GeneralSecurityException if error occurs
          * */
-        @Nullable
-        public static byte[] decrypt(PrivateKey key, byte[] ciphertext) {
-            Cipher cipher;
-            try {
-                cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-                cipher.init(Cipher.DECRYPT_MODE, key);
-                return cipher.doFinal(ciphertext);
-            } catch(NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+        public static byte[] decrypt(PrivateKey key, byte[] cipherText) throws GeneralSecurityException {
+            final Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            return cipher.doFinal(cipherText);
         }
 
         /**
          * Decrypts specified text with private key
          *
          * @param key Private key to decrypt with
-         * @param ciphertext String to decrypt
+         * @param cipherText String to decrypt
          * @return Decrypted text as string
+         * @throws GeneralSecurityException if error occurs
          * */
-        public static byte[] decryptFromString(PrivateKey key, String ciphertext) {
-            return decrypt(key, Base64.getDecoder().decode(ciphertext));
+        public static byte[] decryptFromString(PrivateKey key, String cipherText) throws GeneralSecurityException {
+            return decrypt(key, Base64.getDecoder().decode(cipherText));
         }
 
         // This class should only be called statically

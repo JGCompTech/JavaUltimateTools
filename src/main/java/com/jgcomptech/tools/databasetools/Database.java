@@ -6,12 +6,8 @@ import com.jgcomptech.tools.dialogs.MessageBox;
 import com.jgcomptech.tools.dialogs.MessageBoxButtons;
 import com.jgcomptech.tools.dialogs.MessageBoxIcon;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS;
-import org.apache.commons.dbcp2.datasources.SharedPoolDataSource;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import java.security.GeneralSecurityException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -86,11 +82,11 @@ public class Database implements AutoCloseable {
     }
     /**
      * The object that stores tasks related to the connection,
-     * use <code>getConnection</code> to access methods
+     * use {@code getConnection} to access methods
      */
     public class Connection {
         /**
-         * Returns the raw <code>java.sql.Connection</code> object
+         * Returns the raw {@code java.sql.Connection} object
          * @return the Connection object
          */
         public java.sql.Connection getObject() { return conn; }
@@ -120,7 +116,8 @@ public class Database implements AutoCloseable {
             } catch (SQLException e) {
                 if(showStatusAlert) {
                     if(e.getMessage().contains("Database may be already in use")) {
-                        final DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!\nPlease Close any open connections!",
+                        final DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!"
+                                        + System.lineSeparator() + "Please Close any open connections!",
                                 "Error!", "Database Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.ERROR);
                         if(result.equals(DialogResult.RETRY)) connect(showStatusAlert);
                         if(result.equals(DialogResult.CANCEL)) throw e;
@@ -165,7 +162,7 @@ public class Database implements AutoCloseable {
     }
     /**
      * The object that stores the database info,
-     * use <code>getInfo</code> to access methods
+     * use {@code getInfo} to access methods
      */
     public class Info {
 
@@ -193,7 +190,7 @@ public class Database implements AutoCloseable {
             final String[] TYPES = {"TABLE"};
             try (ResultSet rs = conn.getMetaData().getTables(null, null, null, TYPES)) {
                 while (rs.next()) {
-                    String tName = rs.getString("TABLE_NAME");
+                    final String tName = rs.getString("TABLE_NAME");
                     if (tName != null && tName.equalsIgnoreCase(tableName)) {
                         tExists = true;
                         break;
@@ -210,17 +207,18 @@ public class Database implements AutoCloseable {
          */
         public ArrayList getTablesList() throws SQLException {
 
-            ArrayList<String> listOfTables = new ArrayList<>();
+            final ArrayList<String> listOfTables = new ArrayList<>();
 
-            DatabaseMetaData md = conn.getMetaData();
+            final DatabaseMetaData md = conn.getMetaData();
 
-            ResultSet rs = md.getTables(null, null, "%", null);
-
-            while (rs.next()) {
-                if (rs.getString(4).equalsIgnoreCase("TABLE")) {
-                    listOfTables.add(rs.getString(3));
+            try(final ResultSet rs = md.getTables(null, null, "%", null)) {
+                while (rs.next()) {
+                    if (rs.getString(4).equalsIgnoreCase("TABLE")) {
+                        listOfTables.add(rs.getString(3));
+                    }
                 }
             }
+
             return listOfTables;
         }
     }
@@ -237,46 +235,45 @@ public class Database implements AutoCloseable {
     }
     /**
      * The object that stores methods to complete database tasks,
-     * use <code>getTasks</code> to access methods
+     * use {@code getTasks} to access methods
      */
     public class Tasks {
         /**
          * Executes the given SQL statement, which returns a single
-         * <code>ResultSet</code> object, auto-closes statement object when ResultSet object is closed
+         * {@code ResultSet} object, auto-closes statement object when ResultSet object is closed
          * @param sql an SQL statement to be sent to the database, typically a
-         *        static SQL <code>SELECT</code> statement
-         * @return a <code>ResultSet</code> object that contains the data produced
-         *         by the given query; never <code>null</code>
+         *        static SQL {@code SELECT} statement
+         * @return a {@code ResultSet} object that contains the data produced
+         *         by the given query; never {@code null}
          * @throws SQLException if a database access error occurs or the given
          * SQL statement produces anything other than a single
-         * <code>ResultSet</code> object
+         * {@code ResultSet} object
          */
         public ResultSet executeQuery(String sql) throws SQLException {
-            Statement stmt;
+            final Statement stmt;
 
-            if(dbType == DatabaseType.SQLite) {
-                stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            } else {
-                stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            }
+            int resultsetType = dbType == DatabaseType.SQLite ? ResultSet.TYPE_FORWARD_ONLY
+                    : ResultSet.TYPE_SCROLL_INSENSITIVE;
+
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt.closeOnCompletion();
             return stmt.executeQuery(sql);
         }
 
         /**
-         * Executes the given SQL statement, which may be an <code>INSERT</code>,
-         * <code>UPDATE</code>, or <code>DELETE</code> statement or an
+         * Executes the given SQL statement, which may be an {@code INSERT},
+         * {@code UPDATE}, or {@code DELETE} statement or an
          * SQL statement that returns nothing, such as an SQL DDL statement
-         * @param sql an SQL Data Manipulation Language (DML) statement, such as <code>INSERT</code>, <code>UPDATE</code> or
-         * <code>DELETE</code>; or an SQL statement that returns nothing,
+         * @param sql an SQL Data Manipulation Language (DML) statement, such as {@code INSERT}, {@code UPDATE} or
+         * {@code DELETE}; or an SQL statement that returns nothing,
          * such as a DDL statement.
          * @return either (1) the row count for SQL Data Manipulation Language (DML) statements
          *         or (2) 0 for SQL statements that return nothing
          * @throws SQLException if a database access error occurs or the given
-         * SQL statement produces a <code>ResultSet</code> object
+         * SQL statement produces a {@code ResultSet} object
          */
         public int executeUpdate(String sql) throws SQLException {
-            Statement stmt = conn.createStatement();
+            final Statement stmt = conn.createStatement();
             stmt.closeOnCompletion();
             return stmt.executeUpdate(sql);
         }
@@ -289,20 +286,20 @@ public class Database implements AutoCloseable {
          * return multiple results or (2) you are dynamically executing an
          * unknown SQL string.
          * <P>
-         * The <code>execute</code> method executes an SQL statement and indicates the
+         * The {@code execute} method executes an SQL statement and indicates the
          * form of the first result.  You must then use the methods
-         * <code>getResultSet</code> or <code>getUpdateCount</code>
-         * to retrieve the result, and <code>getMoreResults</code> to
+         * {@code getResultSet} or {@code getUpdateCount}
+         * to retrieve the result, and {@code getMoreResults} to
          * move to any subsequent result(s).
          * <p>
          * @param sql any SQL statement
-         * @return <code>true</code> if the first result is a <code>ResultSet</code>
-         *         object; <code>false</code> if it is an update count or there are
+         * @return {@code true} if the first result is a {@code ResultSet}
+         *         object; {@code false} if it is an update count or there are
          *         no results
          * @throws SQLException if a database access error occurs
          */
         public boolean execute(String sql) throws SQLException {
-            Statement stmt = conn.createStatement();
+            final Statement stmt = conn.createStatement();
             stmt.closeOnCompletion();
             return stmt.execute(sql);
         }
@@ -316,15 +313,17 @@ public class Database implements AutoCloseable {
          * @throws SQLException if error occurs
          */
         public boolean createTable(String tableName, String query, boolean suppressExistsError) throws SQLException {
-            if(!getInfo().TableExists(tableName)) {
-                try (Statement stmt = conn.createStatement()) {
+            if(getInfo().TableExists(tableName)) {
+                if(!suppressExistsError)
+                    MessageBox.show("\"" + tableName + "\" Table Already Exists!", "Error!",
+                            "Database Error", MessageBoxIcon.ERROR);
+                return false;
+            } else {
+                try(Statement stmt = conn.createStatement()) {
                     // create a new table
                     stmt.execute(query);
                     return true;
                 }
-            } else {
-                if(!suppressExistsError) MessageBox.show("\"" + tableName + "\" Table Already Exists!", "Error!", "Database Error", MessageBoxIcon.ERROR);
-                return false;
             }
         }
 
@@ -343,7 +342,8 @@ public class Database implements AutoCloseable {
                 return true;
             } catch(SQLException e) {
                 if(e.getMessage().contains(indexName) &&  e.getMessage().contains("already exists")) {
-                    if(!suppressExistsError) MessageBox.show("\"" + indexName + "\" Index Already Exists!", "Error!", "Database Error", MessageBoxIcon.ERROR);
+                    if(!suppressExistsError) MessageBox.show("\"" + indexName + "\" Index Already Exists!",
+                            "Error!", "Database Error", MessageBoxIcon.ERROR);
                 } else {
                     throw e;
                 }
@@ -358,15 +358,8 @@ public class Database implements AutoCloseable {
          */
         public int getResultRows(ResultSet res){
             int totalRows = 0;
-            try {
-                while(res.next())
-                {
-                    totalRows++;
-                }
-            }
-            catch(Exception ex)  {
-                return 0;
-            }
+            try { while(res.next()) totalRows++; }
+            catch(SQLException ex) { return 0; }
             return totalRows ;
         }
     }
@@ -394,14 +387,14 @@ public class Database implements AutoCloseable {
             if(db.getInfo().getDbType() == DatabaseType.SQLite) { USE_AUTO_INCREMENT = ""; }
 
             //The password field is 150 chars in length due to the length of a SHA-512 hash
-            String createTableQuery = "CREATE TABLE " + TABLE_NAME + " ( "
+            final String createTableQuery = "CREATE TABLE " + TABLE_NAME + " ( "
                     + ID_FIELD + " INTEGER NOT NULL PRIMARY KEY " + USE_AUTO_INCREMENT +
                     ", " + USERNAME_FIELD + " nvarchar(100) NOT NULL" +
                     ", " + PASSWORD_FIELD + " nvarchar(150) NOT NULL" +
                     ", " + SALT_FIELD + " nvarchar(100) NOT NULL" +
                     ", " + TYPE_FIELD + " nvarchar(100) NOT NULL)";
 
-            String createLoginIndexQuery = "CREATE INDEX " + INDEX_NAME + " ON " + TABLE_NAME
+            final String createLoginIndexQuery = "CREATE INDEX " + INDEX_NAME + " ON " + TABLE_NAME
                     + "(" + USERNAME_FIELD + "," + PASSWORD_FIELD + "," + SALT_FIELD + ")";
 
             db.getTasks().createTable(TABLE_NAME, createTableQuery, suppressExistsError);
@@ -417,25 +410,23 @@ public class Database implements AutoCloseable {
          * @param type the user type for the new user
          * @return true if user creation is successful
          * @throws SQLException if error occurs
+         * @throws GeneralSecurityException if error occurs
          */
-        public static boolean create(Database db, String username, String password, String type) throws SQLException {
+        public static boolean create(Database db, String username, String password, String type) throws SQLException, GeneralSecurityException {
             final String TABLE_NAME = "Users";
 
             if(db.getInfo().TableExists(TABLE_NAME)) {
                 if(!exists(db, username)) {
-                    String salt = SecurityTools.PasswordHashes.createSaltString(16);
+                    final String salt = SecurityTools.PasswordHashes.createSaltString(16);
                     password = SecurityTools.PasswordHashes.createHash(password, salt);
 
-                    String UsersSeedQuery = "INSERT INTO " + TABLE_NAME + " (username, password, salt, type)\n" +
-                            "VALUES (\'" + username + "\', \'" + password + "\', \'" + salt + "\', \'" + type + "\')";
+                    final String UsersSeedQuery = "INSERT INTO " + TABLE_NAME + " (username, password, salt, type)" +
+                            System.lineSeparator() + "VALUES (\'" + username + "\', \'" + password + "\', \'" + salt + "\', \'" + type + "\')";
                     db.getTasks().executeUpdate(UsersSeedQuery);
                     return true;
                 }
-            } else {
-                MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
+            } else MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
                         "Database Alert", MessageBoxIcon.ERROR);
-            }
-
             return false;
         }
 
@@ -458,11 +449,8 @@ public class Database implements AutoCloseable {
                         if(result.getString(USERNAME_COLUMN_NAME).toLowerCase().equals(username)) return true;
                     }
                 }
-            } else {
-                MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
+            } else MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
                         "Database Alert", MessageBoxIcon.ERROR);
-            }
-
             return false;
         }
 
@@ -473,8 +461,9 @@ public class Database implements AutoCloseable {
          * @param password the new password
          * @return true if password is changed successfully
          * @throws SQLException if error occurs
+         * @throws GeneralSecurityException if error occurs
          */
-        public static boolean setPassword(Database db, String username, String password) throws SQLException {
+        public static boolean setPassword(Database db, String username, String password) throws SQLException, GeneralSecurityException {
             final String TABLE_NAME = "Users";
             final String USERNAME_FIELD = "Username";
             final String PASSWORD_FIELD = "Password";
@@ -482,24 +471,19 @@ public class Database implements AutoCloseable {
 
             if(db.getInfo().TableExists(TABLE_NAME)) {
                 if(exists(db, username)) {
-                    String salt = SecurityTools.PasswordHashes.createSaltString(16);
+                    final String salt = SecurityTools.PasswordHashes.createSaltString(16);
                     password = SecurityTools.PasswordHashes.createHash(password, salt);
 
-                    String query = "UPDATE " + TABLE_NAME + " " +
+                    final String query = "UPDATE " + TABLE_NAME + " " +
                             "SET " + PASSWORD_FIELD + " = '" + password + "', "
                             + SALT_FIELD + " = '" + salt + "' " +
                             "WHERE " + USERNAME_FIELD + " = '" + username + "'";
                     db.getTasks().executeUpdate(query);
                     return true;
-                } else {
-                    MessageBox.show("\"" + username + "\" User Not Found!", "Database Alert",
+                } else MessageBox.show("\"" + username + "\" User Not Found!", "Database Alert",
                             "Database Alert", MessageBoxIcon.ERROR);
-                }
-            } else {
-                MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
+            } else MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
                         "Database Alert", MessageBoxIcon.ERROR);
-            }
-
             return false;
         }
 
@@ -510,8 +494,9 @@ public class Database implements AutoCloseable {
          * @param password the password to check against
          * @return true if the passwords match
          * @throws SQLException if error occurs
+         * @throws GeneralSecurityException if error occurs
          */
-        public static boolean checkPasswordMatches(Database db, String username, String password) throws SQLException {
+        public static boolean checkPasswordMatches(Database db, String username, String password) throws SQLException, GeneralSecurityException {
             final String TABLE_NAME = "Users";
             final String USERNAME_FIELD = "Username";
             final String PASSWORD_FIELD = "Password";
@@ -519,21 +504,21 @@ public class Database implements AutoCloseable {
 
             if(db.getInfo().TableExists(TABLE_NAME)) {
                 if(exists(db, username)) {
-                    String query = "SELECT * FROM " + TABLE_NAME +
+                    final String query = "SELECT * FROM " + TABLE_NAME +
                             " WHERE " + USERNAME_FIELD + " = '" + username + "'";
 
-                    ResultSet result = db.getTasks().executeQuery(query);
+                    final String salt;
+                    final String databasePass;
+                    try(ResultSet result = db.getTasks().executeQuery(query)) {
 
-                    result.next();
-                    String salt = result.getString(SALT_FIELD);
-                    String databasePass = result.getString(PASSWORD_FIELD);
+                        result.next();
+                        salt = result.getString(SALT_FIELD);
+                        databasePass = result.getString(PASSWORD_FIELD);
+                    }
                     return SecurityTools.PasswordHashes.checkHashesMatch(password, databasePass, salt);
                 }
-            } else {
-                MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
+            } else MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
                         "Database Alert", MessageBoxIcon.ERROR);
-            }
-
             return false;
         }
 
@@ -551,19 +536,16 @@ public class Database implements AutoCloseable {
 
             if(db.getInfo().TableExists(TABLE_NAME)) {
                 if(exists(db, username)) {
-                    String query = "SELECT " + TYPE_FIELD + " FROM " + TABLE_NAME +
+                    final String query = "SELECT " + TYPE_FIELD + " FROM " + TABLE_NAME +
                             " WHERE " + USERNAME_FIELD + " = '" + username + "'";
 
-                    ResultSet result = db.getTasks().executeQuery(query);
-
-                    result.next();
-                    return result.getString(TYPE_FIELD);
+                    try(ResultSet result = db.getTasks().executeQuery(query)) {
+                        result.next();
+                        return result.getString(TYPE_FIELD);
+                    }
                 }
-            } else {
-                MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
+            } else MessageBox.show("\"" + TABLE_NAME + "\" Table Not Found!", "Database Alert",
                         "Database Alert", MessageBoxIcon.ERROR);
-            }
-
             return "ERROR";
         }
 
@@ -590,7 +572,7 @@ public class Database implements AutoCloseable {
 
             if(db.getInfo().getDbType() == DatabaseType.SQLite) { USE_AUTO_INCREMENT = ""; }
 
-            String createTableQuery = "CREATE TABLE " + TABLE_NAME + " ( "
+            final String createTableQuery = "CREATE TABLE " + TABLE_NAME + " ( "
                     + ID_FIELD + " INTEGER NOT NULL PRIMARY KEY " + USE_AUTO_INCREMENT +
                     ", " + NAME_FIELD + " nvarchar(100) NOT NULL" +
                     ", " + VALUE_FIELD + " nvarchar(100) NOT NULL)";
@@ -615,13 +597,13 @@ public class Database implements AutoCloseable {
             String value = "";
 
             if(exists(db, settingName)) {
-                String searchTableQuery = "SELECT " + VALUE_FIELD + " FROM " + TABLE_NAME +
+                final String searchTableQuery = "SELECT " + VALUE_FIELD + " FROM " + TABLE_NAME +
                         " WHERE " + NAME_FIELD + " = '" + settingName + "'";
 
-                ResultSet result = db.getTasks().executeQuery(searchTableQuery);
-
-                result.next();
-                value = result.getString(VALUE_FIELD);
+                try(ResultSet result = db.getTasks().executeQuery(searchTableQuery)) {
+                    result.next();
+                    value = result.getString(VALUE_FIELD);
+                }
             }
 
             return value;
@@ -642,19 +624,16 @@ public class Database implements AutoCloseable {
 
             settingName = settingName.toLowerCase();
 
-            String updateSettingQuery;
+            final String updateSettingQuery;
 
-            if(exists(db, settingName)) {
-                updateSettingQuery = "UPDATE " + TABLE_NAME + " " +
-                        "SET " + VALUE_FIELD + " = '" + settingValue + "' " +
-                        "WHERE " + NAME_FIELD + " = '" + settingName + "'";
+            updateSettingQuery = exists(db, settingName) ? "UPDATE " + TABLE_NAME + " " +
+                    "SET " + VALUE_FIELD + " = '" + settingValue + "' " +
+                    "WHERE " + NAME_FIELD + " = '" + settingName + "'"
+                    :
+                    "INSERT INTO " + TABLE_NAME + " (" + NAME_FIELD + ", " + VALUE_FIELD + ") " +
+                    "VALUES ('" + settingName + "', '" + settingValue + "')";
 
-            } else {
-                updateSettingQuery = "INSERT INTO " + TABLE_NAME + " (" + NAME_FIELD + ", " + VALUE_FIELD + ") " +
-                        "VALUES ('" + settingName + "', '" + settingValue + "')";
-            }
-
-            int result = db.getTasks().executeUpdate(updateSettingQuery);
+            final int result = db.getTasks().executeUpdate(updateSettingQuery);
             return result == 1;
         }
 
@@ -673,10 +652,10 @@ public class Database implements AutoCloseable {
 
             settingName = settingName.toLowerCase();
 
-            String searchTableQuery = "SELECT " + VALUE_FIELD + " FROM " + TABLE_NAME +
+            final String searchTableQuery = "SELECT " + VALUE_FIELD + " FROM " + TABLE_NAME +
                     " WHERE " + NAME_FIELD + " = '" + settingName + "'";
 
-            int rows = db.getTasks().getResultRows(db.getTasks().executeQuery(searchTableQuery));
+            final int rows = db.getTasks().getResultRows(db.getTasks().executeQuery(searchTableQuery));
 
             if(rows == 1) {
                 return true;
@@ -699,7 +678,7 @@ public class Database implements AutoCloseable {
      * resources
      */
     @Override
-    public void close() throws Exception {
+    public void close() throws SQLException {
         if(conn != null && !conn.isClosed()) conn.close();
     }
 }

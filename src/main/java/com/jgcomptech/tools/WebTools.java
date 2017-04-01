@@ -1,9 +1,8 @@
 package com.jgcomptech.tools;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /** Web tools for completing tasks dealing with websites */
@@ -15,25 +14,24 @@ public class WebTools {
          *
          * @param url URL to download from
          * @return HTML source code as string
+         * @throws IOException if error occurs
+         * @throws MalformedURLException if url is invalid
          */
-        @NotNull
-        public static String getHTML(String url) {
-            try {
-                URL newurl = new URL(url);
-                BufferedInputStream buf = new BufferedInputStream(newurl.openStream());
+        public static String getHTML(String url) throws IOException {
+            final URL newurl = new URL(url);
+            final StringBuilder sb;
 
-                StringBuilder sb = new StringBuilder();
+            try(BufferedInputStream buf = new BufferedInputStream(newurl.openStream())) {
+
+                sb = new StringBuilder();
 
                 int data;
                 while((data = buf.read()) != -1) {
                     sb.append((char) data);
                 }
-
-                return sb.toString();
-            } catch(IOException e) {
-                e.printStackTrace();
             }
-            return "";
+
+            return sb.toString();
         }
 
         // This class should only be called statically

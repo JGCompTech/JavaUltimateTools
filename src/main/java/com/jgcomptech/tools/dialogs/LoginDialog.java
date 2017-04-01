@@ -37,8 +37,8 @@ public class LoginDialog extends Dialog {
     {
         this.iconPath = iconPath;
 
-        Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        if(!iconPath.equals("")) stage.getIcons().add(new Image(iconPath));
+        final Stage stage = (Stage) getDialogPane().getScene().getWindow();
+        if(!iconPath.isEmpty()) stage.getIcons().add(new Image(iconPath));
     }
 
     public LoginDialog(String warningText, boolean redText) {
@@ -46,16 +46,16 @@ public class LoginDialog extends Dialog {
         setHeaderText("Please Login to Continue!");
 
         // Create the username and password labels and fields.
-        GridPane mainGrid = new GridPane();
+        final GridPane mainGrid = new GridPane();
 
-        Label status = new Label(warningText);
+        final Label status = new Label(warningText);
         status.setPadding(new Insets(0, 0, 0, 10));
         status.setFont(new Font("Arial", 16));
         if(redText) status.setTextFill(Color.RED);
         if(redText) status.setGraphic(new ImageView(getClass().getResource("/img/Lock-Red.png").toString()));
         mainGrid.add(status, 0, 0);
 
-        GridPane buttonGrid = new GridPane();
+        final GridPane buttonGrid = new GridPane();
         buttonGrid.setHgap(10);
         buttonGrid.setVgap(10);
         buttonGrid.setPadding(new Insets(0, 100, 10, 10));
@@ -65,16 +65,16 @@ public class LoginDialog extends Dialog {
         // Set the icon (must be included in the project).
         setGraphic(new ImageView(getClass().getResource("/img/Data-Secure.png").toString()));
 
-        Label usernamelbl = new Label("Username:");
+        final Label usernamelbl = new Label("Username:");
         usernamelbl.setFont(new Font("Arial", 16));
-        TextField username = new TextField();
+        final TextField username = new TextField();
         username.setId("txtUsername");
         username.setPromptText("Username");
         username.setFont(new Font("Arial", 16));
 
-        Label passwordlbl = new Label("Password:");
+        final Label passwordlbl = new Label("Password:");
         passwordlbl.setFont(new Font("Arial", 16));
-        PasswordField password = new PasswordField();
+        final PasswordField password = new PasswordField();
         password.setId("txtPassword");
         password.setPromptText("Password");
         password.setFont(new Font("Arial", 16));
@@ -89,11 +89,11 @@ public class LoginDialog extends Dialog {
         getDialogPane().setContent(mainGrid);
 
         //Set dialog result data for login button
-        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
+        final ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
 
         //By default disable the login button
-        Node loginButton = getDialogPane().lookupButton(loginButtonType);
+        final Node loginButton = getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
 
         // Enable/Disable login button depending on whether a username was entered.

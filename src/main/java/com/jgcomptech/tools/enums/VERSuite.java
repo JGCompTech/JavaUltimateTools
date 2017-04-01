@@ -43,8 +43,8 @@ public enum VERSuite implements BaseEnum {
     }
 
     public static List<VERSuite> parse(WinDef.WORD value) {
-        List<VERSuite> VERSuiteList = new ArrayList<>();
-        for(VERSuite VS : values()) {
+        final List<VERSuite> VERSuiteList = new ArrayList<>();
+        for(final VERSuite VS : values()) {
             if((value.intValue() & VS.getValue()) != 0)
                 VERSuiteList.add(VS);
         }
@@ -52,7 +52,7 @@ public enum VERSuite implements BaseEnum {
     }
 
     public static VERSuite parse(int value) {
-        for(VERSuite type : VERSuite.values()) {
+        for(final VERSuite type : VERSuite.values()) {
             if(type.getValue() == value) {
                 return type;
             }
@@ -60,7 +60,6 @@ public enum VERSuite implements BaseEnum {
         return Unknown;
     }
 
-    public int getValue() {
-        return _value;
-    }
+    @Override
+    public int getValue() { return _value; }
 }

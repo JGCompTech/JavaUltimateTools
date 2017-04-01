@@ -1,10 +1,6 @@
 package com.jgcomptech.tools.dialogs;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import org.jetbrains.annotations.Contract;
+import javafx.scene.control.*;
 
 import java.util.Optional;
 
@@ -24,8 +20,8 @@ public class MessageBox {
      */
     public static DialogResult show(String text, String title, String headerText, MessageBoxButtons buttons,
                                     MessageBoxIcon icon, MessageBoxDefaultButton defaultButton) {
-        Alert alert;
-        Alert.AlertType type = setAlertType(icon);
+        final Alert alert;
+        final Alert.AlertType type = setAlertType(icon);
         Optional<ButtonType> result = null;
 
         switch(buttons) {
@@ -47,13 +43,15 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.IGNORE).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case CANCEL_CLOSE:
-                        return DialogResult.ABORT;
-                    case BACK_PREVIOUS:
-                        return DialogResult.RETRY;
-                    case NEXT_FORWARD:
-                        return DialogResult.IGNORE;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case CANCEL_CLOSE:
+                            return DialogResult.ABORT;
+                        case BACK_PREVIOUS:
+                            return DialogResult.RETRY;
+                        case NEXT_FORWARD:
+                            return DialogResult.IGNORE;
+                    }
                 }
                 break;
             case Apply:
@@ -62,9 +60,8 @@ public class MessageBox {
                 alert.setHeaderText(headerText);
                 alert.setTitle(title);
                 result = alert.showAndWait();
-                switch(result.get().getButtonData()) {
-                    case APPLY:
-                        return DialogResult.APPLY;
+                if(result.isPresent() && result.get() == MessageBoxButtonType.APPLY) {
+                    return DialogResult.APPLY;
                 }
                 break;
             case ApplyCancel:
@@ -82,11 +79,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case APPLY:
-                        return DialogResult.APPLY;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case APPLY:
+                            return DialogResult.APPLY;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
             case CancelTryAgainContinue:
@@ -107,13 +106,15 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CONTINUE).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
-                    case BACK_PREVIOUS:
-                        return DialogResult.TRYAGAIN;
-                    case NEXT_FORWARD:
-                        return DialogResult.CONTINUE;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                        case BACK_PREVIOUS:
+                            return DialogResult.TRYAGAIN;
+                        case NEXT_FORWARD:
+                            return DialogResult.CONTINUE;
+                    }
                 }
                 break;
             case Close:
@@ -122,9 +123,8 @@ public class MessageBox {
                 alert.setHeaderText(headerText);
                 alert.setTitle(title);
                 result = alert.showAndWait();
-                switch(result.get().getButtonData()) {
-                    case CANCEL_CLOSE:
-                        return DialogResult.CLOSE;
+                if(result.isPresent() && result.get() == MessageBoxButtonType.CLOSE) {
+                    return DialogResult.CLOSE;
                 }
                 break;
             case Finish:
@@ -133,9 +133,8 @@ public class MessageBox {
                 alert.setHeaderText(headerText);
                 alert.setTitle(title);
                 result = alert.showAndWait();
-                switch(result.get().getButtonData()) {
-                    case FINISH:
-                        return DialogResult.FINISH;
+                if(result.isPresent() && result.get() == MessageBoxButtonType.FINISH) {
+                    return DialogResult.FINISH;
                 }
                 break;
             case FinishCancel:
@@ -153,11 +152,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case FINISH:
-                        return DialogResult.FINISH;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case FINISH:
+                            return DialogResult.FINISH;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
             case NextPrevious:
@@ -175,11 +176,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.PREVIOUS).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case NEXT_FORWARD:
-                        return DialogResult.NEXT;
-                    case BACK_PREVIOUS:
-                        return DialogResult.PREVIOUS;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case NEXT_FORWARD:
+                            return DialogResult.NEXT;
+                        case BACK_PREVIOUS:
+                            return DialogResult.PREVIOUS;
+                    }
                 }
                 break;
             case NextPreviousCancel:
@@ -200,13 +203,15 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case NEXT_FORWARD:
-                        return DialogResult.NEXT;
-                    case BACK_PREVIOUS:
-                        return DialogResult.PREVIOUS;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case NEXT_FORWARD:
+                            return DialogResult.NEXT;
+                        case BACK_PREVIOUS:
+                            return DialogResult.PREVIOUS;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
             case OK:
@@ -215,9 +220,10 @@ public class MessageBox {
                 alert.setHeaderText(headerText);
                 alert.setTitle(title);
                 result = alert.showAndWait();
-                switch(result.get().getButtonData()) {
-                    case OK_DONE:
+                if(result.isPresent()) {
+                    if(result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                         return DialogResult.OK;
+                    }
                 }
                 break;
             case OKCancel:
@@ -235,11 +241,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case OK_DONE:
-                        return DialogResult.OK;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case OK_DONE:
+                            return DialogResult.OK;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
             case RetryCancel:
@@ -257,11 +265,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case BACK_PREVIOUS:
-                        return DialogResult.RETRY;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case BACK_PREVIOUS:
+                            return DialogResult.RETRY;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
             case SubmitCancel:
@@ -279,11 +289,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case APPLY:
-                        return DialogResult.SUBMIT;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case APPLY:
+                            return DialogResult.SUBMIT;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
             case YesNo:
@@ -301,11 +313,13 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.NO).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case YES:
-                        return DialogResult.YES;
-                    case NO:
-                        return DialogResult.NO;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case YES:
+                            return DialogResult.YES;
+                        case NO:
+                            return DialogResult.NO;
+                    }
                 }
                 break;
             case YesNoCancel:
@@ -326,13 +340,15 @@ public class MessageBox {
                         result = setDefaultButton(alert, MessageBoxButtonType.CANCEL).showAndWait();
                         break;
                 }
-                switch(result.get().getButtonData()) {
-                    case YES:
-                        return DialogResult.YES;
-                    case NO:
-                        return DialogResult.NO;
-                    case CANCEL_CLOSE:
-                        return DialogResult.CANCEL;
+                if(result.isPresent()) {
+                    switch(result.get().getButtonData()) {
+                        case YES:
+                            return DialogResult.YES;
+                        case NO:
+                            return DialogResult.NO;
+                        case CANCEL_CLOSE:
+                            return DialogResult.CANCEL;
+                    }
                 }
                 break;
         }
@@ -550,7 +566,6 @@ public class MessageBox {
         return show(text, "");
     }
 
-    @Contract(pure = true)
     private static Alert.AlertType setAlertType(MessageBoxIcon icon) {
         switch(icon) {
             case NONE:
@@ -568,8 +583,8 @@ public class MessageBox {
     }
 
     private static Alert setDefaultButton ( Alert alert, ButtonType type ) {
-        DialogPane pane = alert.getDialogPane();
-        for ( ButtonType t : alert.getButtonTypes() )
+        final DialogPane pane = alert.getDialogPane();
+        for ( final ButtonType t : alert.getButtonTypes() )
             ( (Button) pane.lookupButton(t) ).setDefaultButton( t == type );
         return alert;
     }

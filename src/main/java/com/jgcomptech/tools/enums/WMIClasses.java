@@ -1,7 +1,5 @@
 package com.jgcomptech.tools.enums;
 
-import org.jetbrains.annotations.Contract;
-
 public enum WMIClasses {
     Win32_WMISetting("Win32_WMISetting"),
     Win32_WMIElementSetting("Win32_WMIElementSetting");
@@ -12,7 +10,6 @@ public enum WMIClasses {
         this.value = text;
     }
 
-    @Contract(pure = true)
     @Override
     public String toString() {
         return value;
@@ -42,7 +39,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -76,7 +72,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -177,7 +172,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -202,7 +196,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -244,7 +237,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -324,7 +316,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -403,7 +394,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -482,7 +472,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -519,7 +508,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -545,7 +533,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -571,7 +558,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -596,7 +582,6 @@ public enum WMIClasses {
             this.value = text;
         }
 
-        @Contract(pure = true)
         @Override
         public String toString() {
             return value;
@@ -695,15 +680,10 @@ public enum WMIClasses {
 
         String value = "";
 
-        Unknown(String text) {
-            this.value = text;
-        }
+        Unknown(String text) { this.value = text; }
 
-        @Contract(pure = true)
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 }
 

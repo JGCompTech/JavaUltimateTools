@@ -1,7 +1,6 @@
 package com.jgcomptech.tools;
 
 import com.sun.jna.platform.win32.WinDef;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -15,7 +14,6 @@ import static com.jgcomptech.tools.OSInfo.CheckIf.isWindows;
 
 /** Allows you to run console commands and either run them elevated or not and return the result to a string */
 public class CommandInfo {
-    private static final String CRLF = "\r\n";
 
     /**
      * Runs command and returns results to ArrayList in Output object
@@ -23,8 +21,11 @@ public class CommandInfo {
      * @param command Command to run
      * @param args    Arguments to pass to command
      * @return Output object
+     * @throws IOException if error occurs
+     * @throws InterruptedException if command is interrupted
      */
-    public static Output Run(String command, String args) {
+    public static Output Run(String command, String args)
+            throws IOException, InterruptedException {
         return Run(command, args, false, true, false);
     }
 
@@ -37,11 +38,12 @@ public class CommandInfo {
      * @param args    Arguments to pass to command
      * @param elevate Boolean to set if command should be run elevated, if true Output object will be empty
      * @return Output object
+     * @throws IOException if error occurs
+     * @throws InterruptedException if command is interrupted
      */
-    public static Output Run(String command, String args, boolean elevate) {
-        if(elevate) {
-            return Run(command, args, true, false, true);
-        }
+    public static Output Run(String command, String args, boolean elevate)
+            throws IOException, InterruptedException {
+        if(elevate) return Run(command, args, true, false, true);
         return Run(command, args);
     }
 
@@ -60,83 +62,71 @@ public class CommandInfo {
      *                       This parameter is ignored if "hideWindow" is true, this prevents cmd window from staying
      *                       open when hidden and unnecessarily using RAM
      * @return Output object
+     * @throws IOException if error occurs
+     * @throws InterruptedException if command is interrupted
      */
-    @NotNull
-    public static Output Run(String command, String args, boolean elevate, boolean hideWindow, boolean keepWindowOpen) {
-        Output newOutput = new Output();
+    public static Output Run(String command, String args, boolean elevate, boolean hideWindow, boolean keepWindowOpen)
+            throws IOException, InterruptedException {
+        final Output newOutput = new Output();
 
         if((elevate || !hideWindow) && isWindows()) {
             ShellExecute(command, args, elevate, hideWindow, keepWindowOpen);
         } else {
             final Process process;
-            try {
-                if(isWindows()) {
-                    String cmdString = String.format("cmd /C \"%s %s\"", command, args);
-                    process = Runtime.getRuntime().exec(cmdString);
-                } else {
-                    process = Runtime.getRuntime().exec(command);
-                }
+            if(isWindows()) {
+                final String cmdString = String.format("cmd /C \"%s %s\"", command, args);
+                process = Runtime.getRuntime().exec(cmdString);
+            } else {
+                process = Runtime.getRuntime().exec(command);
+            }
 
-                assert process != null;
-                final BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
+            assert process != null;
+            try(BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while((line = br.readLine()) != null) {
                     newOutput.Result.add(line);
                 }
-
-                process.waitFor();
-
-                newOutput.ExitCode = process.exitValue();
-            } catch(IOException | InterruptedException e) {
-                e.printStackTrace();
             }
+
+            process.waitFor();
+
+            newOutput.ExitCode = process.exitValue();
         }
         return newOutput;
     }
 
-    private static void ShellExecute(String command, String args, boolean elevate, boolean hideWindow, boolean keepWindowOpen) {
-        FileWriter writer;
-        try {
-            writer = new FileWriter("my.bat");
-            writer.write("@Echo off" + System.getProperty("line.separator"));
-            writer.write("\"" + command + "\" " + args + System.getProperty("line.separator"));
+    private static void ShellExecute(String command, String args, boolean elevate, boolean hideWindow, boolean keepWindowOpen)
+            throws IOException, InterruptedException {
+        final String filename = "my.bat";
+
+        try(final FileWriter writer = new FileWriter(filename)) {
+            writer.write("@Echo off" + System.lineSeparator());
+            writer.write("\"" + command + "\" " + args + System.lineSeparator());
             if(keepWindowOpen && !hideWindow) { writer.write("pause"); }
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
         }
 
-        int WindowStatus = hideWindow ? 0 : 1;
-        String operation = elevate ? "runas" : "open";
+        final int WindowStatus = hideWindow ? 0 : 1;
+        final String operation = elevate ? "runas" : "open";
 
-        WinDef.HWND hw = null;
-        String filename = "my.bat";
+        final WinDef.HWND hw = null;
         NativeMethods.Shell32.INSTANCE.ShellExecute(hw, operation, filename, null, null, WindowStatus);
-        try {
-            Thread.sleep(2000);
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            Files.delete(Paths.get("my.bat"));
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+
+        Thread.sleep(2000);
+
+        Files.delete(Paths.get(filename));
     }
 
     /** Output object that is returned after the command has completed */
     public static class Output {
         /** Returns the text result of the command */
         public final ArrayList<String> Result = new ArrayList<String>() {
-            @NotNull
             @Override
             public String toString() {
-                StringBuilder sb = new StringBuilder();
-                for(String line : Result) {
+                final StringBuilder sb = new StringBuilder();
+                for(final String line : Result) {
                     if(!line.contains("Windows Script Host Version") &&
-                            !line.contains("Microsoft Corporation. All rights reserved.") && !line.equals("")) {
-                        sb.append(line).append(CRLF);
+                            !line.contains("Microsoft Corporation. All rights reserved.") && !line.isEmpty()) {
+                        sb.append(line).append(System.lineSeparator());
                     }
                 }
                 return sb.toString();
@@ -147,7 +137,7 @@ public class CommandInfo {
         public int ExitCode = 0;
 
         public void print() {
-            for(String line : this.Result) {
+            for(final String line : Result) {
                 System.out.println(line);
             }
         }

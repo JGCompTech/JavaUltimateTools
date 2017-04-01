@@ -2,7 +2,6 @@ package com.jgcomptech.tools;
 
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
-import org.jetbrains.annotations.NotNull;
 
 /** Registry tools for handling registry keys and values */
 public class RegistryInfo {
@@ -14,7 +13,6 @@ public class RegistryInfo {
      * @param value Value name to access
      * @return Key value as string
      */
-    @NotNull
     public static String getStringValue(HKEY hkey, String key, String value) {
         WinReg.HKEY keyobj = null;
 
@@ -45,6 +43,9 @@ public class RegistryInfo {
         return "";
     }
 
+    /**
+     * A list of the different parent keys in the Windows Registry that are used in the {@link RegistryInfo} class
+     */
     public enum HKEY {
         CLASSES_ROOT,
         CURRENT_USER,

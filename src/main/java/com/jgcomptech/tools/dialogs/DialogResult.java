@@ -41,13 +41,9 @@ public class DialogResult {
 
     private final ButtonType value;
 
-    public DialogResult() {
-        this.value = MessageBoxButtonType.NONE;
-    }
+    public DialogResult() { this.value = MessageBoxButtonType.NONE; }
 
-    public DialogResult(ButtonType value) {
-        this.value = value;
-    }
+    public DialogResult(ButtonType value) { this.value = value; }
 
     /**
      * Indicates whether some other object is "equal to" this one
@@ -64,7 +60,7 @@ public class DialogResult {
             return false;
         }
         final DialogResult other = (DialogResult) obj;
-        return (this.value == null) ? other.value == null : this.value.equals(other.value);
+        return (value == null) ? other.value == null : value.equals(other.value);
     }
 
     /**
@@ -85,7 +81,7 @@ public class DialogResult {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 53 * hash + (this.value != null ? this.value.hashCode() : 0);
+        hash = 53 * hash + (value != null ? value.hashCode() : 0);
         return hash;
     }
 }

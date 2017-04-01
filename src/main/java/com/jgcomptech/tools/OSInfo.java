@@ -3,7 +3,6 @@ package com.jgcomptech.tools;
 import com.jgcomptech.tools.enums.*;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.UnknownHostException;
@@ -39,9 +38,7 @@ public class OSInfo {
         private Architecture() { super(); }
     }
 
-    /**
-     * Runs different checks against the OS and returns a boolean value
-     */
+    /** Runs different checks against the OS and returns a boolean value */
     public static class CheckIf {
         private static final String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
@@ -58,11 +55,7 @@ public class OSInfo {
          * @return True if OS is a 64 Bit OS
          */
         public static boolean is64BitOS() {
-            if(isWindows()) {
-                return (System.getenv("ProgramFiles(x86)") != null);
-            } else {
-                return (OS.contains("64"));
-            }
+            return isWindows() ? System.getenv("ProgramFiles(x86)") != null : OS.contains("64");
         }
 
         /**
@@ -97,41 +90,41 @@ public class OSInfo {
         private CheckIf() { super(); }
     }
 
-    /**
-     * Returns the different names provided by the operating system
-     */
+    /** Returns the different names provided by the operating system */
     public static class Name {
         private static final String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
         /**
-         * Returns a full version String, ex.: "Windows XP Service Pack 2 (32 Bit)"
+         * Returns a full version String, ex.: "Windows XP SP2 (32 Bit)"
          *
          * @return String representing a fully displayable version as stored in WMI
+         * @throws IOException if error occurs
+         * @throws InterruptedException if command is interrupted
          */
-        public static String StringExpanded() {
+        public static String StringExpanded() throws IOException, InterruptedException {
             if(isWindows()) {
-                String SPString = "";
-                if(isWin8OrLater()) SPString = " - " + Windows.Version.Build();
-                else SPString = " SP" + Windows.ServicePack.String().substring(SPString.length() - 1);
+                final String SPString = isWin8OrLater() ? " - " + Windows.Version.Build() :
+                        " SP" + Windows.ServicePack.String().replace("Service Pack ", "");
 
                 return String() + " " + Windows.Edition.String() + " " + SPString + " (" + Architecture.Number() + " Bit)";
             } else return OS;
         }
 
         /**
-         * Returns a full version String, ex.: "Windows XP Service Pack 2 (32 Bit)"
+         * Returns a full version String, ex.: "Windows XP SP2 (32 Bit)"
          *
          * @return String representing a fully displayable version as stored in Windows Registry
+         * @throws IOException if error occurs
+         * @throws InterruptedException if command is interrupted
          */
-        public static String StringExpandedFromRegistry() {
+        public static String StringExpandedFromRegistry() throws IOException, InterruptedException {
             if(isWindows()) {
-                String SPString = "";
-                if(isWin8OrLater()) SPString = " - " + Windows.Version.Build();
-                else SPString = " SP" + Windows.ServicePack.String().substring(SPString.length() - 1);
+                final String SPString = isWin8OrLater() ? " - " + Windows.Version.Build() :
+                        " SP" + Windows.ServicePack.String().replace("Service Pack ", "");
 
-                String key = "Software\\\\Microsoft\\\\Windows NT\\\\CurrentVersion";
-                String value = "ProductName";
-                String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+                final String key = "Software\\\\Microsoft\\\\Windows NT\\\\CurrentVersion";
+                final String value = "ProductName";
+                final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
                 return text + " " + SPString + " (" + Architecture.Number() + " Bit)";
             } else return OS;
         }
@@ -140,8 +133,10 @@ public class OSInfo {
          * Returns the name of the operating system running on this Computer
          *
          * @return Enum value containing the the operating system name
+         * @throws IOException if error occurs
+         * @throws InterruptedException if command is interrupted
          */
-        public static OSList Enum() {
+        public static OSList Enum() throws IOException, InterruptedException {
             if(isWindows()) return Windows.Name.Enum();
             else if(isMac()) return OSList.MacOSX;
             else if(isLinux()) return OSList.Linux;
@@ -153,8 +148,10 @@ public class OSInfo {
          * Returns the name of the operating system running on this computer
          *
          * @return String value containing the the operating system name
+         * @throws IOException if error occurs
+         * @throws InterruptedException if command is interrupted
          */
-        public static String String() {
+        public static String String() throws IOException, InterruptedException {
             if(isWindows()) return Windows.Name.String();
             else if(isMac()) return "Mac OSX";
             else if(isLinux()) return "Linux";
@@ -167,10 +164,9 @@ public class OSInfo {
          *
          * @return String value of current computer name
          */
-        @NotNull
         public static String ComputerNameActive() {
-            String key = "System\\ControlSet001\\Control\\ComputerName\\ActiveComputerName";
-            String value = "ComputerName";
+            final String key = "System\\ControlSet001\\Control\\ComputerName\\ActiveComputerName";
+            final String value = "ComputerName";
             return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
         }
 
@@ -179,12 +175,11 @@ public class OSInfo {
          *
          * @return String value of the pending computer name
          */
-        @NotNull
         public static String ComputerNamePending() {
-            String key = "System\\ControlSet001\\Control\\ComputerName\\ComputerName";
-            String value = "ComputerName";
-            String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
-            return text.equals("") ? "N/A" : text;
+            final String key = "System\\ControlSet001\\Control\\ComputerName\\ComputerName";
+            final String value = "ComputerName";
+            final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+            return text.isEmpty() ? "N/A" : text;
         }
 
         // This class should only be called statically
@@ -193,24 +188,24 @@ public class OSInfo {
 
     /** Returns information about the Windows installation */
     public static class Windows {
-        /**
-         * Returns information about the Windows activation status
-         */
+        /** Returns information about the Windows activation status */
         public static class Activation {
             /**
              * Identifies if OS is activated
              *
              * @return true if activated, false if not activated
+             * @throws IOException if error occurs
              */
-            public static boolean isActivated() { return Activation.getStatusAsEnum().equals(Activation.Status.Licensed); }
+            public static boolean isActivated() throws IOException { return getStatusAsEnum() == Status.Licensed; }
 
             /**
              * Identifies If Windows is Activated, uses the Software Licensing Manager Script, this is the quicker
              * method
              *
              * @return "Licensed" If Genuinely Activated as enum
+             * @throws IOException if error occurs
              */
-            public static Status getStatusAsEnum() {
+            public static Status getStatusAsEnum() throws IOException {
                 switch(getStatusFromSLMGR()) {
                     case "Unlicensed":
                         return Status.Unlicensed;
@@ -242,72 +237,56 @@ public class OSInfo {
              * Identifies If Windows is Activated, uses the Software Licensing Manager Script, this is the quicker method
              *
              * @return "Licensed" If Genuinely Activated
+             * @throws IOException if an error occurs
              */
-            public static String getStatusString() { return getStatusFromSLMGR(); }
+            public static String getStatusString() throws IOException { return getStatusFromSLMGR(); }
 
             /**
              * Identifies If Windows is Activated, uses WMI
              *
              * @return Licensed If Genuinely Activated
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static String getStatusFromWMI() {
+            public static String getStatusFromWMI() throws IOException, InterruptedException {
                 final String ComputerName = "localhost";
 
-                String ReturnString = "";
-                try {
-                    String LicenseStatus = WMI.getWMIValue("SELECT * FROM SoftwareLicensingProduct Where PartialProductKey <> null AND ApplicationId='55c92734-d682-4d71-983e-d6ec3f16059f' AND LicenseisAddon=False", "LicenseStatus");
+                final String LicenseStatus = WMI.getWMIValue("SELECT * " +
+                        "FROM SoftwareLicensingProduct " +
+                        "Where PartialProductKey <> null " +
+                        "AND ApplicationId='55c92734-d682-4d71-983e-d6ec3f16059f' " +
+                        "AND LicenseisAddon=False", "LicenseStatus");
 
-                    switch(Integer.parseInt(LicenseStatus)) {
-                        case 0:
-                            ReturnString = "Unlicensed";
-                            break;
-
-                        case 1:
-                            ReturnString = "Licensed";
-                            break;
-
-                        case 2:
-                            ReturnString = "Out-Of-Box Grace";
-                            break;
-
-                        case 3:
-                            ReturnString = "Out-Of-Tolerance Grace";
-                            break;
-
-                        case 4:
-                            ReturnString = "Non Genuine Grace";
-                            break;
-
-                        case 5:
-                            ReturnString = "Notification";
-                            break;
-
-                        case 6:
-                            ReturnString = "Extended Grace";
-                            break;
-
-                        default:
-                            ReturnString = "Unknown License Status";
-                            break;
-                    }
-                } catch(Exception ex) {
-                    System.out.println(ex.getMessage());
+                switch(Integer.parseInt(LicenseStatus)) {
+                    case 0:
+                        return "Unlicensed";
+                    case 1:
+                        return "Licensed";
+                    case 2:
+                        return "Out-Of-Box Grace";
+                    case 3:
+                        return "Out-Of-Tolerance Grace";
+                    case 4:
+                        return "Non Genuine Grace";
+                    case 5:
+                        return "Notification";
+                    case 6:
+                        return "Extended Grace";
+                    default:
+                        return "Unknown License Status";
                 }
-
-                if(ReturnString.isEmpty()) return "Unknown License Status";
-                return ReturnString;
             }
 
             /**
              * Identifies If Windows is Activated, uses the Software Licensing Manager Script, this is the quicker method
              *
              * @return Licensed If Genuinely Activated
+             * @throws IOException if an error occurs
              */
-            public static String getStatusFromSLMGR() {
-                try {
-                    while(true) {
-                        Process p = Runtime.getRuntime().exec("cscript C:\\Windows\\System32\\Slmgr.vbs /dli");
-                        BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            public static String getStatusFromSLMGR() throws IOException {
+                while(true) {
+                    final Process p = Runtime.getRuntime().exec("cscript C:\\Windows\\System32\\Slmgr.vbs /dli");
+                    try(BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
                         String s;
                         while((s = stdOut.readLine()) != null) {
                             //System.out.println(s);
@@ -316,12 +295,13 @@ public class OSInfo {
                             }
                         }
                     }
-                } catch(Exception ex) {
-                    System.out.println(ex.getMessage());
                 }
-                return "Error!";
             }
 
+
+            /**
+             * A list of Activation statuses that are the result of the methods in the {@link Activation} class
+             */
             public enum Status {
                 Unlicensed,
                 Licensed,
@@ -345,8 +325,9 @@ public class OSInfo {
              * Identifies if OS is activated
              *
              * @return true if activated, false if not activated
+             * @throws IOException if error occurs
              */
-            public static boolean isActivated() { return Activation.isActivated(); }
+            public static boolean isActivated() throws IOException { return Activation.isActivated(); }
 
             /**
              * Identifies if OS is a Windows Server OS
@@ -370,9 +351,10 @@ public class OSInfo {
              * Identifies if computer has joined a domain
              *
              * @return true if computer has joined a domain
+             * @throws UnknownHostException if error occurs
              */
             //TODO Add C# implementation
-            public static boolean isDomainJoined() {
+            public static boolean isDomainJoined() throws UnknownHostException {
                 return !UserInfo.CurrentMachineName().equals(UserInfo.CurrentDomainName());
             }
 
@@ -384,9 +366,9 @@ public class OSInfo {
             //TODO Add C# implementation
             public static boolean isCurrentUserAdmin() {
                 boolean isAdmin = false;
-                Advapi32Util.Account[] groups = Advapi32Util.getCurrentUserGroups();
-                for(Advapi32Util.Account group : groups) {
-                    WinNT.PSIDByReference sid = new WinNT.PSIDByReference();
+                final Advapi32Util.Account[] groups = Advapi32Util.getCurrentUserGroups();
+                for(final Advapi32Util.Account group : groups) {
+                    final WinNT.PSIDByReference sid = new WinNT.PSIDByReference();
                     Advapi32.INSTANCE.ConvertStringSidToSid(group.sidString, sid);
                     if(Advapi32.INSTANCE.IsWellKnownSid(sid.getValue(),
                             WinNT.WELL_KNOWN_SID_TYPE.WinBuiltinAdministratorsSid)) {
@@ -401,50 +383,64 @@ public class OSInfo {
              * Identifies if OS is XP or later
              *
              * @return true if XP or later, false if 2000 or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWinXPOrLater() { return Version.Number() >= 51; }
+            public static boolean isWinXPOrLater() throws IOException, InterruptedException { return Version.Number() >= 51; }
 
             /**
              * Identifies if OS is XP x64 or later
              *
              * @return true if XP x64 or later, false if XP or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWinXP64OrLater() { return Version.Number() >= 52; }
+            public static boolean isWinXP64OrLater() throws IOException, InterruptedException { return Version.Number() >= 52; }
 
             /**
              * Identifies if OS is Vista or later
              *
              * @return true if Vista or later, false if XP or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWinVistaOrLater() { return Version.Number() >= 60; }
+            public static boolean isWinVistaOrLater() throws IOException, InterruptedException { return Version.Number() >= 60; }
 
             /**
              * Identifies if OS is Windows 7 or later
              *
              * @return true if Windows 7 or later, false if Vista or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWin7OrLater() { return Version.Number() >= 61; }
+            public static boolean isWin7OrLater() throws IOException, InterruptedException { return Version.Number() >= 61; }
 
             /**
              * Identifies if OS is Windows 8 or later
              *
              * @return true if Windows 8 or later, false if Windows 7 or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWin8OrLater() { return Version.Number() >= 62; }
+            public static boolean isWin8OrLater() throws IOException, InterruptedException { return Version.Number() >= 62; }
 
             /**
              * Identifies if OS is Windows 8.1 or later
              *
              * @return true if Windows 8.1 or later, false if Windows 8 or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWin81OrLater() { return Version.Number() >= 63; }
+            public static boolean isWin81OrLater() throws IOException, InterruptedException { return Version.Number() >= 63; }
 
             /**
              * Identifies if OS is Windows 10 or later
              *
              * @return true if Windows 10 or later, false if Windows 10 or previous
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static boolean isWin10OrLater() { return Version.Number() >= 100; }
+            public static boolean isWin10OrLater() throws IOException, InterruptedException { return Version.Number() >= 100; }
 
             // This class should only be called statically
             private CheckIf() { super(); }
@@ -460,7 +456,7 @@ public class OSInfo {
              * @return integer equivalent of the operating system product type
              */
             public static int ProductType() {
-                WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
+                final WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 if(NativeMethods.getVersionInfoFailed(osVersionInfo)) return ProductEdition.Undefined.getValue();
                 return osVersionInfo.wProductType;
             }
@@ -469,30 +465,34 @@ public class OSInfo {
              * Returns the product type of the OS as a string
              *
              * @return string containing the the operating system product type
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static String String() {
+            public static String String() throws IOException, InterruptedException {
                 switch(Version.Major()) {
                     case 5:
                         return GetVersion5();
                     case 6:
                     case 10:
                         return GetVersion6AndUp();
+                    default:
+                        return "";
                 }
-                return "";
             }
 
             /**
              * Returns the product type from Windows 2000 to XP and Server 2000 to 2003
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            @NotNull
-            private static String GetVersion5() {
-                WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
+            private static String GetVersion5() throws IOException, InterruptedException {
+                final WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 if(NativeMethods.getVersionInfoFailed(osVersionInfo)) return "";
-                WinDef.WORD wSuiteMask = osVersionInfo.wSuiteMask;
+                final WinDef.WORD wSuiteMask = osVersionInfo.wSuiteMask;
 
                 if(NativeMethods.getSystemMetrics(OtherConsts.SMMediaCenter)) return " Media Center";
                 if(NativeMethods.getSystemMetrics(OtherConsts.SMTabletPC)) return " Tablet PC";
-                if(CheckIf.isWindowsServer()) {
+                if(isWindowsServer()) {
                     if(Version.Minor() == 0) {
                         // Windows 2000 Datacenter Server
                         if(VERSuite.parse(wSuiteMask).contains(VERSuite.Datacenter)) { return " Datacenter Server"; }
@@ -528,9 +528,10 @@ public class OSInfo {
 
             /**
              * Returns the product type from Windows Vista to 10 and Server 2008 to 2016
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            @NotNull
-            private static String GetVersion6AndUp() {
+            private static String GetVersion6AndUp() throws IOException, InterruptedException {
                 switch(ProductEdition.parse(getProductInfo())) {
                     case Ultimate:
                     case UltimateE:
@@ -618,11 +619,13 @@ public class OSInfo {
                     case StorageStandardServer:
                     case StorageWorkgroupServer:
                         return "Storage Server";
+                    case Undefined:
+                        return "";
                 }
                 return "";
             }
 
-            private static int getProductInfo() {
+            private static int getProductInfo() throws IOException, InterruptedException {
                 return NativeMethods.getProductInfo(Version.Major(), Version.Minor());
             }
 
@@ -630,22 +633,24 @@ public class OSInfo {
             private Edition() { super(); }
         }
 
-        /**
-         * Returns the different names provided by the operating system
-         */
+        /** Returns the different names provided by the operating system */
         public static class Name {
             /**
              * Returns the OS name
              *
              * @return OS name as enum
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static OSList Enum() {
+            public static OSList Enum() throws IOException, InterruptedException {
                 switch(Version.Number()) {
                     case 51:
                         return OSList.WindowsXP;
 
                     case 52:
-                        return isWindowsServer() ? (NativeMethods.getSystemMetrics(OtherConsts.SMServerR2) ? OSList.Windows2003R2 : OSList.Windows2003) : OSList.WindowsXP64;
+                        return isWindowsServer() ? (NativeMethods.getSystemMetrics(OtherConsts.SMServerR2)
+                                ? OSList.Windows2003R2 : OSList.Windows2003) : OSList.WindowsXP64;
+
                     case 60:
                         return isWindowsServer() ? OSList.Windows2008 : OSList.WindowsVista;
 
@@ -660,25 +665,31 @@ public class OSInfo {
 
                     case 64:
                         return isWindowsServer() ? OSList.Windows2016 : OSList.Windows10;
+
+                    default:
+                        return OSList.Windows2000AndPrevious;
                 }
-                return OSList.Windows2000AndPrevious;
             }
 
             /**
              * Returns the OS name
              *
              * @return OS name as string
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static String String() {
+            public static String String() throws IOException, InterruptedException {
                 switch(Version.Major()) {
                     case 5: {
                         switch(Version.Minor()) {
                             case 1:
                                 return "Windows XP";
                             case 2:
-                                return isWindowsServer() ? (NativeMethods.getSystemMetrics(OtherConsts.SMServerR2) ? "Windows Server 2003 R2" : "Windows Server 2003") : "WindowsXP x64";
+                                return isWindowsServer() ? (NativeMethods.getSystemMetrics(OtherConsts.SMServerR2)
+                                        ? "Windows Server 2003 R2" : "Windows Server 2003") : "WindowsXP x64";
+                            default:
+                                return "UNKNOWN";
                         }
-                        break;
                     }
                     case 6: {
                         switch(Version.Minor()) {
@@ -690,36 +701,39 @@ public class OSInfo {
                                 return isWindowsServer() ? "Windows 2012" : "Windows 8";
                             case 3:
                                 return isWindowsServer() ? "Windows 2012 R2" : "Windows 8.1";
+                            default:
+                                return "UNKNOWN";
                         }
-                        break;
                     }
                     case 10: {
                         switch(Version.Minor()) {
                             case 0:
                                 return isWindowsServer() ? "Windows 2016" : "Windows 10";
+                            default:
+                                return "UNKNOWN";
                         }
-                        break;
                     }
+                    default:
+                        return "UNKNOWN";
                 }
-                return "UNKNOWN";
             }
 
             // This class should only be called statically
             private Name() { super(); }
         }
 
-        /**
-         * Returns the service pack information of the operating system running on this Computer
-         */
+        /** Returns the service pack information of the operating system running on this Computer */
         public static class ServicePack {
             /**
              * Returns the service pack information of the operating system running on this Computer
              *
              * @return A String containing the operating system service pack information
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static String String() {
-                String sp = Integer.toString(Number());
-                return isWin8OrLater() ? "" : ((sp.equals("") | sp.isEmpty()) ? "Service Pack 0" : sp);
+            public static String String() throws IOException, InterruptedException {
+                final String sp = Integer.toString(Number());
+                return isWin8OrLater() ? "" : sp.isEmpty() ? "Service Pack 0" : "Service Pack " + sp;
             }
 
             /**
@@ -728,7 +742,7 @@ public class OSInfo {
              * @return A int containing the operating system service pack number
              */
             public static int Number() {
-                WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
+                final WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 return NativeMethods.getVersionInfoFailed(osVersionInfo) ? -1 : osVersionInfo.wServicePackMajor.intValue();
             }
 
@@ -746,21 +760,23 @@ public class OSInfo {
              * @return Information as string
              * @throws IOException if command cannot be run
              */
-            @NotNull
             public static String getInfo() throws IOException {
-                Runtime runtime = Runtime.getRuntime();
-                Process process = runtime.exec("systeminfo");
-                BufferedReader systemInformationReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                final Runtime runtime = Runtime.getRuntime();
+                final Process process = runtime.exec("systeminfo");
 
-                StringBuilder stringBuilder = new StringBuilder();
-                String line;
+                try(BufferedReader systemInformationReader =
+                            new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 
-                while((line = systemInformationReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                    stringBuilder.append(System.lineSeparator());
+                    final StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+
+                    while((line = systemInformationReader.readLine()) != null) {
+                        stringBuilder.append(line);
+                        stringBuilder.append(System.lineSeparator());
+                    }
+
+                    return stringBuilder.toString().trim();
                 }
-
-                return stringBuilder.toString().trim();
             }
 
             /**
@@ -769,7 +785,7 @@ public class OSInfo {
              * @return Current time as string
              */
             public static String getTime() {
-                WinBase.SYSTEMTIME time = new WinBase.SYSTEMTIME();
+                final WinBase.SYSTEMTIME time = new WinBase.SYSTEMTIME();
                 NativeMethods.Kernel32.INSTANCE.GetSystemTime(time);
                 return time.wMonth + "/" + time.wDay + "/" + time.wYear + " " + time.wHour + ":" + time.wMinute;
             }
@@ -787,10 +803,9 @@ public class OSInfo {
              *
              * @return Registered Organization as string
              */
-            @NotNull
             public static String RegisteredOrganization() {
-                String key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
-                String value = "RegisteredOrganization";
+                final String key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
+                final String value = "RegisteredOrganization";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
 
@@ -799,10 +814,9 @@ public class OSInfo {
              *
              * @return Registered Owner as string
              */
-            @NotNull
             public static String RegisteredOwner() {
-                String key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
-                String value = "RegisteredOwner";
+                final String key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
+                final String value = "RegisteredOwner";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
 
@@ -810,18 +824,18 @@ public class OSInfo {
              * Returns the user name of the person who is currently logged on to the Windows operating system
              *
              * @return Logged in username as string
+             * @throws IllegalStateException if cannot retrieve the logged-in username
              */
-            @NotNull
             public static String LoggedInUserName() {
-                char[] userNameBuf = new char[10000];
-                IntByReference size = new IntByReference(userNameBuf.length);
-                boolean result = NativeMethods.Secur32.INSTANCE.GetUserNameEx
+                final char[] userNameBuf = new char[10000];
+                final IntByReference size = new IntByReference(userNameBuf.length);
+                final boolean result = NativeMethods.Secur32.INSTANCE.GetUserNameEx
                         (Secur32.EXTENDED_NAME_FORMAT.NameSamCompatible, userNameBuf, size);
 
                 if(!result)
                     throw new IllegalStateException("Cannot retrieve name of the currently logged-in user");
 
-                String[] username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
+                final String[] username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
                 return username[1];
             }
 
@@ -829,17 +843,18 @@ public class OSInfo {
              * Returns the network domain name associated with the current user
              *
              * @return Current domain name as string
+             * @throws IllegalStateException if cannot retrieve the joined domain
              */
             public static String CurrentDomainName() {
-                char[] userNameBuf = new char[10000];
-                IntByReference size = new IntByReference(userNameBuf.length);
-                boolean result = NativeMethods.Secur32.INSTANCE.GetUserNameEx
+                final char[] userNameBuf = new char[10000];
+                final IntByReference size = new IntByReference(userNameBuf.length);
+                final boolean result = NativeMethods.Secur32.INSTANCE.GetUserNameEx
                         (Secur32.EXTENDED_NAME_FORMAT.NameSamCompatible, userNameBuf, size);
 
                 if(!result)
-                    throw new IllegalStateException("Cannot retrieve name of the currently logged-in user");
+                    throw new IllegalStateException("Cannot retrieve name of the currently joined domain");
 
-                String[] username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
+                final String[] username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
                 return username[0];
             }
 
@@ -847,16 +862,11 @@ public class OSInfo {
              * Returns the current host name for the system
              *
              * @return Current domain name as string
+             * @throws UnknownHostException if error occurs
              */
-            @NotNull
-            public static String CurrentMachineName() {
-                try {
-                    java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
-                    return localMachine.getHostName();
-                } catch(UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                return "Error";
+            public static String CurrentMachineName() throws UnknownHostException {
+                final java.net.InetAddress localMachineIP = java.net.InetAddress.getLocalHost();
+                return localMachineIP.getHostName();
             }
 
             // This class should only be called statically
@@ -871,94 +881,94 @@ public class OSInfo {
              * Returns the full version of the operating system running on this Computer
              *
              * @return Full version as string
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static String Main() { return getVersionInfo(Type.Main); }
+            public static String Main() throws IOException, InterruptedException { return getVersionInfo(Type.Main); }
 
             /**
              * Returns the major version of the operating system running on this Computer
              *
              * @return Major version as int
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static int Major() { return Integer.parseInt(getVersionInfo(Type.Major)); }
+            public static int Major() throws IOException, InterruptedException { return Integer.parseInt(getVersionInfo(Type.Major)); }
 
             /**
              * Returns the minor version of the operating system running on this Computer
              *
              * @return Minor version as int
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static int Minor() { return Integer.parseInt(getVersionInfo(Type.Minor)); }
+            public static int Minor() throws IOException, InterruptedException { return Integer.parseInt(getVersionInfo(Type.Minor)); }
 
             /**
              * Returns the build version of the operating system running on this Computer
              *
              * @return Build version as int
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static int Build() { return Integer.parseInt(getVersionInfo(Type.Build)); }
+            public static int Build() throws IOException, InterruptedException { return Integer.parseInt(getVersionInfo(Type.Build)); }
 
             /**
              * Returns the revision version of the operating system running on this Computer
              *
              * @return Build Revision as int
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static int Revision() { return Integer.parseInt(getVersionInfo(Type.Revision)); }
+            public static int Revision() throws IOException, InterruptedException { return Integer.parseInt(getVersionInfo(Type.Revision)); }
 
             /**
              * Returns a numeric value representing OS version.
              *
              * @return OSMajorVersion times 10 plus OSMinorVersion
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            public static int Number() { return (Major() * 10 + Minor()); }
+            public static int Number() throws IOException, InterruptedException { return (Major() * 10 + Minor()); }
 
-            static String getVersionInfo(Type type) {
-                String ReturnString = "0";
-                try {
-                    String VersionString = WMI.getWMIValue("SELECT * FROM " + WMIClasses.OS.OperatingSystem,
-                            "Version");
+            static String getVersionInfo(Type type) throws IOException, InterruptedException {
+                final String VersionString = WMI.getWMIValue("SELECT * FROM " +
+                                WMIClasses.OS.OperatingSystem,"Version");
 
-                    String Temp;
-                    String Major = VersionString.substring(0, VersionString.indexOf("."));
-                    Temp = VersionString.substring(Major.length() + 1);
-                    String Minor = Temp.substring(0, VersionString.indexOf(".") - 1);
-                    Temp = VersionString.substring(Major.length() + 1 + Minor.length() + 1);
-                    String Build;
-                    if(Temp.contains(".")) {
-                        Build = Temp.substring(0, VersionString.indexOf(".") - 1);
-                        Temp = VersionString.substring(Major.length() + 1 + Minor.length() + 1 + Build.length() + 1);
-                    } else {
-                        Build = Temp;
-                        Temp = "0";
-                    }
-                    String Revision = Temp;
-
-                    switch(type) {
-                        case Main:
-                            ReturnString = VersionString;
-                            break;
-
-                        case Major:
-                            ReturnString = Major;
-                            break;
-
-                        case Minor:
-                            ReturnString = Minor;
-                            break;
-
-                        case Build:
-                            ReturnString = Build;
-                            break;
-
-                        case Revision:
-                            ReturnString = Revision;
-                            break;
-                    }
-                } catch(Exception ex) {
-                    System.out.println(ex.getMessage());
+                String Temp;
+                final String Major = VersionString.substring(0, VersionString.indexOf("."));
+                Temp = VersionString.substring(Major.length() + 1);
+                final String Minor = Temp.substring(0, VersionString.indexOf(".") - 1);
+                Temp = VersionString.substring(Major.length() + 1 + Minor.length() + 1);
+                final String Build;
+                if(Temp.contains(".")) {
+                    Build = Temp.substring(0, VersionString.indexOf(".") - 1);
+                    Temp = VersionString.substring(Major.length() + 1 + Minor.length() + 1 + Build.length() + 1);
+                } else {
+                    Build = Temp;
+                    Temp = "0";
                 }
+                final String Revision = Temp;
 
-                if(ReturnString.isEmpty()) return "0";
-                return ReturnString;
+                switch(type) {
+                    case Main:
+                        return VersionString;
+                    case Major:
+                        return Major;
+                    case Minor:
+                        return Minor;
+                    case Build:
+                        return Build;
+                    case Revision:
+                        return Revision;
+                }
+                return "0";
             }
 
+
+            /**
+             * A list of Version types used in the {@link OSInfo.Windows.Version} class
+             */
             public enum Type {
                 Main,
                 Major,
@@ -973,7 +983,7 @@ public class OSInfo {
 
         /** Returns information from WMI */
         public static class WMI {
-            private static final String CRLF = "\r\n";
+            private static final String CRLF = System.lineSeparator();
 
             /**
              * Generate a VBScript string capable of querying the desired WMI information.
@@ -984,15 +994,15 @@ public class OSInfo {
              *                                   results. <br>i.e. "Model"
              * @return the vbscript string.
              */
-            @NotNull
             private static String getVBScript(String wmiQueryStr, String wmiCommaSeparatedFieldName) {
-                StringBuilder vbs = new StringBuilder();
+                final StringBuilder vbs = new StringBuilder();
                 vbs.append("Dim oWMI : Set oWMI = GetObject(\"winmgmts:\")").append(CRLF);
-                vbs.append(String.format("Dim classComponent : Set classComponent = oWMI.ExecQuery(\"%s\")", wmiQueryStr)).append(CRLF);
+                vbs.append(String.format("Dim classComponent : Set classComponent = oWMI.ExecQuery(\"%s\")",
+                        wmiQueryStr)).append(CRLF);
                 vbs.append("Dim obj, strData").append(CRLF);
                 vbs.append("For Each obj in classComponent").append(CRLF);
-                String[] wmiFieldNameArray = wmiCommaSeparatedFieldName.split(",");
-                for(String fieldName : wmiFieldNameArray) {
+                final String[] wmiFieldNameArray = wmiCommaSeparatedFieldName.split(",");
+                for(final String fieldName : wmiFieldNameArray) {
                     vbs.append(String.format("  strData = strData & obj.%s & VBCrLf", fieldName)).append(CRLF);
                 }
                 vbs.append("Next").append(CRLF);
@@ -1005,9 +1015,12 @@ public class OSInfo {
              *
              * @param variableName The name of the environment variable to get
              * @return The value of the environment variable
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
+             * @throws IllegalArgumentException if Environment Variable does't exist
              */
-            public static String getEnvironmentVar(String variableName) {
-                String varName = "%" + variableName + "%";
+            public static String getEnvironmentVar(String variableName) throws IOException, InterruptedException {
+                final String varName = "%" + variableName + "%";
                 String variableValue = CommandInfo.Run("cmd", "/C echo " + varName).Result.get(0);
                 //execute(new String[] {"cmd.exe", "/C", "echo " + varName});
                 variableValue = variableValue.replace("\"", "");
@@ -1022,15 +1035,13 @@ public class OSInfo {
              *
              * @param filename the file to write the string to
              * @param data     a string to be written to the file
+             * @throws IOException if error occurs
              */
-            private static void writeStringToFile(String filename, String data) {
-                try {
-                    FileWriter output = new FileWriter(filename);
+            private static void writeStringToFile(String filename, String data) throws IOException {
+                try(FileWriter output = new FileWriter(filename)) {
                     output.write(data);
                     output.flush();
                     output.close();
-                } catch(IOException e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -1040,37 +1051,36 @@ public class OSInfo {
              * @param wmiQueryStr                the query string as syntactically defined by the WMI reference
              * @param wmiCommaSeparatedFieldName the field object that you want to get out of the query results
              * @return the value
+             * @throws IOException if error occurs
+             * @throws InterruptedException if command is interrupted
              */
-            @NotNull
-            public static String getWMIValue(String wmiQueryStr, String wmiCommaSeparatedFieldName) {
-                String tmpFileName = getEnvironmentVar("TEMP").trim() + File.separator + "javawmi.vbs";
+            public static String getWMIValue(String wmiQueryStr, String wmiCommaSeparatedFieldName)
+                    throws IOException, InterruptedException {
+                final String tmpFileName = getEnvironmentVar("TEMP").trim() + File.separator + "javawmi.vbs";
                 writeStringToFile(tmpFileName, getVBScript(wmiQueryStr, wmiCommaSeparatedFieldName));
-                String output = CommandInfo.Run("cmd.exe", "/C cscript.exe " + tmpFileName).Result.toString();
-                try {
-                    Files.delete(Paths.get(tmpFileName));
-                } catch(IOException e) {
-                    e.printStackTrace();
-                }
+                final String output = CommandInfo.Run("cmd.exe", "/C cscript.exe " + tmpFileName)
+                        .Result.toString();
+                Files.delete(Paths.get(tmpFileName));
 
                 return output.trim();
             }
 
-            public static void executeDemoQueries() {
-                try {
-                    System.out.println(getWMIValue("Select * from Win32_ComputerSystem", "Model"));
-                    System.out.println(getWMIValue("Select Name from Win32_ComputerSystem", "Name"));
-                    //System.out.println(getWMIValue("Select Description from Win32_PnPEntity", "Description"));
-                    //System.out.println(getWMIValue("Select Description, Manufacturer from Win32_PnPEntity", "Description,Manufacturer"));
-                    //System.out.println(getWMIValue("Select * from Win32_Service WHERE State = 'Stopped'", "Name"));
-                    //this will return everything since the field is incorrect and was not used to a filter
-                    //System.out.println(getWMIValue("Select * from Win32_Service", "Name"));
-                    //this will return nothing since there is no field specified
-                    System.out.println(getWMIValue("Select Name from Win32_ComputerSystem", ""));
-                    //this is a failing case where the Win32_Service class does not contain the 'Name' field
-                    //System.out.println(getWMIValue("Select * from Win32_Service", "Name"));
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
+            public static void executeDemoQueries() throws IOException, InterruptedException {
+                System.out.println(getWMIValue("Select * from Win32_ComputerSystem",
+                        "Model"));
+                System.out.println(getWMIValue("Select Name from Win32_ComputerSystem",
+                        "Name"));
+                //System.out.println(getWMIValue("Select Description from Win32_PnPEntity", "Description"));
+                //System.out.println(getWMIValue("Select Description, Manufacturer from Win32_PnPEntity",
+                // "Description,Manufacturer"));
+                //System.out.println(getWMIValue("Select * from Win32_Service WHERE State = 'Stopped'", "Name"));
+                //this will return everything since the field is incorrect and was not used to a filter
+                //System.out.println(getWMIValue("Select * from Win32_Service", "Name"));
+                //this will return nothing since there is no field specified
+                System.out.println(getWMIValue("Select Name from Win32_ComputerSystem",
+                        ""));
+                //this is a failing case where the Win32_Service class does not contain the 'Name' field
+                //System.out.println(getWMIValue("Select * from Win32_Service", "Name"));
             }
 
             // This class should only be called statically
@@ -1081,6 +1091,9 @@ public class OSInfo {
         private Windows() { super(); }
     }
 
+    /**
+     * An Install Info Object for use with the {@link ComputerInfo} class
+     */
     public static class InstallInfoObject {
         String ActivationStatus = "";
         String Architecture = "";
@@ -1108,6 +1121,9 @@ public class OSInfo {
         public VersionObject Version() { return Version; }
     }
 
+    /**
+     * A Version Object for use with the {@link ComputerInfo} class
+     */
     public static class VersionObject {
         String Main;
         int Major;
@@ -1129,6 +1145,9 @@ public class OSInfo {
         public int Number() { return Number; }
     }
 
+    /**
+     * An Operating System Object for use with the {@link ComputerInfo} class
+     */
     public static class OSObject {
         String ComputerName;
         String ComputerNamePending;

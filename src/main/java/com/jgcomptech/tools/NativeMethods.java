@@ -35,7 +35,7 @@ public class NativeMethods {
      * @return Product Info as an int
      */
     public static int getProductInfo(int Major, int Minor) {
-        IntByReference strProductType = new IntByReference();
+        final IntByReference strProductType = new IntByReference();
         Kernel32.INSTANCE.GetProductInfo(Major, Minor, 0, 0, strProductType);
         return strProductType.getValue();
     }

@@ -3,14 +3,15 @@ package com.jgcomptech.tools;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.ShlObj;
 import com.sun.jna.platform.win32.WinDef;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import static com.jgcomptech.tools.Misc.ConvertBytes;
 import static com.jgcomptech.tools.OSInfo.CheckIf.*;
@@ -24,11 +25,10 @@ public class HWInfo {
          *
          * @return BIOS date as string
          */
-        @NotNull
         public static String getReleaseDate() {
             if(isWindows()) {
-                String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-                String value = "BIOSReleaseDate";
+                final String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+                final String value = "BIOSReleaseDate";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
             return "Unknown";
@@ -39,11 +39,10 @@ public class HWInfo {
          *
          * @return BIOS version as string
          */
-        @NotNull
         public static String getVersion() {
             if(isWindows()) {
-                String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-                String value = "BIOSVersion";
+                final String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+                final String value = "BIOSVersion";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
             return "Unknown";
@@ -54,11 +53,10 @@ public class HWInfo {
          *
          * @return BIOS vendor name as string
          */
-        @NotNull
         public static String getVendor() {
             if(isWindows()) {
-                String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-                String value = "BIOSVendor";
+                final String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+                final String value = "BIOSVendor";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
             return "Unknown";
@@ -77,10 +75,9 @@ public class HWInfo {
          */
         public static String getInternalIPAddress() {
             try {
-                String ip = (InetAddress.getLocalHost().getHostAddress()).trim();
-                if(ip.equals("127.0.0.1")) return "N/A";
-                return ip;
-            } catch(Exception ex) { return "ERROR"; }
+                final String ip = (InetAddress.getLocalHost().getHostAddress()).trim();
+                return ip.equals("127.0.0.1") ? "N/A" : ip;
+            } catch(UnknownHostException ex) { return ex.getMessage(); }
         }
 
         /**
@@ -89,13 +86,13 @@ public class HWInfo {
          * @return External IP address as string
          */
         public static String getExternalIPAddress() {
-            try {
-                URL url = new URL("http://api.ipify.org");
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            final URL url;
+            try { url = new URL("http://api.ipify.org"); }
+            catch(MalformedURLException e) { return e.getMessage(); }
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
                 return (in.readLine()).trim();
-            } catch(Exception ex) {
-                if(ex.toString().contains("java.net.UnknownHostException:")) { return "N/A"; }
-                return ex.toString();
+            } catch(IOException ex) {
+                return ex.toString().contains("java.net.UnknownHostException:") ? "N/A" : ex.getMessage();
             }
         }
 
@@ -120,8 +117,8 @@ public class HWInfo {
         public static String Name() {
             String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
             String value = "SystemManufacturer";
-            String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
-            if(text.equals("")) {
+            final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+            if(text.isEmpty()) {
                 key = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInFormation";
                 value = "Manufacturer";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
@@ -137,8 +134,8 @@ public class HWInfo {
         public static String ProductName() {
             String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
             String value = "SystemProductName";
-            String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
-            if(text.equals("")) {
+            final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+            if(text.isEmpty()) {
                 key = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInFormation";
                 value = "Model";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
@@ -157,10 +154,9 @@ public class HWInfo {
          *
          * @return Processor name as string
          * */
-        @NotNull
         public static String Name() {
-            String key = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-            String value = "ProcessorNameString";
+            final String key = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+            final String value = "ProcessorNameString";
             return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
         }
 
@@ -168,8 +164,9 @@ public class HWInfo {
          * Returns the number of cores available on the system processor
          *
          * @return Number of cores as int
+         * @throws IOException if error occurs
          * */
-        public static int Cores() {
+        public static int Cores() throws IOException {
             String command = "";
 
             if(isMac()) command = "sysctl -n machdep.cpu.core_count";
@@ -179,19 +176,18 @@ public class HWInfo {
             final Process process;
             int numberOfCores = 0;
             int sockets = 0;
-            try {
-                if(isMac()) {
-                    String[] cmd = { "/bin/sh", "-c", command };
-                    process = Runtime.getRuntime().exec(cmd);
-                } else process = Runtime.getRuntime().exec(command);
+            if(isMac()) {
+                final String[] cmd = { "/bin/sh", "-c", command };
+                process = Runtime.getRuntime().exec(cmd);
+            } else process = Runtime.getRuntime().exec(command);
 
-                assert process != null;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            assert process != null;
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
 
                 while((line = reader.readLine()) != null) {
                     if(isMac()) {
-                        numberOfCores = line.length() > 0 ? Integer.parseInt(line) : 0;
+                        numberOfCores = line.isEmpty() ? 0 : Integer.parseInt(line);
                     } else if(isLinux()) {
                         if(line.contains("Core(s) per socket:")) {
                             numberOfCores = Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
@@ -205,8 +201,6 @@ public class HWInfo {
                         }
                     }
                 }
-            } catch(IOException e) {
-                e.printStackTrace();
             }
 
             if(isLinux()) return numberOfCores * sockets;
@@ -224,8 +218,8 @@ public class HWInfo {
          *
          * @return Total Ram as string
          * */
-        public static String GetTotalRam() {
-            long memorySize = ((com.sun.management.OperatingSystemMXBean)
+        public static String getTotalRam() {
+            final long memorySize = ((com.sun.management.OperatingSystemMXBean)
                     java.lang.management.ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
             return ConvertBytes((double) memorySize);
         }
@@ -241,9 +235,8 @@ public class HWInfo {
          *
          * @return System drive file path as string
          * */
-        @NotNull
         public static String getSystemDrivePath() {
-            char[] pszPath = new char[WinDef.MAX_PATH];
+            final char[] pszPath = new char[WinDef.MAX_PATH];
             NativeMethods.Shell32.INSTANCE.SHGetFolderPath
                     (null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
             return Native.toString(pszPath).replace("WINDOWS", "");
@@ -254,9 +247,8 @@ public class HWInfo {
          *
          * @return Windows directory file path as string
          * */
-        @NotNull
         public static String getWindowsPath() {
-            char[] pszPath = new char[WinDef.MAX_PATH];
+            final char[] pszPath = new char[WinDef.MAX_PATH];
             NativeMethods.Shell32.INSTANCE.SHGetFolderPath
                     (null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
             return Native.toString(pszPath);
@@ -267,7 +259,6 @@ public class HWInfo {
          *
          * @return System drive size as string
          * */
-        @NotNull
         public static String getSystemDriveSize() {
             return getDriveSize(getSystemDrivePath().replace(":/", "").charAt(0));
         }
@@ -278,11 +269,9 @@ public class HWInfo {
          * @param driveLetter Drive letter of drive to get the size of
          * @return Drive size of the specified drive letter
          * */
-        @NotNull
         public static String getDriveSize(char driveLetter) {
-            File aDrive = new File(driveLetter + ":");
-            if(aDrive.exists()) return ConvertBytes((double) aDrive.getTotalSpace());
-            return "N/A";
+            final File aDrive = new File(driveLetter + ":");
+            return aDrive.exists() ? ConvertBytes((double) aDrive.getTotalSpace()) : "N/A";
         }
 
         /**
@@ -290,7 +279,6 @@ public class HWInfo {
          *
          * @return System drive free space as string
          * */
-        @NotNull
         public static String getSystemDriveFreeSpace() {
             return getDriveFreeSpace(getSystemDrivePath().replace(":/", "").charAt(0));
         }
@@ -301,17 +289,18 @@ public class HWInfo {
          * @param driveLetter Drive letter of drive to get the free space of
          * @return Drive free space of the specified drive letter
          * */
-        @NotNull
         public static String getDriveFreeSpace(char driveLetter) {
-            File aDrive = new File(driveLetter + ":");
-            if(aDrive.exists()) return ConvertBytes((double) aDrive.getUsableSpace());
-            return "N/A";
+            final File aDrive = new File(driveLetter + ":");
+            return aDrive.exists() ? ConvertBytes((double) aDrive.getUsableSpace()) : "N/A";
         }
 
         // This class should only be called statically
         private Storage() { super(); }
     }
 
+    /**
+     * A Hardware Object for use with the {@link ComputerInfo} class
+     */
     public static class HWObject {
         String SystemOEM;
         String ProductName;
@@ -336,6 +325,9 @@ public class HWInfo {
         public StorageObject Storage() { return Storage; }
     }
 
+    /**
+     * A BIOS Object for use with the {@link ComputerInfo} class
+     */
     public static class BIOSObject {
         String Name;
         String ReleaseDate;
@@ -351,6 +343,9 @@ public class HWInfo {
         public String Version() { return Version; }
     }
 
+    /**
+     * A Drive Object for use with the {@link ComputerInfo} class
+     */
     public static class DriveObject {
         //String Name;
         //String Format;
@@ -369,6 +364,9 @@ public class HWInfo {
         public String TotalFree() { return TotalFree; }
     }
 
+    /**
+     * A Network Object for use with the {@link ComputerInfo} class
+     */
     public static class NetworkObject {
         String InternalIPAddress;
         String ExternalIPAddress;
@@ -381,6 +379,9 @@ public class HWInfo {
         public Boolean ConnectionStatus() { return ConnectionStatus; }
     }
 
+    /**
+     * A Processor Object for use with the {@link ComputerInfo} class
+     */
     public static class ProcessorObject {
         String Name;
         int Cores;
@@ -390,12 +391,18 @@ public class HWInfo {
         public int Cores() { return Cores; }
     }
 
+    /**
+     * A RAM Object for use with the {@link ComputerInfo} class
+     */
     public static class RAMObject {
         String TotalInstalled;
 
         public String TotalInstalled() { return TotalInstalled; }
     }
 
+    /**
+     * A Storage Object for use with the {@link ComputerInfo} class
+     */
     public static class StorageObject {
         //List<DriveObject> InstalledDrives;
         DriveObject SystemDrive;

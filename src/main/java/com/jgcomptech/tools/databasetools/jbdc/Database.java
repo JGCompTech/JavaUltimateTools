@@ -1,4 +1,4 @@
-package com.jgcomptech.tools.databasetools;
+package com.jgcomptech.tools.databasetools.jbdc;
 
 import com.jgcomptech.tools.SecurityTools;
 import com.jgcomptech.tools.dialogs.DialogResult;
@@ -114,15 +114,12 @@ public class Database implements AutoCloseable {
                 if(showStatusAlert) MessageBox.show("Connection to database has been established.", "Database Alert",
                         "Database Alert", MessageBoxIcon.INFORMATION);
             } catch (SQLException e) {
-                if(showStatusAlert) {
-                    if(e.getMessage().contains("Database may be already in use")) {
-                        final DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!"
-                                        + System.lineSeparator() + "Please Close any open connections!",
-                                "Error!", "Database Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.ERROR);
-                        if(result.equals(DialogResult.RETRY)) connect(showStatusAlert);
-                        if(result.equals(DialogResult.CANCEL)) throw e;
-                    }
-                    else throw e;
+                if(e.getMessage().contains("Database may be already in use")) {
+                    final DialogResult result = MessageBox.show("\"" + dbName + "\" is currently in use!"
+                                    + System.lineSeparator() + "Please Close any open connections!",
+                            "Error!", "Database Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.ERROR);
+                    if(result.equals(DialogResult.RETRY)) connect(showStatusAlert);
+                    if(result.equals(DialogResult.CANCEL)) throw e;
                 }
                 else throw e;
             }

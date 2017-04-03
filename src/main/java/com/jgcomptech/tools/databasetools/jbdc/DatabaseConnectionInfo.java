@@ -1,4 +1,4 @@
-package com.jgcomptech.tools.databasetools;
+package com.jgcomptech.tools.databasetools.jbdc;
 
 /**
  * Connection info object to be used to connect to a database

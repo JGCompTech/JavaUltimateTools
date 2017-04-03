@@ -1,4 +1,4 @@
-package com.jgcomptech.tools.databasetools;
+package com.jgcomptech.tools.databasetools.jbdc;
 
 /**
  * Database type to be used to determine database operations

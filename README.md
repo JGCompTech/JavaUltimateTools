@@ -11,20 +11,20 @@ JavaUltimateTools is a large repository of scripts for use in any Java program. 
 
 If you would like a more details check out the [CLASSDESCRIPTION.md](https://github.com/JGCompTech/JavaUltimateTools/blob/master/CLASSDESCRIPTION.md) file. I will be updating this with more documentation soon.
 
-If you would like to view the JavaDoc info it is hosted at [https://jgcomptech.github.io/JavaUltimateTools/](https://jgcomptech.github.io/JavaUltimateTools/). This is what is stored in the doc folder in the project.
+If you would like to view the JavaDoc info it is hosted at [github.io](https://jgcomptech.github.io/JavaUltimateTools/) and at [javadoc.io](http://www.javadoc.io/doc/com.jgcomptech.tools/java-ultimate-tools). This is what is stored in the doc folder in the project.
 
 # Development
 Want to contribute? Great!
 Any help with development is greatly appreciated. If you want to add something or fix any typos please submit a pull request and if it is helpful it may be merged. Please check out our [Code of Conduct for Contributors](https://github.com/JGCompTech/JavaUltimateTools/blob/master/code-of-conduct.md).
 
 # Download
-This project is currently at version 1.3.0 - **[Download v1.3.0](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.3)**
+**[Download v1.3.0](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.3)**
 
 The changelog can be found [here](https://github.com/JGCompTech/JavaUltimateTools/blob/master/Changelog.txt)
 
 # Using with Maven
 If you are familiar with [Maven](http://maven.apache.org), add the following XML
-fragments into your pom.xml file. With those settings, your Maven will automatically download our library into your local Maven repository, since our libraries are synchronized with the [Maven's central repository](http://repo1.maven.org/maven2/com/jgcomptech/tools/java-ultimate-tools/).
+fragments into your pom.xml file. With those settings, your Maven will automatically download our library into your local Maven repository, since our libraries are synchronized with the [Maven central repository](http://repo1.maven.org/maven2/com/jgcomptech/tools/java-ultimate-tools/).
 
     <dependencies>
        <dependency>

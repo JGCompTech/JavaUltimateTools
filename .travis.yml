@@ -7,3 +7,5 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
+
+install: mvn install -Dgpg.skip

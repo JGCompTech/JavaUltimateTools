@@ -6,16 +6,22 @@
 
     <groupId>com.jgcomptech.tools</groupId>
     <artifactId>java-ultimate-tools</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <name>${project.groupId}:${project.artifactId}</name>
+    <name>Java Ultimate Tools</name>
     <description>A large repository of scripts for use in any Java program..</description>
     <url>https://github.com/JGCompTech/JavaUltimateTools</url>
+    <organization>
+        <name>J&amp;G CompTech</name>
+        <url>https://github.com/JGCompTech</url>
+    </organization>
+
+    <inceptionYear>2017</inceptionYear>
 
     <licenses>
         <license>
@@ -30,6 +36,7 @@
             <email>jlgager@jgcomptech.com</email>
             <organization>J&amp;G CompTech</organization>
             <organizationUrl>https://github.com/JGCompTech</organizationUrl>
+            <timezone>America/New_York</timezone>
         </developer>
     </developers>
 
@@ -50,17 +57,65 @@
         </repository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
+        <directory>${project.basedir}/target</directory>
+        <outputDirectory>${project.build.directory}/classes</outputDirectory>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <extensions>true</extensions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.jgcomptech.tools.demo.Main</mainClass>
+                            <addDefaultImplementationEntries>
+                                true
+                            </addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -104,6 +159,20 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>auto-clean</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
@@ -126,20 +195,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.versioneye</groupId>
-                <artifactId>versioneye-maven-plugin</artifactId>
-                <version>3.11.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -179,7 +234,7 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Main-Class>com.jgcomptech.tools.demo.Main</Main-Class>
-                                        <Build-Number>1.3</Build-Number>
+                                        <Build-Number>${project.version}</Build-Number>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -195,6 +250,31 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.versioneye</groupId>
+                <artifactId>versioneye-maven-plugin</artifactId>
+                <version>3.11.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -241,6 +321,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>RELEASE</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-model -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>3.5.0-beta-1</version>
         </dependency>
     </dependencies>
 </project>

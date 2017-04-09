@@ -1,6 +1,8 @@
 com.jgcomptech.tools
+com.jgcomptech.tools.authenication
 com.jgcomptech.tools.databasetools
 com.jgcomptech.tools.databasetools.jbdc
 com.jgcomptech.tools.demo
 com.jgcomptech.tools.dialogs
 com.jgcomptech.tools.enums
+com.jgcomptech.tools.permissions

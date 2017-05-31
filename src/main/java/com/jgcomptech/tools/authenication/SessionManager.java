@@ -42,6 +42,7 @@ public final class SessionManager {
      * @return the instance of the SessionManager
      */
     public static synchronized SessionManager getInstance(Database usersDatabase, String appIconPath) {
+        if(usersDatabase == null) { throw new IllegalArgumentException("Users Database Cannot Be Null!"); }
         if(instance == null) instance = new SessionManager();
         instance.usersDatabase = usersDatabase;
         instance.appIconPath = appIconPath;
@@ -102,14 +103,20 @@ public final class SessionManager {
         }
     }
 
-    /** Shows the login dialog window and does not show the error message */
-    public void showLoginWindow() { showLoginWindow(false); }
+    /**
+     * Shows the login dialog window and does not show the error message
+     * @throws GeneralSecurityException if error occurs while hashing password
+     * @throws SQLException if error occurs while accessing the database
+     */
+    public void showLoginWindow() throws GeneralSecurityException, SQLException { showLoginWindow(false); }
 
     /**
      * Shows the login dialog window, if showErrorMessage is true the error message is displayed
      * @param showErrorMessage if true the error message is displayed
+     * @throws GeneralSecurityException if error occurs while hashing password
+     * @throws SQLException if error occurs while accessing the database
      */
-    public void showLoginWindow(boolean showErrorMessage) {
+    public void showLoginWindow(boolean showErrorMessage) throws GeneralSecurityException, SQLException {
         final LoginDialog dialog;
         dialog = showErrorMessage ? new LoginDialog(activator.getLoginErrorText(), true) :
                 new LoginDialog("", false);
@@ -129,19 +136,14 @@ public final class SessionManager {
         }
     }
 
-    private void checkPasswordMatches(String username, String password) {
-        try {
-            if(Database.Users.checkPasswordMatches(usersDatabase, username, password)) {
-                final String userType = Database.Users.getUserType(usersDatabase, username);
-                loginUser(username, userType);
-                activator.ifLoginSucceeds(username);
-            } else {
-                activator.ifLoginFails(username);
-                if(!activator.setDoNotRetryLoginOnFail()) showLoginWindow(true);
-            }
-        } catch(SQLException | GeneralSecurityException e) {
-            MessageBox.show(e.getMessage(), "Session Manager Error", "Method: checkPasswordMatches",
-                    MessageBoxIcon.ERROR);
+    private void checkPasswordMatches(String username, String password) throws GeneralSecurityException, SQLException {
+        if(Database.Users.checkPasswordMatches(usersDatabase, username, password)) {
+            final String userType = Database.Users.getUserType(usersDatabase, username);
+            loginUser(username, userType);
+            activator.ifLoginSucceeds(username);
+        } else {
+            activator.ifLoginFails(username);
+            if(!activator.setDoNotRetryLoginOnFail()) showLoginWindow(true);
         }
     }
 

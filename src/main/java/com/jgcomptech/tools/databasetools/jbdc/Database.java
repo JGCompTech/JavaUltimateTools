@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Database object that allows communication with a SQL database
  */
-public class Database implements AutoCloseable {
+public final class Database implements AutoCloseable {
     private java.sql.Connection conn;
     private String connString;
     final private String username;
@@ -80,11 +80,12 @@ public class Database implements AutoCloseable {
         }
         return connection;
     }
+
     /**
      * The object that stores tasks related to the connection,
      * use {@code getConnection} to access methods
      */
-    public class Connection {
+    public final class Connection {
         /**
          * Returns the raw {@code java.sql.Connection} object
          * @return the Connection object
@@ -157,11 +158,12 @@ public class Database implements AutoCloseable {
         }
         return info;
     }
+
     /**
      * The object that stores the database info,
      * use {@code getInfo} to access methods
      */
-    public class Info {
+    public final class Info {
 
         /**
          * Returns the name of the database
@@ -230,11 +232,12 @@ public class Database implements AutoCloseable {
         }
         return tasks;
     }
+
     /**
      * The object that stores methods to complete database tasks,
      * use {@code getTasks} to access methods
      */
-    public class Tasks {
+    public final class Tasks {
         /**
          * Executes the given SQL statement, which returns a single
          * {@code ResultSet} object, auto-closes statement object when ResultSet object is closed
@@ -364,7 +367,7 @@ public class Database implements AutoCloseable {
     /**
      * Allows for management of user accounts in a database
      */
-    public static class Users {
+    public final static class Users {
         /**
          * Creates a Users table in the specified database
          * @param db the database to create the table in
@@ -553,7 +556,7 @@ public class Database implements AutoCloseable {
     /**
      * Allows setting and retrieval of settings values from a database
      */
-    public static class Settings {
+    public final static class Settings {
         /**
          * Creates a Settings table in the specified database
          * @param db the database to create the table in

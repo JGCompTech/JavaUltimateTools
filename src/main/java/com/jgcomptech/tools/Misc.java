@@ -4,7 +4,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /** Contains methods to do misc tasks */
-public class Misc {
+public final class Misc {
     /**
      * Returns the conversion from bytes to the correct version (1024 bytes = 1 KB)
      *

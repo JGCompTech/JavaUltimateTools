@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import static com.jgcomptech.tools.OSInfo.CheckIf.isWindows;
 
 /** Allows you to run console commands and either run them elevated or not and return the result to a string */
-public class CommandInfo {
+public final class CommandInfo {
 
     /**
      * Runs command and returns results to ArrayList in Output object

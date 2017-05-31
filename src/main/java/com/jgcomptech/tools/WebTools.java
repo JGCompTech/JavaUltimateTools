@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /** Web tools for completing tasks dealing with websites */
-public class WebTools {
+public final class WebTools {
     /** HTML tools for handling html source code */
     public static class HTML {
         /**

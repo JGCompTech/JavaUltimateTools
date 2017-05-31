@@ -20,7 +20,7 @@ import javafx.util.Pair;
  *     Use setIconPath to set the icon of the window, path must be in the resource folder
  * </p>
  */
-public class LoginDialog extends Dialog {
+public final class LoginDialog extends Dialog {
     private String iconPath = "";
 
     /**
@@ -33,8 +33,7 @@ public class LoginDialog extends Dialog {
      * Sets the path in the resource folder of the window icon
      * @param iconPath the icon path
      */
-    public void setIconPath(String iconPath)
-    {
+    public void setIconPath(String iconPath) {
         this.iconPath = iconPath;
 
         final Stage stage = (Stage) getDialogPane().getScene().getWindow();

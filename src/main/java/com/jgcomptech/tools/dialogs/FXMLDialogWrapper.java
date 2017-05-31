@@ -14,7 +14,7 @@ import java.util.Optional;
  * @param <ReturnType> the class type to be returned when the dialog is closed.
  * @param <Controller> the controller class to be used for the dialog.
  */
-public class FXMLDialogWrapper<ReturnType, Controller extends Initializable> {
+public final class FXMLDialogWrapper<ReturnType, Controller extends Initializable> {
     private final Dialog<ReturnType> dialog;
     private final FXMLLoader loader;
 

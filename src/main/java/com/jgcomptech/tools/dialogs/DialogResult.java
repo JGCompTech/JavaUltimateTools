@@ -5,7 +5,7 @@ import javafx.scene.control.ButtonType;
 /**
  * Specifies identifiers to indicate the return value of a message box
  */
-public class DialogResult {
+public final class DialogResult {
     /** The message box return value is OK (usually sent from a button labeled OK) */
     public static final DialogResult OK = new DialogResult(MessageBoxButtonType.OK);
     /** The message box return value is APPLY (usually sent from a button labeled APPLY) */

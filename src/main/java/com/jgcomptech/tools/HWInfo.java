@@ -17,9 +17,9 @@ import static com.jgcomptech.tools.Misc.ConvertBytes;
 import static com.jgcomptech.tools.OSInfo.CheckIf.*;
 
 /** Returns information about the system hardware */
-public class HWInfo {
+public final class HWInfo {
     /** Returns information about the system BIOS */
-    public static class BIOS {
+    public final static class BIOS {
         /**
          * Returns the system BIOS release date stored in the registry
          *
@@ -67,7 +67,7 @@ public class HWInfo {
     }
 
     /** Returns information about the current network */
-    public static class Network {
+    public final static class Network {
         /**
          * Returns the Internal IP Address
          *
@@ -108,7 +108,7 @@ public class HWInfo {
     }
 
     /** Returns information about the system manufacturer */
-    public static class OEM {
+    public final static class OEM {
         /**
          * Returns the system manufacturer name that is stored in the registry
          *
@@ -148,7 +148,7 @@ public class HWInfo {
     }
 
     /** Returns information about the system processor */
-    public static class Processor {
+    public final static class Processor {
         /**
          * Returns the system processor name that is stored in the registry
          *
@@ -212,7 +212,7 @@ public class HWInfo {
     }
 
     /** Returns information about the system RAM */
-    public static class RAM {
+    public final static class RAM {
         /**
          * Returns the total ram installed on the system
          *
@@ -229,7 +229,7 @@ public class HWInfo {
     }
 
     /** Returns information about the system storage */
-    public static class Storage {
+    public final static class Storage {
         /**
          * Returns the file path to the root of the drive Windows is installed on
          *
@@ -301,7 +301,7 @@ public class HWInfo {
     /**
      * A Hardware Object for use with the {@link ComputerInfo} class
      */
-    public static class HWObject {
+    public final static class HWObject {
         String SystemOEM;
         String ProductName;
         BIOSObject BIOS;
@@ -328,7 +328,7 @@ public class HWInfo {
     /**
      * A BIOS Object for use with the {@link ComputerInfo} class
      */
-    public static class BIOSObject {
+    public final static class BIOSObject {
         String Name;
         String ReleaseDate;
         String Vendor;
@@ -346,7 +346,7 @@ public class HWInfo {
     /**
      * A Drive Object for use with the {@link ComputerInfo} class
      */
-    public static class DriveObject {
+    public final static class DriveObject {
         //String Name;
         //String Format;
         //String Label;
@@ -367,7 +367,7 @@ public class HWInfo {
     /**
      * A Network Object for use with the {@link ComputerInfo} class
      */
-    public static class NetworkObject {
+    public final static class NetworkObject {
         String InternalIPAddress;
         String ExternalIPAddress;
         Boolean ConnectionStatus;
@@ -382,7 +382,7 @@ public class HWInfo {
     /**
      * A Processor Object for use with the {@link ComputerInfo} class
      */
-    public static class ProcessorObject {
+    public final static class ProcessorObject {
         String Name;
         int Cores;
 
@@ -394,7 +394,7 @@ public class HWInfo {
     /**
      * A RAM Object for use with the {@link ComputerInfo} class
      */
-    public static class RAMObject {
+    public final static class RAMObject {
         String TotalInstalled;
 
         public String TotalInstalled() { return TotalInstalled; }
@@ -403,7 +403,7 @@ public class HWInfo {
     /**
      * A Storage Object for use with the {@link ComputerInfo} class
      */
-    public static class StorageObject {
+    public final static class StorageObject {
         //List<DriveObject> InstalledDrives;
         DriveObject SystemDrive;
 

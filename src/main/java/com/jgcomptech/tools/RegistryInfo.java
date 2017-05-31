@@ -4,7 +4,7 @@ import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 
 /** Registry tools for handling registry keys and values */
-public class RegistryInfo {
+public final class RegistryInfo {
     /**
      * Gets string value from a registry key
      *

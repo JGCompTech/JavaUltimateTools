@@ -8,7 +8,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.W32APIOptions;
 
 /** Contains methods that allow access to Windows C++ dll files */
-public class NativeMethods {
+public final class NativeMethods {
     /**
      * Generates a new instance of the VersionInfo object
      *

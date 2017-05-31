@@ -15,11 +15,11 @@ import static com.jgcomptech.tools.OSInfo.Windows.CheckIf.isWin8OrLater;
 import static com.jgcomptech.tools.OSInfo.Windows.CheckIf.isWindowsServer;
 
 /** Returns information about the operating system */
-public class OSInfo {
+public final class OSInfo {
     /**
      * Determines if the current application is 32 or 64-bit
      */
-    public static class Architecture {
+    public final static class Architecture {
         /**
          * Determines if the current application is 32 or 64-bit
          *
@@ -39,7 +39,7 @@ public class OSInfo {
     }
 
     /** Runs different checks against the OS and returns a boolean value */
-    public static class CheckIf {
+    public final static class CheckIf {
         private static final String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
         /**
@@ -91,7 +91,7 @@ public class OSInfo {
     }
 
     /** Returns the different names provided by the operating system */
-    public static class Name {
+    public final static class Name {
         private static final String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
         /**
@@ -187,9 +187,9 @@ public class OSInfo {
     }
 
     /** Returns information about the Windows installation */
-    public static class Windows {
+    public final static class Windows {
         /** Returns information about the Windows activation status */
-        public static class Activation {
+        public final static class Activation {
             /**
              * Identifies if OS is activated
              *
@@ -320,7 +320,7 @@ public class OSInfo {
         /**
          * Contains boolean functions to check if certain conditions are true
          */
-        public static class CheckIf {
+        public final static class CheckIf {
             /**
              * Identifies if OS is activated
              *
@@ -449,7 +449,7 @@ public class OSInfo {
         /**
          * Returns the product type of the operating system running on this Computer
          */
-        public static class Edition {
+        public final static class Edition {
             /**
              * Returns the product type of the OS as an integer
              *
@@ -634,7 +634,7 @@ public class OSInfo {
         }
 
         /** Returns the different names provided by the operating system */
-        public static class Name {
+        public final static class Name {
             /**
              * Returns the OS name
              *
@@ -723,7 +723,7 @@ public class OSInfo {
         }
 
         /** Returns the service pack information of the operating system running on this Computer */
-        public static class ServicePack {
+        public final static class ServicePack {
             /**
              * Returns the service pack information of the operating system running on this Computer
              *
@@ -753,7 +753,7 @@ public class OSInfo {
         /**
          * Returns information about the current Windows installation
          */
-        public static class SystemInformation {
+        public final static class SystemInformation {
             /**
              * Returns information about the current Windows installation as text
              *
@@ -797,7 +797,7 @@ public class OSInfo {
         /**
          * Returns info about the currently logged in user account
          */
-        public static class UserInfo {
+        public final static class UserInfo {
             /**
              * Returns the current Registered Organization
              *
@@ -876,7 +876,7 @@ public class OSInfo {
         /**
          * Returns the full version of the operating system running on this Computer
          */
-        public static class Version {
+        public final static class Version {
             /**
              * Returns the full version of the operating system running on this Computer
              *
@@ -982,7 +982,7 @@ public class OSInfo {
         }
 
         /** Returns information from WMI */
-        public static class WMI {
+        public final static class WMI {
             private static final String CRLF = System.lineSeparator();
 
             /**
@@ -1094,7 +1094,7 @@ public class OSInfo {
     /**
      * An Install Info Object for use with the {@link ComputerInfo} class
      */
-    public static class InstallInfoObject {
+    public final static class InstallInfoObject {
         String ActivationStatus = "";
         String Architecture = "";
         String NameExpanded = "";
@@ -1124,7 +1124,7 @@ public class OSInfo {
     /**
      * A Version Object for use with the {@link ComputerInfo} class
      */
-    public static class VersionObject {
+    public final static class VersionObject {
         String Main;
         int Major;
         int Minor;
@@ -1148,7 +1148,7 @@ public class OSInfo {
     /**
      * An Operating System Object for use with the {@link ComputerInfo} class
      */
-    public static class OSObject {
+    public final static class OSObject {
         String ComputerName;
         String ComputerNamePending;
         InstallInfoObject InstallInfo;

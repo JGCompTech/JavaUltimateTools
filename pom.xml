@@ -14,7 +14,7 @@
     </properties>
 
     <name>Java Ultimate Tools</name>
-    <description>A large repository of scripts for use in any Java program..</description>
+    <description>A large repository of scripts for use in any Java program.</description>
     <url>https://github.com/JGCompTech/JavaUltimateTools</url>
     <organization>
         <name>J&amp;G CompTech</name>
@@ -63,6 +63,15 @@
             <name>Central Repository</name>
             <url>http://repo.maven.apache.org/maven2</url>
             <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>org.netbeans</id>
+            <name>netbeans.org</name>
+            <layout>default</layout>
+            <url>http://bits.netbeans.org/maven2/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -223,7 +232,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
-                    <!-- Run shade goal on package phase -->
+                    <!-- Run shade goal on package plugin -->
                     <execution>
                         <phase>package</phase>
                         <goals>
@@ -327,6 +336,11 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
             <version>3.5.0-beta-1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE802</version>
         </dependency>
     </dependencies>
 </project>

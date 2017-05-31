@@ -10,7 +10,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 /** Contains methods dealing with encryption and hashing */
-public class SecurityTools {
+public final class SecurityTools {
 
     /**
      * A list of the Hash Types to be used for hashing string values in the {@link SecurityTools} class

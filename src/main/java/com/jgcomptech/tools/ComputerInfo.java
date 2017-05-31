@@ -3,17 +3,17 @@ package com.jgcomptech.tools;
 import java.io.IOException;
 
 /** Returns Information about the current OS and Hardware on the current system */
-public class ComputerInfo {
+public final class ComputerInfo {
     public OSInfo.OSObject OS;
     public HWInfo.HWObject HW;
 
     public ComputerInfo() throws IOException, InterruptedException {
-        HW = ReInitalizeHW();
-        OS = ReInitalizeOS();
+        HW = ReInitializeHW();
+        OS = ReInitializeOS();
     }
 
     /* Reprocesses the OS information and returns a new OSObject */
-    public static OSInfo.OSObject ReInitalizeOS() throws IOException, InterruptedException {
+    public static OSInfo.OSObject ReInitializeOS() throws IOException, InterruptedException {
         final OSInfo.VersionObject vobj = new OSInfo.VersionObject();
         vobj.Build = OSInfo.Windows.Version.Build();
         vobj.Main = OSInfo.Windows.Version.Main();
@@ -45,7 +45,7 @@ public class ComputerInfo {
     }
 
     /* Reprocesses the Hardware information and returns a new HWObject */
-    public static HWInfo.HWObject ReInitalizeHW() throws IOException {
+    public static HWInfo.HWObject ReInitializeHW() throws IOException {
         final HWInfo.BIOSObject biosobj = new HWInfo.BIOSObject();
         biosobj.Name = HWInfo.BIOS.getVendor() + " " + HWInfo.BIOS.getVersion();
         biosobj.ReleaseDate = HWInfo.BIOS.getReleaseDate();

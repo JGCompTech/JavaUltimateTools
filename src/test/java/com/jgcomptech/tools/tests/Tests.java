@@ -194,7 +194,7 @@ public class Tests {
             manager.loginUser("admin");
             Assert.assertTrue(manager.isLoggedIn());
             Assert.assertTrue(manager.getLoggedInUsername().equals("admin"));
-            Assert.assertTrue(manager.getLoggedInUserRole().equals(UserRoleManager.SystemUserRoles.ADMIN.getRole()));
+            Assert.assertTrue(manager.getLoggedInUserRole().equals(UserRoleManager.SystemUserRoles.EDITOR.getRole()));
             manager.logoutUser();
 
             try {

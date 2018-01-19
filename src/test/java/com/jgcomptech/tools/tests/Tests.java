@@ -40,6 +40,7 @@ public class Tests {
      * Tests the {@link SecurityTools.RSAHashes#encryptToString(PublicKey, String)} and
      * {@link SecurityTools.RSAHashes#decryptFromString(PrivateKey, String)} methods.
      */
+    @Test
     public void TestRSAEncryptDecrypt() {
         try {
             final KeyPair pair = generateKeyPair();

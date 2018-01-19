@@ -1,8 +1,5 @@
 package com.jgcomptech.tools.events;
 
-import com.sun.istack.internal.NotNull;
-import javafx.beans.NamedArg;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -26,8 +23,8 @@ public final class EventManager {
         return instance;
     }
 
-    private Event registerNewEvent(@NamedArg("name") @NotNull final String eventName,
-                                     @NamedArg("target") @NotNull final EventTarget<? extends Event> target) {
+    private Event registerNewEvent(final String eventName,
+                                   final EventTarget<? extends Event> target) {
         if (eventName == null || eventName.isEmpty()) {
             throw new NullPointerException("Event name cannot be null!");
         }
@@ -38,34 +35,34 @@ public final class EventManager {
         return events.put(eventName, new Event(target));
     }
 
-    public <T extends Event> T registerNewEvent(@NamedArg("name") @NotNull final String eventName,
-                                                @NamedArg("classRef") @NotNull final Class<T> classRef,
-                                                @NamedArg("eventType") @NotNull final EventType<? extends T> eventType)
+    public <T extends Event> T registerNewEvent(final String eventName,
+                                                final Class<T> classRef,
+                                                final EventType<? extends T> eventType)
             throws Exception {
         return registerNewEvent(eventName, classRef, new EventTarget<>(), eventType);
     }
 
-    public <T extends Event> T registerNewEvent(@NamedArg("name") @NotNull final String eventName,
-                                                @NamedArg("classRef") @NotNull final Class<T> classRef,
-                                                @NamedArg("eventType") @NotNull final EventType<? extends T> eventType,
-                                                @NamedArg("args") @NotNull final List<Object> args)
+    public <T extends Event> T registerNewEvent(final String eventName,
+                                                final Class<T> classRef,
+                                                final EventType<? extends T> eventType,
+                                                final List<Object> args)
             throws Exception {
         return registerNewEvent(eventName, classRef, new EventTarget<>(), eventType, args);
     }
 
-    public <T extends Event> T registerNewEvent(@NamedArg("name") @NotNull final String eventName,
-                                                @NamedArg("classRef") @NotNull final Class<T> classRef,
-                                                @NamedArg("target") @NotNull final EventTarget<? extends T> target,
-                                                @NamedArg("eventType") @NotNull final EventType<? extends T> eventType)
+    public <T extends Event> T registerNewEvent(final String eventName,
+                                                final Class<T> classRef,
+                                                final EventTarget<? extends T> target,
+                                                final EventType<? extends T> eventType)
             throws Exception {
         return registerNewEvent(eventName, classRef, target, eventType, new ArrayList<>());
     }
 
-    public <T extends Event> T registerNewEvent(@NamedArg("name") @NotNull final String eventName,
-                                                @NamedArg("classRef") @NotNull final Class<T> classRef,
-                                                @NamedArg("target") @NotNull final EventTarget<? extends T> target,
-                                                @NamedArg("eventType") @NotNull final EventType<? extends T> eventType,
-                                                @NamedArg("args") @NotNull final List<Object> args)
+    public <T extends Event> T registerNewEvent(final String eventName,
+                                                final Class<T> classRef,
+                                                final EventTarget<? extends T> target,
+                                                final EventType<? extends T> eventType,
+                                                final List<Object> args)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
         if (eventName == null || eventName.isEmpty()) {
             throw new IllegalArgumentException("Event name cannot be null!");
@@ -92,9 +89,7 @@ public final class EventManager {
         return event;
     }
 
-    public <T extends Event> T getEvent(final String eventName) {
-        return (T) events.get(eventName);
-    }
+    public <T extends Event> T getEvent(final String eventName) { return (T) events.get(eventName); }
 
     /**
      * Fires the specified event with the specified source.

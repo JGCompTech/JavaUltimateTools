@@ -13,6 +13,7 @@ import java.util.Optional;
  * Loads a dialog using the specified JavaFX fxml file.
  * @param <ReturnType> the class type to be returned when the dialog is closed.
  * @param <Controller> the controller class to be used for the dialog.
+ * @since 1.3.1
  */
 public final class FXMLDialogWrapper<ReturnType, Controller extends Initializable> {
     private final Dialog<ReturnType> dialog;
@@ -24,7 +25,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final String fxmlPath) throws IOException {
         this(null, null, null, fxmlPath);
     }
 
@@ -34,7 +35,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(String title, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final String title, final String fxmlPath) throws IOException {
         this(title, null, null, fxmlPath);
     }
 
@@ -44,7 +45,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(Image icon, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final Image icon, final String fxmlPath) throws IOException {
         this(null, icon, null, fxmlPath);
     }
 
@@ -54,7 +55,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(Stage owner, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final Stage owner, final String fxmlPath) throws IOException {
         this(null, null, owner, fxmlPath);
     }
 
@@ -65,7 +66,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(Image icon, Stage owner, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final Image icon, final Stage owner, final String fxmlPath) throws IOException {
         this(null, icon, owner, fxmlPath);
     }
 
@@ -76,7 +77,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(String title, Stage owner, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final String title, final Stage owner, final String fxmlPath) throws IOException {
         this(title, null, owner, fxmlPath);
     }
 
@@ -87,7 +88,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(String title, Image icon, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final String title, final Image icon, final String fxmlPath) throws IOException {
         this(title, icon, null, fxmlPath);
     }
     //endregion Constructor Overflows
@@ -100,7 +101,8 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param fxmlPath the path of the fxml file
      * @throws IOException if fxml file fails to load
      */
-    public FXMLDialogWrapper(String title, Image icon, Stage owner, String fxmlPath) throws IOException {
+    public FXMLDialogWrapper(final String title, final Image icon, final Stage owner, final String fxmlPath)
+            throws IOException {
         if(fxmlPath == null || fxmlPath.isEmpty()) {
             throw new IllegalArgumentException("FXML path cannot be null or an empty string.");
         }
@@ -135,16 +137,16 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
     public Dialog<ReturnType> getDialog() { return dialog; }
 
     /**
-     * Returns the controller associated with the {@code Dialog}
+     * Returns the controller associated with the {@code Dialog}.
      * @return the {@code Controller} object
      */
     public Controller getController() { return loader.getController(); }
 
     /**
-     * Defines the controller associated with the {@code Dialog}
+     * Defines the controller associated with the {@code Dialog}.
      * @param controller the {@code Controller} object
      */
-    public void getController(Initializable controller) { loader.setController(controller); }
+    public void getController(final Initializable controller) { loader.setController(controller); }
 
     /**
      * Shows the dialog and waits for the user response (in other words, brings
@@ -152,7 +154,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * <p>
      * This method must be called on the JavaFX Application thread.
      * Additionally, it must either be called from an input event handler or
-     * from the run method of a Runnable passed to
+     * From the run method of a Runnable passed to
      * {@link javafx.application.Platform#runLater Platform.runLater}.
      * It must not be called during animation or layout processing.
      * </p>
@@ -171,8 +173,9 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      *
      * @param value the title to set.
      */
-    public void setTitle(String value) {
-        if(value == null || value.isEmpty()) throw new IllegalArgumentException("Title cannot be null or an empty string.");
+    public void setTitle(final String value) {
+        if(value == null || value.isEmpty()) throw new IllegalArgumentException(
+                "Title cannot be null or an empty string.");
         else {
             final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
             dialogStage.setTitle(value);
@@ -183,8 +186,9 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * Defines the icon image for the {@code Dialog} to be used in the window decorations and when minimized.
      * @param value the icon image
      */
-    public void setIcon(Image value) {
-        if(value == null || value.isError()) throw new IllegalArgumentException("Icon cannot be null or have loading errors.");
+    public void setIcon(final Image value) {
+        if(value == null || value.isError()) throw new IllegalArgumentException(
+                "Icon cannot be null or have loading errors.");
         else {
             final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
             dialogStage.getIcons().add(value);
@@ -202,7 +206,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      *
      * @throws IllegalStateException if this stage is the primary stage.
      */
-    public void setOwner(Stage value) {
+    public void setOwner(final Stage value) {
         final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.initOwner(value);
     }
@@ -224,7 +228,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      *
      * @param value the value to set.
      */
-    public void setAlwaysOnTop(boolean value) {
+    public void setAlwaysOnTop(final boolean value) {
         final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.setAlwaysOnTop(value);
     }
@@ -241,7 +245,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
 
     /**
      * Returns the icon image for the {@code Dialog} that is used in the window decorations and when minimized.
-     * @return the icon image, null if no icon exists
+     * @return the icon image, null if no icon userExists
      */
     public Image getIcon() {
         final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();

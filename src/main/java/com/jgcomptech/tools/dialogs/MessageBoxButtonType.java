@@ -5,8 +5,9 @@ import javafx.scene.control.ButtonType;
 
 /**
  * Used to specify which buttons should be shown to users in the message box.
+ * @since 1.3.0
  */
-public class MessageBoxButtonType {
+public final class MessageBoxButtonType {
     /**
      * A pre-defined {@code ButtonType} that displays "Apply" and has a
      * {@code ButtonBar.ButtonData} of {@code ButtonBar.ButtonData.APPLY}.
@@ -75,6 +76,6 @@ public class MessageBoxButtonType {
 
     public static final ButtonType NONE = new ButtonType("");
 
-    // This class should only be called statically
-    private MessageBoxButtonType() { super(); }
+    /** Prevents instantiation of this utility class. */
+    private MessageBoxButtonType() { }
 }

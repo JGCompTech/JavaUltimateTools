@@ -2,7 +2,10 @@ package com.jgcomptech.tools;
 
 import java.io.IOException;
 
-/** Returns Information about the current OS and Hardware on the current system */
+/**
+ * Returns Information about the current OS and Hardware on the current system.
+ * @since 1.2.0
+ */
 public final class ComputerInfo {
     public OSInfo.OSObject OS;
     public HWInfo.HWObject HW;
@@ -12,7 +15,7 @@ public final class ComputerInfo {
         OS = ReInitializeOS();
     }
 
-    /* Reprocesses the OS information and returns a new OSObject */
+    /* Reprocesses the OS information and returns a new OSObject. */
     public static OSInfo.OSObject ReInitializeOS() throws IOException, InterruptedException {
         final OSInfo.VersionObject vobj = new OSInfo.VersionObject();
         vobj.Build = OSInfo.Windows.Version.Build();
@@ -44,10 +47,10 @@ public final class ComputerInfo {
         return osobj;
     }
 
-    /* Reprocesses the Hardware information and returns a new HWObject */
+    /* Reprocesses the Hardware information and returns a new HWObject. */
     public static HWInfo.HWObject ReInitializeHW() throws IOException {
         final HWInfo.BIOSObject biosobj = new HWInfo.BIOSObject();
-        biosobj.Name = HWInfo.BIOS.getVendor() + " " + HWInfo.BIOS.getVersion();
+        biosobj.Name = HWInfo.BIOS.getVendor() + ' ' + HWInfo.BIOS.getVersion();
         biosobj.ReleaseDate = HWInfo.BIOS.getReleaseDate();
         biosobj.Vendor = HWInfo.BIOS.getVendor();
         biosobj.Version = HWInfo.BIOS.getVersion();

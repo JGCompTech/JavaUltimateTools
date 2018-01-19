@@ -3,11 +3,13 @@ package com.jgcomptech.tools;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.ShlObj;
 import com.sun.jna.platform.win32.WinDef;
+import com.sun.management.OperatingSystemMXBean;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,13 +18,12 @@ import java.net.UnknownHostException;
 import static com.jgcomptech.tools.Misc.ConvertBytes;
 import static com.jgcomptech.tools.OSInfo.CheckIf.*;
 
-/** Returns information about the system hardware */
+/** Returns information about the system hardware. */
 public final class HWInfo {
-    /** Returns information about the system BIOS */
-    public final static class BIOS {
+    /** Returns information about the system BIOS. */
+    public static final class BIOS {
         /**
-         * Returns the system BIOS release date stored in the registry
-         *
+         * Returns the system BIOS release date stored in the registry.
          * @return BIOS date as string
          */
         public static String getReleaseDate() {
@@ -35,8 +36,7 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the system BIOS version stored in the registry
-         *
+         * Returns the system BIOS version stored in the registry.
          * @return BIOS version as string
          */
         public static String getVersion() {
@@ -49,8 +49,7 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the system BIOS vendor name stored in the registry
-         *
+         * Returns the system BIOS vendor name stored in the registry.
          * @return BIOS vendor name as string
          */
         public static String getVendor() {
@@ -62,15 +61,14 @@ public final class HWInfo {
             return "Unknown";
         }
 
-        // This class should only be called statically
-        private BIOS() { super(); }
+        /** Prevents instantiation of this utility class. */
+        private BIOS() { }
     }
 
-    /** Returns information about the current network */
-    public final static class Network {
+    /** Returns information about the current network. */
+    public static final class Network {
         /**
-         * Returns the Internal IP Address
-         *
+         * Returns the Internal IP Address.
          * @return Internal IP Address as string
          */
         public static String getInternalIPAddress() {
@@ -81,8 +79,7 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the External IP Address by connecting to "http://api.ipify.org"
-         *
+         * Returns the External IP Address by connecting to "http://api.ipify.org".
          * @return External IP address as string
          */
         public static String getExternalIPAddress() {
@@ -97,21 +94,19 @@ public final class HWInfo {
         }
 
         /**
-         * Returns status of internet connection
-         *
+         * Returns status of internet connection.
          * @return Internet connection status as boolean
          * */
         public static boolean isConnectedToInternet() { return !getExternalIPAddress().equals("N/A"); }
 
-        // This class should only be called statically
-        private Network() { super(); }
+        /** Prevents instantiation of this utility class. */
+        private Network() { }
     }
 
-    /** Returns information about the system manufacturer */
-    public final static class OEM {
+    /** Returns information about the system manufacturer. */
+    public static final class OEM {
         /**
-         * Returns the system manufacturer name that is stored in the registry
-         *
+         * Returns the system manufacturer name that is stored in the registry.
          * @return OEM name as string
          * */
         public static String Name() {
@@ -127,8 +122,7 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the system product name that is stored in the registry
-         *
+         * Returns the system product name that is stored in the registry.
          * @return Product name as string
          * */
         public static String ProductName() {
@@ -143,15 +137,14 @@ public final class HWInfo {
             return text;
         }
 
-        // This class should only be called statically
-        private OEM() { super(); }
+        /** Prevents instantiation of this utility class. */
+        private OEM() { }
     }
 
-    /** Returns information about the system processor */
-    public final static class Processor {
+    /** Returns information about the system processor. */
+    public static final class Processor {
         /**
-         * Returns the system processor name that is stored in the registry
-         *
+         * Returns the system processor name that is stored in the registry.
          * @return Processor name as string
          * */
         public static String Name() {
@@ -161,8 +154,7 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the number of cores available on the system processor
-         *
+         * Returns the number of cores available on the system processor.
          * @return Number of cores as int
          * @throws IOException if error occurs
          * */
@@ -177,7 +169,7 @@ public final class HWInfo {
             int numberOfCores = 0;
             int sockets = 0;
             if(isMac()) {
-                final String[] cmd = { "/bin/sh", "-c", command };
+                final String[] cmd = {"/bin/sh", "-c", command};
                 process = Runtime.getRuntime().exec(cmd);
             } else process = Runtime.getRuntime().exec(command);
 
@@ -190,7 +182,8 @@ public final class HWInfo {
                         numberOfCores = line.isEmpty() ? 0 : Integer.parseInt(line);
                     } else if(isLinux()) {
                         if(line.contains("Core(s) per socket:")) {
-                            numberOfCores = Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
+                            numberOfCores =
+                                    Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
                         }
                         if(line.contains("Socket(s):")) {
                             sockets = Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
@@ -207,56 +200,52 @@ public final class HWInfo {
             return numberOfCores;
         }
 
-        // This class should only be called statically
-        private Processor() { super(); }
+        /** Prevents instantiation of this utility class. */
+        private Processor() { }
     }
 
-    /** Returns information about the system RAM */
-    public final static class RAM {
+    /** Returns information about the system RAM. */
+    public static final class RAM {
         /**
-         * Returns the total ram installed on the system
-         *
+         * Returns the total ram installed on the system.
          * @return Total Ram as string
          * */
         public static String getTotalRam() {
-            final long memorySize = ((com.sun.management.OperatingSystemMXBean)
-                    java.lang.management.ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
+            final long memorySize = ((OperatingSystemMXBean)
+                    ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
             return ConvertBytes((double) memorySize);
         }
 
-        // This class should only be called statically
-        private RAM() { super(); }
+        /** Prevents instantiation of this utility class. */
+        private RAM() { }
     }
 
-    /** Returns information about the system storage */
-    public final static class Storage {
+    /** Returns information about the system storage. */
+    public static final class Storage {
         /**
-         * Returns the file path to the root of the drive Windows is installed on
-         *
+         * Returns the file path to the root of the drive Windows is installed on.
          * @return System drive file path as string
          * */
         public static String getSystemDrivePath() {
             final char[] pszPath = new char[WinDef.MAX_PATH];
-            NativeMethods.Shell32.INSTANCE.SHGetFolderPath
-                    (null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
+            NativeMethods.Shell32.INSTANCE.SHGetFolderPath(
+                    null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
             return Native.toString(pszPath).replace("WINDOWS", "");
         }
 
         /**
-         * Returns the file path to the Windows directory
-         *
+         * Returns the file path to the Windows directory.
          * @return Windows directory file path as string
          * */
         public static String getWindowsPath() {
             final char[] pszPath = new char[WinDef.MAX_PATH];
-            NativeMethods.Shell32.INSTANCE.SHGetFolderPath
-                    (null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
+            NativeMethods.Shell32.INSTANCE.SHGetFolderPath(
+                    null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
             return Native.toString(pszPath);
         }
 
         /**
-         * Returns the drive size of the drive Windows is installed on
-         *
+         * Returns the drive size of the drive Windows is installed on.
          * @return System drive size as string
          * */
         public static String getSystemDriveSize() {
@@ -264,19 +253,17 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the drive size of the specified drive by drive letter, returns "N/A" if drive doesn't exist
-         *
+         * Returns the drive size of the specified drive by drive letter, returns "N/A" if drive doesn't exist.
          * @param driveLetter Drive letter of drive to get the size of
          * @return Drive size of the specified drive letter
          * */
-        public static String getDriveSize(char driveLetter) {
+        public static String getDriveSize(final char driveLetter) {
             final File aDrive = new File(driveLetter + ":");
             return aDrive.exists() ? ConvertBytes((double) aDrive.getTotalSpace()) : "N/A";
         }
 
         /**
-         * Returns the free space of drive of the drive Windows is installed on
-         *
+         * Returns the free space of drive of the drive Windows is installed on.
          * @return System drive free space as string
          * */
         public static String getSystemDriveFreeSpace() {
@@ -284,24 +271,21 @@ public final class HWInfo {
         }
 
         /**
-         * Returns the free space of the specified drive by drive letter, returns "N/A" if drive doesn't exist
-         *
+         * Returns the free space of the specified drive by drive letter, returns "N/A" if drive doesn't exist.
          * @param driveLetter Drive letter of drive to get the free space of
          * @return Drive free space of the specified drive letter
          * */
-        public static String getDriveFreeSpace(char driveLetter) {
+        public static String getDriveFreeSpace(final char driveLetter) {
             final File aDrive = new File(driveLetter + ":");
             return aDrive.exists() ? ConvertBytes((double) aDrive.getUsableSpace()) : "N/A";
         }
 
-        // This class should only be called statically
-        private Storage() { super(); }
+        /** Prevents instantiation of this utility class. */
+        private Storage() { }
     }
 
-    /**
-     * A Hardware Object for use with the {@link ComputerInfo} class
-     */
-    public final static class HWObject {
+    /** A Hardware Object for use with the {@link ComputerInfo} class. */
+    public static final class HWObject {
         String SystemOEM;
         String ProductName;
         BIOSObject BIOS;
@@ -325,10 +309,8 @@ public final class HWInfo {
         public StorageObject Storage() { return Storage; }
     }
 
-    /**
-     * A BIOS Object for use with the {@link ComputerInfo} class
-     */
-    public final static class BIOSObject {
+    /** A BIOS Object for use with the {@link ComputerInfo} class. */
+    public static final class BIOSObject {
         String Name;
         String ReleaseDate;
         String Vendor;
@@ -343,10 +325,8 @@ public final class HWInfo {
         public String Version() { return Version; }
     }
 
-    /**
-     * A Drive Object for use with the {@link ComputerInfo} class
-     */
-    public final static class DriveObject {
+    /** A Drive Object for use with the {@link ComputerInfo} class. */
+    public static final class DriveObject {
         //String Name;
         //String Format;
         //String Label;
@@ -364,10 +344,8 @@ public final class HWInfo {
         public String TotalFree() { return TotalFree; }
     }
 
-    /**
-     * A Network Object for use with the {@link ComputerInfo} class
-     */
-    public final static class NetworkObject {
+    /** A Network Object for use with the {@link ComputerInfo} class. */
+    public static final class NetworkObject {
         String InternalIPAddress;
         String ExternalIPAddress;
         Boolean ConnectionStatus;
@@ -379,10 +357,8 @@ public final class HWInfo {
         public Boolean ConnectionStatus() { return ConnectionStatus; }
     }
 
-    /**
-     * A Processor Object for use with the {@link ComputerInfo} class
-     */
-    public final static class ProcessorObject {
+    /** A Processor Object for use with the {@link ComputerInfo} class. */
+    public static final class ProcessorObject {
         String Name;
         int Cores;
 
@@ -391,19 +367,15 @@ public final class HWInfo {
         public int Cores() { return Cores; }
     }
 
-    /**
-     * A RAM Object for use with the {@link ComputerInfo} class
-     */
-    public final static class RAMObject {
+    /** A RAM Object for use with the {@link ComputerInfo} class. */
+    public static final class RAMObject {
         String TotalInstalled;
 
         public String TotalInstalled() { return TotalInstalled; }
     }
 
-    /**
-     * A Storage Object for use with the {@link ComputerInfo} class
-     */
-    public final static class StorageObject {
+    /** A Storage Object for use with the {@link ComputerInfo} class. */
+    public static final class StorageObject {
         //List<DriveObject> InstalledDrives;
         DriveObject SystemDrive;
 
@@ -411,6 +383,6 @@ public final class HWInfo {
         public DriveObject SystemDrive() { return SystemDrive; }
     }
 
-    // This class should only be called statically
-    private HWInfo() { super(); }
+    /** Prevents instantiation of this utility class. */
+    private HWInfo() { }
 }

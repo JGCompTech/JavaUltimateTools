@@ -13,34 +13,35 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 /**
- * Creates a Login Dialog for use to authenticate passwords
+ * Creates a Login Dialog for use to authenticate passwords.
  * <p>
  *     Use setTitle to set the title of the window<br>
  *     Use setHeader to set the header of the window<br>
  *     Use setIconPath to set the icon of the window, path must be in the resource folder
  * </p>
+ * @since 1.3.0
  */
 public final class LoginDialog extends Dialog {
     private String iconPath = "";
 
     /**
-     * Returns the path in the resource folder of the window icon
+     * Returns the path in the resource folder of the window icon.
      * @return the icon path
      */
     public String getIconPath() { return iconPath; }
 
     /**
-     * Sets the path in the resource folder of the window icon
+     * Sets the path in the resource folder of the window icon.
      * @param iconPath the icon path
      */
-    public void setIconPath(String iconPath) {
+    public void setIconPath(final String iconPath) {
         this.iconPath = iconPath;
 
         final Stage stage = (Stage) getDialogPane().getScene().getWindow();
         if(!iconPath.isEmpty()) stage.getIcons().add(new Image(iconPath));
     }
 
-    public LoginDialog(String warningText, boolean redText) {
+    public LoginDialog(final String warningText, final boolean redText) {
         setTitle("Login");
         setHeaderText("Please Login to Continue!");
 
@@ -59,7 +60,7 @@ public final class LoginDialog extends Dialog {
         buttonGrid.setVgap(10);
         buttonGrid.setPadding(new Insets(0, 100, 10, 10));
 
-        buttonGrid.getStylesheets().add(this.getClass().getResource("/css/LoginDialog.css").toExternalForm());
+        buttonGrid.getStylesheets().add(getClass().getResource("/css/LoginDialog.css").toExternalForm());
 
         // Set the icon (must be included in the project).
         setGraphic(new ImageView(getClass().getResource("/img/Data-Secure.png").toString()));

@@ -5,24 +5,27 @@ import javafx.scene.control.*;
 import java.util.Optional;
 
 /**
- * Displays message box with specified options
+ * Displays message box with specified options.
+ * @since 1.3.0
  */
-public class MessageBox {
+public final class MessageBox {
     /**
-     * Displays message box with specified text, title, header text, buttons, icon and default button
+     * Displays message box with specified text, title, header text, buttons, icon and default button.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
      * @param buttons One of the MessageBoxButtons values that specifies which buttons to display in the message box
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
-     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button for the message box
+     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button
+     *                      for the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText, MessageBoxButtons buttons,
-                                    MessageBoxIcon icon, MessageBoxDefaultButton defaultButton) {
+    public static DialogResult show(final String text, final String title, final String headerText,
+                                    final MessageBoxButtons buttons, final MessageBoxIcon icon,
+                                    final MessageBoxDefaultButton defaultButton) {
         final Alert alert;
         final Alert.AlertType type = setAlertType(icon);
-        Optional<ButtonType> result = null;
+        Optional<ButtonType> result = Optional.empty();
 
         switch(buttons) {
             case AbortRetryIgnore:
@@ -357,7 +360,7 @@ public class MessageBox {
     }
 
     /**
-     * Displays message box with specified text, title, header text, buttons and icon
+     * Displays message box with specified text, title, header text, buttons and icon.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
@@ -365,36 +368,38 @@ public class MessageBox {
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText, MessageBoxButtons buttons,
-                                    MessageBoxIcon icon) {
+    public static DialogResult show(final String text, final String title, final String headerText,
+                                    final MessageBoxButtons buttons, final MessageBoxIcon icon) {
         return show(text, title, headerText, buttons, icon, MessageBoxDefaultButton.Button1);
     }
 
     /**
-     * Displays message box with specified text, title, header text, buttons and default button
+     * Displays message box with specified text, title, header text, buttons and default button.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
      * @param buttons One of the MessageBoxButtons values that specifies which buttons to display in the message box
-     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button for the message box
+     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button
+     *                      for the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText, MessageBoxButtons buttons,
-                                    MessageBoxDefaultButton defaultButton) {
+    public static DialogResult show(final String text, final String title, final String headerText,
+                                    final MessageBoxButtons buttons, final MessageBoxDefaultButton defaultButton) {
         return show(text, title, headerText, buttons, MessageBoxIcon.NONE, defaultButton);
     }
 
     /**
-     * Displays message box with specified text, title, header text, icon and default button
+     * Displays message box with specified text, title, header text, icon and default button.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
-     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button for the message box
+     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button
+     *                      for the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText, MessageBoxIcon icon,
-                                    MessageBoxDefaultButton defaultButton) {
+    public static DialogResult show(final String text, final String title, final String headerText,
+                                    final MessageBoxIcon icon, final MessageBoxDefaultButton defaultButton) {
         MessageBoxButtons buttons = MessageBoxButtons.OK;
         switch(icon) {
             case NONE:
@@ -417,42 +422,45 @@ public class MessageBox {
     }
 
     /**
-     * Displays message box with specified text, title, buttons, icon and default button
+     * Displays message box with specified text, title, buttons, icon and default button.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param buttons One of the MessageBoxButtons values that specifies which buttons to display in the message box
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
-     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button for the message box
+     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button
+     *                      for the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, MessageBoxButtons buttons,
-                                    MessageBoxIcon icon, MessageBoxDefaultButton defaultButton) {
+    public static DialogResult show(final String text, final String title, final MessageBoxButtons buttons,
+                                    final MessageBoxIcon icon, final MessageBoxDefaultButton defaultButton) {
         return show(text, title, "", buttons, icon, defaultButton);
     }
 
     /**
-     * Displays message box with specified text, title, buttons and default button
+     * Displays message box with specified text, title, buttons and default button.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param buttons One of the MessageBoxButtons values that specifies which buttons to display in the message box
-     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button for the message box
+     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button
+     *                      for the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, MessageBoxButtons buttons,
-                                    MessageBoxDefaultButton defaultButton) {
+    public static DialogResult show(final String text, final String title, final MessageBoxButtons buttons,
+                                    final MessageBoxDefaultButton defaultButton) {
         return show(text, title, buttons, MessageBoxIcon.NONE, defaultButton);
     }
 
     /**
-     * Displays message box with specified text, title, icon and default button
+     * Displays message box with specified text, title, icon and default button.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
-     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button for the message box
+     * @param defaultButton One of the MessageBoxDefaultButton values that specifies the default button
+     *                      for the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, MessageBoxIcon icon,
-                                    MessageBoxDefaultButton defaultButton) {
+    public static DialogResult show(final String text, final String title, final MessageBoxIcon icon,
+                                    final MessageBoxDefaultButton defaultButton) {
         MessageBoxButtons buttons = MessageBoxButtons.OK;
         switch(icon) {
             case NONE:
@@ -475,26 +483,28 @@ public class MessageBox {
     }
 
     /**
-     * Displays message box with specified text, title, header text and buttons
+     * Displays message box with specified text, title, header text and buttons.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
      * @param buttons One of the MessageBoxButtons values that specifies which buttons to display in the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText, MessageBoxButtons buttons) {
+    public static DialogResult show(final String text, final String title,
+                                    final String headerText, final MessageBoxButtons buttons) {
         return show(text, title, headerText, buttons, MessageBoxIcon.NONE, MessageBoxDefaultButton.Button1);
     }
 
     /**
-     * Displays message box with specified text, title, header text and icon
+     * Displays message box with specified text, title, header text and icon.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText, MessageBoxIcon icon) {
+    public static DialogResult show(final String text, final String title,
+                                    final String headerText, final MessageBoxIcon icon) {
         MessageBoxButtons buttons = MessageBoxButtons.OK;
         switch(icon) {
             case NONE:
@@ -517,56 +527,54 @@ public class MessageBox {
     }
 
     /**
-     * Displays message box with specified text, title and buttons
+     * Displays message box with specified text, title and buttons.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param buttons One of the MessageBoxButtons values that specifies which buttons to display in the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, MessageBoxButtons buttons) {
+    public static DialogResult show(final String text, final String title, final MessageBoxButtons buttons) {
         return show(text, title, "", buttons);
     }
 
     /**
-     * Displays message box with specified text, title and icon
+     * Displays message box with specified text, title and icon.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param icon One of the MessageBoxIcons values that specifies which icon to display in the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, MessageBoxIcon icon) {
+    public static DialogResult show(final String text, final String title, final MessageBoxIcon icon) {
         return show(text, title, "", icon);
     }
 
     /**
-     * Displays message box with specified text, title and header text
+     * Displays message box with specified text, title and header text.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @param headerText The text to display in the header section of the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title, String headerText) {
+    public static DialogResult show(final String text, final String title, final String headerText) {
         return show(text, title, headerText, MessageBoxButtons.OK);
     }
 
     /**
-     * Displays message box with specified text and title
+     * Displays message box with specified text and title.
      * @param text The text to display in the message box
      * @param title The text to display in the title bar of the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text, String title) { return show(text, title, ""); }
+    public static DialogResult show(final String text, final String title) { return show(text, title, ""); }
 
     /**
-     * Displays message box with specified text
+     * Displays message box with specified text.
      * @param text The text to display in the message box
      * @return DialogResult representing the return value of the message box
      */
-    public static DialogResult show(String text) {
-        return show(text, "");
-    }
+    public static DialogResult show(final String text) { return show(text, ""); }
 
-    private static Alert.AlertType setAlertType(MessageBoxIcon icon) {
+    private static Alert.AlertType setAlertType(final MessageBoxIcon icon) {
         switch(icon) {
             case NONE:
                 return Alert.AlertType.NONE;
@@ -582,10 +590,13 @@ public class MessageBox {
         return Alert.AlertType.NONE;
     }
 
-    private static Alert setDefaultButton ( Alert alert, ButtonType type ) {
+    private static Alert setDefaultButton(final Alert alert, final ButtonType type) {
         final DialogPane pane = alert.getDialogPane();
-        for ( final ButtonType t : alert.getButtonTypes() )
-            ( (Button) pane.lookupButton(t) ).setDefaultButton( t == type );
+        for (final ButtonType t : alert.getButtonTypes())
+            ((Button) pane.lookupButton(t)).setDefaultButton(t == type);
         return alert;
     }
+
+    /** Prevents instantiation of this utility class. */
+    private MessageBox() { }
 }

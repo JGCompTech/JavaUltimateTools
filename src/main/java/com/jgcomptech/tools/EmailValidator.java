@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
  * RFC 2822 email address and other corresponding
  * information of interest.
  * @author Les Hazlewood (www.leshazlewood.com)
+ * @since 1.4.0
  */
 
 public final class EmailValidator {
@@ -59,7 +60,7 @@ public final class EmailValidator {
 
     private static final String wsp = "[ \\t]"; //space or tab
 
-    private static final String fwsp = wsp + "*"; //empty string, space or tab
+    private static final String fwsp = wsp + '*'; //empty string, space or tab
 
     //RFC 2822 3.2.1 Primitive tokens
 
@@ -75,33 +76,33 @@ public final class EmailValidator {
 
     // RFC 2822 3.2.2 Quoted characters:
 
-    private static final String quotedPair = "(\\\\" + asciiText + ")"; //single backslash followed by a text char
+    private static final String quotedPair = "(\\\\" + asciiText + ')'; //single backslash followed by a text char
 
     //RFC 2822 3.2.4 Atom:
 
     private static final String atomText = "[a-zA-Z0-9!#$%&'*+\\-/=?^_`{|}~]";
 
-    private static final String atom = fwsp + atomText + "+" + fwsp;
+    private static final String atom = fwsp + atomText + '+' + fwsp;
 
-    private static final String dotAtomText = atomText + "+" + "(" + "\\." + atomText + "+)*";
+    private static final String dotAtomText = atomText + '+' + '(' + "\\." + atomText + "+)*";
 
-    private static final String dotAtom = fwsp + "(" + dotAtomText + ")" + fwsp;
+    private static final String dotAtom = fwsp + '(' + dotAtomText + ')' + fwsp;
 
     //RFC 2822 3.2.5 Quoted strings:
 
     //noWsCtl and the rest of ASCII except the double quote and backslash characters:
 
-    private static final String quotedText = "[" + noWsCtl + "\\x21\\x23-\\x5B\\x5D-\\x7E]";
+    private static final String quotedText = '[' + noWsCtl + "\\x21\\x23-\\x5B\\x5D-\\x7E]";
 
-    private static final String quotedContent = "(" + quotedText + "|" + quotedPair + ")";
+    private static final String quotedContent = '(' + quotedText + '|' + quotedPair + ')';
 
-    private static final String quotedString = quote + "(" + fwsp + quotedContent + ")*" + fwsp + quote;
+    private static final String quotedString = quote + '(' + fwsp + quotedContent + ")*" + fwsp + quote;
 
     //RFC 2822 3.2.6 Miscellaneous tokens
 
     private static final String word = "((" + atom + ")|(" + quotedString + "))";
 
-    private static final String phrase = word + "+"; //one or more words.
+    private static final String phrase = word + '+'; //one or more words.
 
     //RFC 1035 tokens for domain names:
 
@@ -111,7 +112,7 @@ public final class EmailValidator {
 
     private static final String letterNumberHyphen = "[a-zA-Z0-9-]";
 
-    private static final String rfcLabel = letterNumber + "(" + letterNumberHyphen + "{0,61}" + letterNumber + ")?";
+    private static final String rfcLabel = letterNumber + '(' + letterNumberHyphen + "{0,61}" + letterNumber + ")?";
 
     private static final String rfc1035DomainName = rfcLabel + "(\\." + rfcLabel + ")*\\." + letter + "{2,6}";
 
@@ -119,25 +120,25 @@ public final class EmailValidator {
 
     //domain text - non white space controls and the rest of ASCII chars not including [, ], or \:
 
-    private static final String domainText = "[" + noWsCtl + "\\x21-\\x5A\\x5E-\\x7E]";
+    private static final String domainText = '[' + noWsCtl + "\\x21-\\x5A\\x5E-\\x7E]";
 
-    private static final String domainContent = domainText + "|" + quotedPair;
+    private static final String domainContent = domainText + '|' + quotedPair;
 
-    private static final String domainLiteral = "\\[" + "(" + fwsp + domainContent + "+)*" + fwsp + "]";
+    private static final String domainLiteral = "\\[" + '(' + fwsp + domainContent + "+)*" + fwsp + ']';
 
-    private static final String rfc2822Domain = "(" + dotAtom + "|" + domainLiteral + ")";
+    private static final String rfc2822Domain = '(' + dotAtom + '|' + domainLiteral + ')';
 
     private final String domain = allowDomainLiterals ? rfc2822Domain : rfc1035DomainName;
 
     private static final String localPart = "((" + dotAtom + ")|(" + quotedString + "))";
 
-    private final String addressSpec = localPart + "@" + domain;
+    private final String addressSpec = localPart + '@' + domain;
 
-    private final String angleAddress = "<" + addressSpec + ">";
+    private final String angleAddress = '<' + addressSpec + '>';
 
-    private final String nameAddress = "(" + phrase + ")?" + fwsp + angleAddress;
+    private final String nameAddress = '(' + phrase + ")?" + fwsp + angleAddress;
 
-    private final String mailbox = nameAddress + "|" + addressSpec;
+    private final String mailbox = nameAddress + '|' + addressSpec;
 
     //now compile a pattern for efficient re-use:
 
@@ -145,9 +146,8 @@ public final class EmailValidator {
 
     final Pattern validPattern = Pattern.compile(allowQuotedIdentifiers ? mailbox : addressSpec);
 
-    private EmailValidator() { super(); }
-    
-    EmailValidator(boolean allowQuotedIdentifiers, boolean allowDomainLiterals) {
+    private EmailValidator() { }
+    EmailValidator(final boolean allowQuotedIdentifiers, final boolean allowDomainLiterals) {
         this.allowQuotedIdentifiers = allowQuotedIdentifiers;
         this.allowDomainLiterals = allowDomainLiterals;
     }

@@ -1,128 +1,130 @@
 package com.jgcomptech.tools.enums;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
- * A list of Product Editions according to <a href="http://msdn.microsoft.com/en-us/library/ms724358(VS.85).aspx">Microsoft
- * Documentation</a>
+ * A list of Product Editions according to
+ * <a href="http://msdn.microsoft.com/en-us/library/ms724358(VS.85).aspx">Microsoft Documentation</a>.
  */
 public enum ProductEdition implements BaseEnum {
-    /** Business */
+    /** Business. */
     Business(6),
-    /** BusinessN */
+    /** BusinessN. */
     BusinessN(16),
-    /** ClusterServer */
+    /** ClusterServer. */
     ClusterServer(18),
-    /** DatacenterServer */
+    /** DatacenterServer. */
     DatacenterServer(8),
-    /** DatacenterServerCore */
+    /** DatacenterServerCore. */
     DatacenterServerCore(12),
-    /** DatacenterServerCoreV */
+    /** DatacenterServerCoreV. */
     DatacenterServerCoreV(39),
-    /** DatacenterServerV */
+    /** DatacenterServerV. */
     DatacenterServerV(37),
 
     //DeveloperPreview(74),
-    /** Enterprise */
+    /** Enterprise. */
     Enterprise(4),
 
-    /** EnterpriseE */
+    /** EnterpriseE. */
     EnterpriseE(70),
-    /** EnterpriseN */
+    /** EnterpriseN. */
     EnterpriseN(27),
-    /** EnterpriseServer */
+    /** EnterpriseServer. */
     EnterpriseServer(10),
-    /** EnterpriseServerCore */
+    /** EnterpriseServerCore. */
     EnterpriseServerCore(14),
-    /** EnterpriseServerCoreV */
+    /** EnterpriseServerCoreV. */
     EnterpriseServerCoreV(41),
-    /** EnterpriseServerIA64 */
+    /** EnterpriseServerIA64. */
     EnterpriseServerIA64(15),
-    /** EnterpriseServerV */
+    /** EnterpriseServerV. */
     EnterpriseServerV(38),
-    /** HomeBasic */
+    /** HomeBasic. */
     HomeBasic(2),
-    /** HomeBasicE */
+    /** HomeBasicE. */
     HomeBasicE(67),
-    /** HomeBasicN */
+    /** HomeBasicN. */
     HomeBasicN(5),
-    /** HomePremium */
+    /** HomePremium. */
     HomePremium(3),
-    /** HomePremiumE */
+    /** HomePremiumE. */
     HomePremiumE(68),
-    /** HomePremiumN */
+    /** HomePremiumN. */
     HomePremiumN(26),
 
     //HomePremiumServer(34),
     //HyperV(42),
-    /** MediumBusinessServerManagement */
+    /** MediumBusinessServerManagement. */
     MediumBusinessServerManagement(30),
 
-    /** MediumBusinessServerMessaging */
+    /** MediumBusinessServerMessaging. */
     MediumBusinessServerMessaging(32),
-    /** MediumBusinessServerSecurity */
+    /** MediumBusinessServerSecurity. */
     MediumBusinessServerSecurity(31),
-    /** Professional */
+    /** Professional. */
     Professional(48),
-    /** ProfessionalE */
+    /** ProfessionalE. */
     ProfessionalE(69),
-    /** ProfessionalN */
+    /** ProfessionalN. */
     ProfessionalN(49),
 
     //SBSolutionServer(50),
-    /** ServerForSmallBusiness */
+    /** ServerForSmallBusiness. */
     ServerForSmallBusiness(24),
 
-    /** ServerForSmallBusinessV */
+    /** ServerForSmallBusinessV. */
     ServerForSmallBusinessV(35),
 
     //ServerFoundation(33),
-    /** SmallBusinessServer */
+    /** SmallBusinessServer. */
     SmallBusinessServer(9),
 
     //SmallBusinessServerPremium(25),
     //SolutionEmbeddedServer(56),
-    /** StandardServer */
+    /** StandardServer. */
     StandardServer(7),
 
-    /** StandardServerCore */
+    /** StandardServerCore. */
     StandardServerCore(13),
-    /** StandardServerCoreV */
+    /** StandardServerCoreV. */
     StandardServerCoreV(40),
-    /** StandardServerV */
+    /** StandardServerV. */
     StandardServerV(36),
-    /** Starter */
+    /** Starter. */
     Starter(11),
-    /** StarterE */
+    /** StarterE. */
     StarterE(66),
-    /** StarterN */
+    /** StarterN. */
     StarterN(47),
-    /** StorageEnterpriseServer */
+    /** StorageEnterpriseServer. */
     StorageEnterpriseServer(23),
-    /** StorageExpressServer */
+    /** StorageExpressServer. */
     StorageExpressServer(20),
-    /** StorageStandardServer */
+    /** StorageStandardServer. */
     StorageStandardServer(21),
-    /** StorageWorkgroupServer */
+    /** StorageWorkgroupServer. */
     StorageWorkgroupServer(22),
-    /** Undefined */
+    /** Undefined. */
     Undefined(0),
-    /** Ultimate */
+    /** Ultimate. */
     Ultimate(1),
-    /** UltimateE */
+    /** UltimateE. */
     UltimateE(71),
-    /** UltimateN */
+    /** UltimateN. */
     UltimateN(28),
-    /** WebServer */
+    /** WebServer. */
     WebServer(17),
-    /** WebServerCore */
+    /** WebServerCore. */
     WebServerCore(29);
 
     private final int value;
 
-    ProductEdition(int value) {
+    ProductEdition(final int value) {
         this.value = value;
     }
 
-    public static ProductEdition parse(int value) {
+    public static ProductEdition parse(final int value) {
         for(final ProductEdition type : ProductEdition.values()) {
             if(type.getValue() == value) {
                 return type;
@@ -133,4 +135,11 @@ public enum ProductEdition implements BaseEnum {
 
     @Override
     public int getValue() { return value; }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("value", value)
+                .toString();
+    }
 }

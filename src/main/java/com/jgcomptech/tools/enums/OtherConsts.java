@@ -1,7 +1,7 @@
 package com.jgcomptech.tools.enums;
 
 
-public class OtherConsts {
+public final class OtherConsts {
     //Type bitmask ( http://msdn.microsoft.com/en-gb/library/ms725494(vs.85).aspx )
     //public static final int VERMinorVersion = 1;
     //public static final int VERMajorVersion = 2;
@@ -26,4 +26,7 @@ public class OtherConsts {
     public static final int SMMediaCenter = 87;
     //public static final int SMStarter = 88;
     public static final int SMServerR2 = 89;
+
+    /** Prevents instantiation of this utility class. */
+    private OtherConsts() { }
 }

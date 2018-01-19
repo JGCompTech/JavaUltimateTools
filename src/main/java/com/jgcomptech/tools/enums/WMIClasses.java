@@ -4,16 +4,12 @@ public enum WMIClasses {
     Win32_WMISetting("Win32_WMISetting"),
     Win32_WMIElementSetting("Win32_WMIElementSetting");
 
-    String value = "";
+    private final String value;
 
-    WMIClasses(String text) {
-        this.value = text;
-    }
+    WMIClasses(final String text) { value = text; }
 
     @Override
-    public String toString() {
-        return value;
-    }
+    public String toString() { return value; }
 
     public enum COM {
         ClassicCOMApplicationClasses("Win32_ClassicCOMApplicationClasses"),
@@ -33,16 +29,12 @@ public enum WMIClasses {
         DCOMApplicationSetting("Win32_DCOMApplicationSetting"),
         ImplementedCategory("Win32_ImplementedCategory");
 
-        String value = "";
+        private final String value;
 
-        COM(String text) {
-            this.value = text;
-        }
+        COM(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum File_System {
@@ -66,16 +58,12 @@ public enum WMIClasses {
         VolumeQuotaSetting("Win32_VolumeQuotaSetting"),
         VolumeUserQuota("Win32_VolumeUserQuota");
 
-        String value = "";
+        private final String value;
 
-        File_System(String text) {
-            this.value = text;
-        }
+        File_System(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Hardware {
@@ -166,16 +154,12 @@ public enum WMIClasses {
         VideoSettings("Win32_VideoSettings"),
         VoltageProbe("Win32_VoltageProbe");
 
-        String value = "";
+        private final String value;
 
-        Hardware(String text) {
-            this.value = text;
-        }
+        Hardware(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Networking {
@@ -190,16 +174,12 @@ public enum WMIClasses {
         PingStatus("Win32_PingStatus"),
         ProtocolBinding("Win32_ProtocolBinding");
 
-        String value = "";
+        private final String value;
 
-        Networking(String text) {
-            this.value = text;
-        }
+        Networking(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum OS {
@@ -231,16 +211,12 @@ public enum WMIClasses {
         SystemTimeZone("Win32_SystemTimeZone"),
         SystemUsers("Win32_SystemUsers");
 
-        String value = "";
+        private final String value;
 
-        OS(String text) {
-            this.value = text;
-        }
+        OS(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Other {
@@ -310,16 +286,12 @@ public enum WMIClasses {
         VolumeUserQuota("Win32_VolumeUserQuota"),
         WindowsProductActivation("Win32_WindowsProductActivation");
 
-        String value = "";
+        private final String value;
 
-        Other(String text) {
-            this.value = text;
-        }
+        Other(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Performance_FormattedData {
@@ -335,13 +307,15 @@ public enum WMIClasses {
         ContentIndex_IndexingService("Win32_PerfFormattedData_ContentIndex_IndexingService"),
         DTSPipeline_SQLServerDTSPipeline("Win32_PerfFormattedData_DTSPipeline_SQLServerDTSPipeline"),
         Fax_FaxServices("Win32_PerfFormattedData_Fax_FaxServices"),
-        InetInfo_InternetInformationServicesGlobal("Win32_PerfFormattedData_InetInfo_InternetInformationServicesGlobal"),
+        InetInfo_InternetInformationServicesGlobal(
+                "Win32_PerfFormattedData_InetInfo_InternetInformationServicesGlobal"),
         ISAPISearch_HttpIndexingService("Win32_PerfFormattedData_ISAPISearch_HttpIndexingService"),
         MSDTC_DistributedTransactionCoordinator("Win32_PerfFormattedData_MSDTC_DistributedTransactionCoordinator"),
         NETCLRData_NETCLRData("Win32_PerfFormattedData_NETCLRData_NETCLRData"),
         NETCLRNetworking_NETCLRNetworking("Win32_PerfFormattedData_NETCLRNetworking_NETCLRNetworking"),
         NETDataProviderforOracle_NETCLRData("Win32_PerfFormattedData_NETDataProviderforOracle_NETCLRData"),
-        NETDataProviderforSqlServer_NETDataProviderforSqlServer("Win32_PerfFormattedData_NETDataProviderforSqlServer_NETDataProviderforSqlServer"),
+        NETDataProviderforSqlServer_NETDataProviderforSqlServer(
+                "Win32_PerfFormattedData_NETDataProviderforSqlServer_NETDataProviderforSqlServer"),
         NETFramework_NETCLRExceptions("Win32_PerfFormattedData_NETFramework_NETCLRExceptions"),
         NETFramework_NETCLRInterop("Win32_PerfFormattedData_NETFramework_NETCLRInterop"),
         NETFramework_NETCLRJit("Win32_PerfFormattedData_NETFramework_NETCLRJit"),
@@ -350,7 +324,8 @@ public enum WMIClasses {
         NETFramework_NETCLRMemory("Win32_PerfFormattedData_NETFramework_NETCLRMemory"),
         NETFramework_NETCLRRemoting("Win32_PerfFormattedData_NETFramework_NETCLRRemoting"),
         NETFramework_NETCLRSecurity("Win32_PerfFormattedData_NETFramework_NETCLRSecurity"),
-        NTFSDRV_ControladordealmacenamientoNTFSdeSMTP("Win32_PerfFormattedData_NTFSDRV_ControladordealmacenamientoNTFSdeSMTP"),
+        NTFSDRV_ControladordealmacenamientoNTFSdeSMTP(
+                "Win32_PerfFormattedData_NTFSDRV_ControladordealmacenamientoNTFSdeSMTP"),
         Outlook_Outlook("Win32_PerfFormattedData_Outlook_Outlook"),
         PerfDisk_LogicalDisk("Win32_PerfFormattedData_PerfDisk_LogicalDisk"),
         PerfDisk_PhysicalDisk("Win32_PerfFormattedData_PerfDisk_PhysicalDisk"),
@@ -388,16 +363,12 @@ public enum WMIClasses {
         TermService_TerminalServicesSession("Win32_PerfFormattedData_TermService_TerminalServicesSession"),
         W3SVC_WebService("Win32_PerfFormattedData_W3SVC_WebService");
 
-        String value = "";
+        private final String value;
 
-        Performance_FormattedData(String text) {
-            this.value = text;
-        }
+        Performance_FormattedData(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Performance_RawData {
@@ -413,13 +384,16 @@ public enum WMIClasses {
         PerfRawData_ContentIndex_IndexingService("Win32_PerfRawData_ContentIndex_IndexingService"),
         PerfRawData_DTSPipeline_SQLServerDTSPipeline("Win32_PerfRawData_DTSPipeline_SQLServerDTSPipeline"),
         PerfRawData_Fax_FaxServices("Win32_PerfRawData_Fax_FaxServices"),
-        PerfRawData_InetInfo_InternetInformationServicesGlobal("Win32_PerfRawData_InetInfo_InternetInformationServicesGlobal"),
+        PerfRawData_InetInfo_InternetInformationServicesGlobal(
+                "Win32_PerfRawData_InetInfo_InternetInformationServicesGlobal"),
         PerfRawData_ISAPISearch_HttpIndexingService("Win32_PerfRawData_ISAPISearch_HttpIndexingService"),
-        PerfRawData_MSDTC_DistributedTransactionCoordinator("Win32_PerfRawData_MSDTC_DistributedTransactionCoordinator"),
+        PerfRawData_MSDTC_DistributedTransactionCoordinator(
+                "Win32_PerfRawData_MSDTC_DistributedTransactionCoordinator"),
         PerfRawData_NETCLRData_NETCLRData("Win32_PerfRawData_NETCLRData_NETCLRData"),
         PerfRawData_NETCLRNetworking_NETCLRNetworking("Win32_PerfRawData_NETCLRNetworking_NETCLRNetworking"),
         PerfRawData_NETDataProviderforOracle_NETCLRData("Win32_PerfRawData_NETDataProviderforOracle_NETCLRData"),
-        PerfRawData_NETDataProviderforSqlServer_NETDataProviderforSqlServer("Win32_PerfRawData_NETDataProviderforSqlServer_NETDataProviderforSqlServer"),
+        PerfRawData_NETDataProviderforSqlServer_NETDataProviderforSqlServer(
+                "Win32_PerfRawData_NETDataProviderforSqlServer_NETDataProviderforSqlServer"),
         PerfRawData_NETFramework_NETCLRExceptions("Win32_PerfRawData_NETFramework_NETCLRExceptions"),
         PerfRawData_NETFramework_NETCLRInterop("Win32_PerfRawData_NETFramework_NETCLRInterop"),
         PerfRawData_NETFramework_NETCLRJit("Win32_PerfRawData_NETFramework_NETCLRJit"),
@@ -428,7 +402,8 @@ public enum WMIClasses {
         PerfRawData_NETFramework_NETCLRMemory("Win32_PerfRawData_NETFramework_NETCLRMemory"),
         PerfRawData_NETFramework_NETCLRRemoting("Win32_PerfRawData_NETFramework_NETCLRRemoting"),
         PerfRawData_NETFramework_NETCLRSecurity("Win32_PerfRawData_NETFramework_NETCLRSecurity"),
-        PerfRawData_NTFSDRV_ControladordealmacenamientoNTFSdeSMTP("Win32_PerfRawData_NTFSDRV_ControladordealmacenamientoNTFSdeSMTP"),
+        PerfRawData_NTFSDRV_ControladordealmacenamientoNTFSdeSMTP(
+                "Win32_PerfRawData_NTFSDRV_ControladordealmacenamientoNTFSdeSMTP"),
         PerfRawData_Outlook_Outlook("Win32_PerfRawData_Outlook_Outlook"),
         PerfRawData_PerfDisk_LogicalDisk("Win32_PerfRawData_PerfDisk_LogicalDisk"),
         PerfRawData_PerfDisk_PhysicalDisk("Win32_PerfRawData_PerfDisk_PhysicalDisk"),
@@ -466,16 +441,12 @@ public enum WMIClasses {
         PerfRawData_TermService_TerminalServicesSession("Win32_PerfRawData_TermService_TerminalServicesSession"),
         PerfRawData_W3SVC_WebService("Win32_PerfRawData_W3SVC_WebService");
 
-        String value = "";
+        private final String value;
 
-        Performance_RawData(String text) {
-            this.value = text;
-        }
+        Performance_RawData(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Security {
@@ -502,16 +473,12 @@ public enum WMIClasses {
         SID("Win32_SID"),
         Trustee("Win32_Trustee");
 
-        String value = "";
+        private final String value;
 
-        Security(String text) {
-            this.value = text;
-        }
+        Security(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Shares {
@@ -527,16 +494,12 @@ public enum WMIClasses {
         Share("Win32_Share"),
         ShareToDirectory("Win32_ShareToDirectory");
 
-        String value = "";
+        private final String value;
 
-        Shares(String text) {
-            this.value = text;
-        }
+        Shares(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Storage {
@@ -552,16 +515,12 @@ public enum WMIClasses {
         Volume("Win32_Volume"),
         VolumeUserQuota("Win32_VolumeUserQuota");
 
-        String value = "";
+        private final String value;
 
-        Storage(String text) {
-            this.value = text;
-        }
+        Storage(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Users {
@@ -576,16 +535,12 @@ public enum WMIClasses {
         UserAccount("Win32_UserAccount"),
         UserInDomain("Win32_UserInDomain");
 
-        String value = "";
+        private final String value;
 
-        Users(String text) {
-            this.value = text;
-        }
+        Users(final String text) { value = text; }
 
         @Override
-        public String toString() {
-            return value;
-        }
+        public String toString() { return value; }
     }
 
     public enum Unknown {
@@ -678,9 +633,9 @@ public enum WMIClasses {
         WMIElementSetting("Win32_WMIElementSetting"),
         WMISetting("Win32_WMISetting");
 
-        String value = "";
+        private final String value;
 
-        Unknown(String text) { this.value = text; }
+        Unknown(final String text) { value = text; }
 
         @Override
         public String toString() { return value; }

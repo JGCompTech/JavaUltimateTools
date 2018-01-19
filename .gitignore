@@ -3,9 +3,6 @@
 # Compiled class file
 *.class
 
-# Log file
-*.log
-
 # BlueJ files
 *.ctxt
 
@@ -19,6 +16,9 @@
 *.zip
 *.tar.gz
 *.rar
+
+# Database Files #
+*.db
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*

@@ -7,42 +7,37 @@ import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.W32APIOptions;
 
-/** Contains methods that allow access to Windows C++ dll files */
+/** Contains methods that allow access to Windows C++ dll files. */
 public final class NativeMethods {
     /**
-     * Generates a new instance of the VersionInfo object
-     *
+     * Generates a new instance of the VersionInfo object.
      * @param osVersionInfo Empty VersionInfo object to fill
      * @return True if an error occurs
      */
-    public static boolean getVersionInfoFailed(WinNT.OSVERSIONINFOEX osVersionInfo) {
+    public static boolean getVersionInfoFailed(final WinNT.OSVERSIONINFOEX osVersionInfo) {
         return !Kernel32.INSTANCE.GetVersionEx(osVersionInfo);
     }
 
     /**
-     * Checks if a system metrics value is true
-     *
+     * Checks if a system metrics value is true.
      * @param nIndex Value to check for
      * @return False if value is false
      */
-    public static boolean getSystemMetrics(int nIndex) { return Kernel32.INSTANCE.GetSystemMetrics(nIndex); }
+    public static boolean getSystemMetrics(final int nIndex) { return Kernel32.INSTANCE.GetSystemMetrics(nIndex); }
 
     /**
-     * Generates a new instance of the ProductInfo object
-     *
-     * @param Major version
-     * @param Minor version
+     * Generates a new instance of the ProductInfo object.
+     * @param major version
+     * @param minor version
      * @return Product Info as an int
      */
-    public static int getProductInfo(int Major, int Minor) {
+    public static int getProductInfo(final int major, final int minor) {
         final IntByReference strProductType = new IntByReference();
-        Kernel32.INSTANCE.GetProductInfo(Major, Minor, 0, 0, strProductType);
+        Kernel32.INSTANCE.GetProductInfo(major, minor, 0, 0, strProductType);
         return strProductType.getValue();
     }
 
-    /**
-     * Interface object to hold all the Kernel32 Instances
-     * */
+    /** Interface object to hold all the Kernel32 Instances. */
     public interface Kernel32 extends com.sun.jna.platform.win32.Kernel32 {
         Kernel32 INSTANCE = (Kernel32)
                 Native.loadLibrary("kernel32", Kernel32.class, W32APIOptions.DEFAULT_OPTIONS);
@@ -57,9 +52,7 @@ public final class NativeMethods {
         boolean GetSystemMetrics(int nIndex);
     }
 
-    /**
-     * Interface object to hold all the Shell32 Instances
-     * */
+    /** Interface object to hold all the Shell32 Instances. */
     public interface Shell32 extends com.sun.jna.platform.win32.Shell32 {
         Shell32 INSTANCE = (Shell32)
                 Native.loadLibrary("shell32", Shell32.class, W32APIOptions.DEFAULT_OPTIONS);
@@ -72,14 +65,12 @@ public final class NativeMethods {
                                        int nShowCmd);
     }
 
-    /**
-     * Interface object to hold all the Secur32 Instances
-     * */
+    /** Interface object to hold all the Secur32 Instances. */
     public interface Secur32 extends com.sun.jna.platform.win32.Secur32 {
         Secur32 INSTANCE = (Secur32)
                 Native.loadLibrary("secur32", Secur32.class, W32APIOptions.DEFAULT_OPTIONS);
     }
 
-    // This class should only be called statically
-    private NativeMethods() { super(); }
+    /** Prevents instantiation of this utility class. */
+    private NativeMethods() { }
 }

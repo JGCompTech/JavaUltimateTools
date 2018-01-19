@@ -7,7 +7,7 @@ JavaUltimateTools is a large repository of scripts for use in any Java program. 
 - CommandInfo - Allows you to run any console command and will return the result to a string to use within your program. You can also run the command elevated and it will open in a new cmd window and show the results. Note: If elevated, result cannot be returned as a string.
 - MessageBox and Login dialogs - Dialogs to use in JavaFX applications
 - FXML Dialog Wrapper - Class to wrap a FXML dialog object, reducing the amount of required code
-- DatabaseTools - Allows communication with SQLite and H2 databases
+- DatabaseTools - Allows communication with H2 and SQLite databases
 - And Much More!
 
 If you would like a more details check out the [CLASSDESCRIPTION.md](https://github.com/JGCompTech/JavaUltimateTools/blob/master/CLASSDESCRIPTION.md) file. I will be updating this with more documentation soon.

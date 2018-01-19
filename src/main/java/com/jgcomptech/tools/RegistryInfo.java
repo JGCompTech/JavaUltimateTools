@@ -3,17 +3,16 @@ package com.jgcomptech.tools;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 
-/** Registry tools for handling registry keys and values */
+/** Registry tools for handling registry keys and values. */
 public final class RegistryInfo {
     /**
-     * Gets string value from a registry key
-     *
+     * Gets string value from a registry key.
      * @param hkey  Root key to use to access key
      * @param key   Key path to access
      * @param value Value name to access
      * @return Key value as string
      */
-    public static String getStringValue(HKEY hkey, String key, String value) {
+    public static String getStringValue(final HKEY hkey, final String key, final String value) {
         WinReg.HKEY keyobj = null;
 
         switch(hkey) {
@@ -43,9 +42,7 @@ public final class RegistryInfo {
         return "";
     }
 
-    /**
-     * A list of the different parent keys in the Windows Registry that are used in the {@link RegistryInfo} class
-     */
+    /** A list of the different parent keys in the Windows Registry that are used in the {@link RegistryInfo} class. */
     public enum HKEY {
         CLASSES_ROOT,
         CURRENT_USER,
@@ -55,6 +52,6 @@ public final class RegistryInfo {
         CURRENT_CONFIG
     }
 
-    // This class should only be called statically
-    private RegistryInfo() { super(); }
+    /** Prevents instantiation of this utility class. */
+    private RegistryInfo() { }
 }

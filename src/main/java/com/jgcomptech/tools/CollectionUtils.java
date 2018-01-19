@@ -1,56 +1,63 @@
 package com.jgcomptech.tools;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
+/**
+ * Contains methods for dealing with collections.
+ * @since 1.4.0
+ */
 public final class CollectionUtils {
     /**
      * Converts a map into a delimited string value.
-     * A '=' seperates the keys and values and a '&' seperates the key pairs.
+     * A "{@literal =}" separates the keys and values and a "{@literal &}" separates the key pairs.
      * @param stringMap map to convert
      * @return string representation of map
      */
-    public static String convertMapToString(Map<String, String> stringMap) {
+    public static String convertMapToString(final Map<String, String> stringMap) {
         final StringBuilder sb = new StringBuilder();
-        final char KeySeparator = '=';
-        final char PairSeparator = '&';
+        final char keySeparator = '=';
+        final char pairSeparator = '&';
         for(final Map.Entry<String, String> pair:stringMap.entrySet())
         {
             sb.append(pair.getKey());
-            sb.append(KeySeparator);
+            sb.append(keySeparator);
             sb.append(pair.getValue());
-            sb.append(PairSeparator);
+            sb.append(pairSeparator);
         }
         return sb.toString().substring(0, sb.length() - 1);
     }
 
     /**
      * Converts a delimited string value into a map.
-     * Expects that '=' seperates the keys and values and a '&' seperates the key pairs.
+     * <p>Expects that "{@literal =}" separates the keys and values and a "{@literal &}" separates the key pairs.</p>
      * @param value map to convert
      * @return string representation of map
      */
-    public static Map<String, String> convertStringToMap(String value) {
+    public static Map<String, String> convertStringToMap(final String value) {
         final Map<String, String> myMap = new HashMap<>();
-        final String KeySeparator = "=";
-        final String PairSeparator = "&";
-        final String[] pairs = value.split(PairSeparator);
+        final String keySeparator = "=";
+        final String pairSeparator = "&";
+        final String[] pairs = value.split(pairSeparator);
         for(final String pair : pairs) {
-            final String[] keyValue = pair.split(KeySeparator);
+            final String[] keyValue = pair.split(keySeparator);
             myMap.put(keyValue[0], keyValue[1]);
         }
         return myMap;
     }
 
     /**
-     * Checks if an item exists in a HashSet that matches the specified Predicate.
+     * Checks if an item userExists in a HashSet that matches the specified Predicate.
      * @param set the HashSet to check against
      * @param condition the Predicate to check
      * @param <T> the type of objects in the HashSet
      * @return true if condition is true
      * @throws IllegalArgumentException if HashSet or Predicate is null
      */
-    public static <T> boolean doesItemExistInHashSet(HashSet<T> set, Predicate<T> condition) {
+    public static <T> boolean doesItemExistInHashSet(final HashSet<T> set, final Predicate<T> condition) {
         if(set == null) throw new IllegalArgumentException("HashSet cannot be null!");
         if(condition == null) throw new IllegalArgumentException("Predicate cannot be null!");
         for(final T object : set) if (condition.test(object)) return true;
@@ -58,7 +65,7 @@ public final class CollectionUtils {
     }
 
     /**
-     * Checks if a value exists in a HashMap that matches the specified Predicate.
+     * Checks if a value userExists in a HashMap that matches the specified Predicate.
      * @param map the HashMap to check against
      * @param condition the Predicate to check
      * @param <K> the type of the Key in the HashMap
@@ -66,7 +73,7 @@ public final class CollectionUtils {
      * @return true if condition is true
      * @throws IllegalArgumentException if HashMap or Predicate is null
      */
-    public static <K, V> boolean doesItemExistInHashMap(HashMap<K, V> map, Predicate<V> condition) {
+    public static <K, V> boolean doesItemExistInHashMap(final HashMap<K, V> map, final Predicate<V> condition) {
         if(map == null) throw new IllegalArgumentException("HashMap cannot be null!");
         if(condition == null) throw new IllegalArgumentException("Predicate cannot be null!");
         for(final Map.Entry<K, V> entry : map.entrySet()) if (condition.test(entry.getValue())) return true;
@@ -74,14 +81,14 @@ public final class CollectionUtils {
     }
 
     /**
-     * Returns item in HashSet that matches the specified Predicate
+     * Returns item in HashSet that matches the specified Predicate.
      * @param set the HashSet to check against
      * @param condition the Predicate to check
      * @param <T> the type of objects in the HashSet
      * @return an Optional containing the matching object, Empty if not found
      * @throws IllegalArgumentException if HashSet or Predicate is null
      */
-    public static <T> Optional<T> getItemInHashSet(HashSet<T> set, Predicate<T> condition) {
+    public static <T> Optional<T> getItemInHashSet(final HashSet<T> set, final Predicate<T> condition) {
         if(set == null) throw new IllegalArgumentException("HashSet cannot be null!");
         if(condition == null) throw new IllegalArgumentException("Predicate cannot be null!");
         for(final T object : set) if (condition.test(object)) return Optional.of(object);
@@ -89,7 +96,7 @@ public final class CollectionUtils {
     }
 
     /**
-     * Returns a HashSet of values in a HashMap that match the specified Predicate
+     * Returns a HashSet of values in a HashMap that match the specified Predicate.
      * @param map the HashMap to check against
      * @param condition the Predicate to check
      * @param <K> the type of the Key in the HashMap
@@ -97,7 +104,7 @@ public final class CollectionUtils {
      * @return a HashSet of values matching the predicate, empty HashSet if no results found
      * @throws IllegalArgumentException if HashMap or Predicate is null
      */
-    public static <K, V> HashSet<V> getValuesInHashMap(HashMap<K, V> map, Predicate<V> condition) {
+    public static <K, V> HashSet<V> getValuesInHashMap(final HashMap<K, V> map, final Predicate<V> condition) {
         final HashSet<V> matchingValues = new HashSet<>();
 
         if(map == null) throw new IllegalArgumentException("HashMap cannot be null!");
@@ -109,7 +116,7 @@ public final class CollectionUtils {
     }
 
     /**
-     * Returns the first item found in a HashMap that matches the specified Predicate
+     * Returns the first item found in a HashMap that matches the specified Predicate.
      * @param map the HashMap to check against
      * @param condition the Predicate to check
      * @param <K> the type of the Key in the HashMap
@@ -117,7 +124,7 @@ public final class CollectionUtils {
      * @return an Optional containing the matching value, Empty if no results found
      * @throws IllegalArgumentException if HashMap or Predicate is null
      */
-    public static <K, V> Optional<V> getValueInHashMap(HashMap<K, V> map, Predicate<V> condition) {
+    public static <K, V> Optional<V> getValueInHashMap(final HashMap<K, V> map, final Predicate<V> condition) {
         V matchingValue = null;
 
         if(map == null) throw new IllegalArgumentException("HashMap cannot be null!");
@@ -132,4 +139,7 @@ public final class CollectionUtils {
 
         return matchingValue == null ? Optional.empty() : Optional.of(matchingValue);
     }
+
+    /** Prevents instantiation of this utility class. */
+    private CollectionUtils() { }
 }

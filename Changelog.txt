@@ -1,17 +1,37 @@
-Version 1.3.1.0 changes (4/5/2017):
+Version 1.4.0 changes (1/19/2018):
+* Added User Management Classes (UserManager, UserAccount, UserRoleManager and UserRole)
+* Added Permission Management Classes (Permission Manager and Permission)
+* Added Session Management Classes (Session Manager, MultiSessionManager and Session)
+* Added Database Builder Classes For Building SQL Code
+* Added HyperSQL Database Support
+* Added Custom Event/Event Handler System
+* Added New Utilities Classes (StringUtils, NumberUtils and CollectionUtils)
+
+NOTE: Some API changes have occurred:
+* Moved Database.Users class to UsersManager class
+* Made Database class constructor auto-connect to database
+* Deprecated DatabaseConnectionInfo fields and replaced with getters/setters
+* Made all utility classes final and have have private constructors
+* Made all method parameters and most existing classes final
+* Added period to first line of all javadoc comments
+* Updated SecurityTools.getFileHash to use Apache Commons Codec Library (Java 9 Fix)
+* Renamed ReInitalizeHW to ReInitializeHW
+* Renamed ReInitalizeOS to ReInitializeOS
+
+Version 1.3.1 changes (4/5/2017):
 * Added FXML Dialog Wrapper
 * JavaDocs documentation is improved
 * Pom file is improved and updated
 * Now hosted on Maven Central
 
-Version 1.3.0.0 changes (3/31/2017):
+Version 1.3.0 changes (3/31/2017):
 * Added MessageBox and Login dialog objects
 * Added Static Class Instantiation Protection
 * Added Database Tools classes (Includes SQLite and H2 databases)
 * All dependencies are now included in jar file
 * JavaDocs documentation is improved
 
-Version 1.2.0.0 changes (02/22/2017):
+Version 1.2.0 changes (02/22/2017):
 * Fixed ComputerNameActive and ComputerNamePending not returning accurate value
 * Added ComputerInfo Class
 * Fixed a naming bug since version 1.1 that caused an infinite loop
@@ -20,11 +40,11 @@ Version 1.2.0.0 changes (02/22/2017):
 * Fixed error with RSA generate key pair, it didn't check if save to files was true
 * Fixed error with ConvertBytes function not returning accurate value
 
-Version 1.1.0.0 changes (02/18/2017):
+Version 1.1.0 changes (02/18/2017):
 * Created OSInfo, HWInfo, SecurityTools and WebTools classes instead of packages to improve importing.
 * Renamed StringExpanded2 to StringExpandedFromRegistry.
 * Moved tools.osinfo.Enums to just tools.Enums.
 * Finalized JavaDocs. Everything is documented correctly now.
 
-Version 1.0.0.0 changes (02/13/2017):
+Version 1.0.0 changes (02/13/2017):
 * Initial Release

@@ -3,13 +3,9 @@ package com.jgcomptech.tools.demo;
 import com.jgcomptech.tools.authenication.*;
 import com.jgcomptech.tools.databasetools.jbdc.Database;
 import com.jgcomptech.tools.databasetools.jbdc.DatabaseType;
-import com.jgcomptech.tools.databasetools.jbdc.QueryBuilder;
-import com.jgcomptech.tools.databasetools.jbdc.TypedStatement;
 import com.jgcomptech.tools.dialogs.MessageBox;
 import com.jgcomptech.tools.dialogs.MessageBoxIcon;
-import com.jgcomptech.tools.events.ActionEvent;
 import com.jgcomptech.tools.events.EventHandler;
-import com.jgcomptech.tools.events.EventManager;
 import com.jgcomptech.tools.events.PermissionEvent;
 import com.jgcomptech.tools.permissions.Permission;
 import com.jgcomptech.tools.permissions.PermissionManager;
@@ -24,7 +20,6 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.KeyPair;
-import java.sql.ResultSet;
 
 public class Main extends Application {
     private static void print(final String str) { System.out.println(str); }
@@ -66,79 +61,40 @@ public class Main extends Application {
             final ComputerInfo compInfo = new ComputerInfo();
             print("");
             print(compInfo.OS.InstallInfo().NameExpandedFromRegistry());*/
-
+            //print("------------------------------------");
+            print("");
+            print("Creating New Database userdb.db...");
             try(Database db = new Database("./userdb.db", DatabaseType.H2)) {
                 UserManager userManager = new UserManager(db);
-                userManager.createUser("jlgager", "1234", UserRoleManager.SystemUserRoles.EDITOR);
-                userManager.createUser("admin", "1234", UserRoleManager.SystemUserRoles.EDITOR);
+                userManager.createUser("admin", "1234", UserRoleManager.SystemUserRoles.ADMIN);
+                userManager.createUser("editor", "1234", UserRoleManager.SystemUserRoles.EDITOR);
 
-                TypedStatement statement = TypedStatement.newQuery()
-                                                    .SELECT("Username", "Password", "Type")
-                                                    .FROM("Users")
-                                                    .WHERE("Username", "admin")
-                                                    .WHERE_IN("Type", "ADMIN", "EDITOR")
-                                                    .ORDER_BY("Username", true)
-                                                    .build(db);
-
-                print(statement.toString());
-
-                try(ResultSet resultSet = statement.executeQuery()) {
-                    if(resultSet.next()) {
-                        print(resultSet.getString(
-                                "Username") + " = " + resultSet.getString("Type"));
-                    }
-                }
-
-                try(ResultSet resultSet = new QueryBuilder()
-                        .SELECT_COUNT_ALL_FROM(
-                                new QueryBuilder()
-                                        .SELECT("Type")
-                                        .FROM("Users")
-                                        .WHERE("Username", "admin")
-                        )
-                        .buildAndExecute(db)) {
-                    if(resultSet.next()) {
-                        print(resultSet.getInt(1));
-                    }
-                }
-
-                print(userManager.userExists("admin"));
-                print(userManager.getUserRole("admin").toString());
-                print(userManager.checkPasswordMatches("admin", "1234"));
+                print("Admin User Exists: " + userManager.userExists("admin"));
 
                 UserAccount account = userManager.getUser("admin");
-                print(account.getUsername() + " = " + account.getUserRole());
-                print(account.setPassword("5678"));
-                print(account.checkPasswordMatches("5678"));
+                print("Admin User Role: " + account.getUserRole());
+                print("Admin Password Matches \"1234\": " + account.checkPasswordMatches("1234"));
 
-                print("changed " + userManager.setPassword("admin", "pass"));
+                print("Changed Admin Password To \"pass\": "
+                        + userManager.setPassword("admin", "pass"));
 
-                db.getSettings().createTable();
-                db.getSettings().setValue("Global", "1234");
-                print(db.getSettings().getValue("Global"));
-
-                print(userManager.userExists("admin"));
-
-                print(userManager.getUsernameList().contains("admin"));
-
-                userManager.setUserRole("admin", UserRoleManager.SystemUserRoles.ADMIN);
-
-                print(userManager.getUser("admin").getUserRole().toString());
-
+                print("Initializing Permissions Manager...");
                 PermissionManager permissionManager = PermissionManager.getInstance();
                 permissionManager.setOnPermissionsApplied(e -> {
                     UserRole userRole = (UserRole) e.getArgs().get(0);
-                    System.out.println(userRole.getName() + " Permissions Applied!");
+                    System.out.println("EVENT: " + userRole.getName() + " Permissions Applied!");
                 });
-                permissionManager.setOnAllPermissionsEnabled(e -> System.out.println("All permissions enabled!"));
-                permissionManager.setOnAllPermissionsDisabled(e -> System.out.println("All permissions disabled!"));
+                permissionManager.setOnAllPermissionsEnabled(e ->
+                        System.out.println("EVENT: All permissions enabled!"));
+                permissionManager.setOnAllPermissionsDisabled(e ->
+                        System.out.println("EVENT: All permissions disabled!"));
                 EventHandler<PermissionEvent> permissionEnabled = e -> {
                     Permission permission = e.getPermission();
-                    System.out.println("Permission " + permission.getName() + " Enabled!");
+                    System.out.println("EVENT: Permission " + permission.getName() + " Enabled!");
                 };
                 EventHandler<PermissionEvent> permissionDisabled = e -> {
                     Permission permission = e.getPermission();
-                    System.out.println("Permission " + permission.getName() + " Disabled!");
+                    System.out.println("EVENT: Permission " + permission.getName() + " Disabled!");
                 };
                 permissionManager.getAdminPermission().setOnEnabled(permissionEnabled);
                 permissionManager.getAdminPermission().setOnDisabled(permissionDisabled);
@@ -154,81 +110,74 @@ public class Main extends Application {
 
                 userManager.getSessionManager().setOnLoginSuccess(e -> {
                     String username = e.getUser().getUsername();
-                    System.out.println("Access Granted " + username + '!');
+                    System.out.println("EVENT: Access Granted " + username + '!');
                 });
                 userManager.getSessionManager().setOnLoginFailure(e ->
-                        MessageBox.show("Invalid Username Or Password!"));
+                        MessageBox.show("EVENT: Invalid Username Or Password!"));
                 userManager.getSessionManager().setOnSessionOpened(e -> {
                     String username = e.getSession().getUsername();
-                    System.out.println(username + " Logged In Successfully!");
+                    System.out.println("EVENT: " + username + " Logged In Successfully!");
                 });
                 userManager.getSessionManager().setOnSessionClosed(e -> {
                     String username = e.getSession().getUsername();
-                    System.out.println(username + " Logged Out Successfully!");
+                    System.out.println("EVENT: " + username + " Logged Out Successfully!");
                 });
 
                 permissionManager.loadPermissions(false);
 
+                print("Attempting to login user...");
                 boolean result = userManager.getSessionManager().showLoginWindow(
                         "Please Login! (username=admin, pass=pass)",
                         "Invalid Login! Please Try Again!", true);
                 if(!result) print("Login Canceled!");
+
+                print("Attempting User Logout...");
                 if(userManager.getSessionManager().logoutUser()) print("Logout Succeeded!");
                 else print("Logout Failed!");
 
-                EventManager eventManager = EventManager.getInstance();
-                ActionEvent newEvent = eventManager.registerNewEvent("actionEvent",
-                        ActionEvent.class, ActionEvent.ACTION);
-                newEvent.getArgs().add("Hello World!");
-                newEvent.getTarget().addEventHandler(ActionEvent.ANY, e ->
-                {
-                    System.out.println(e.getArgs().get(0));
-                    System.out.println(e.getEventType());
-                    System.out.println(e.getSource());
-                    System.out.println(e.getTarget());
-                });
-
-                newEvent.fireEvent(this);
-
+                print("Enabling \"admin\" Permission...");
                 permissionManager.setAdminPermission(true);
+                print("Adding Custom Permission \"change_settings\"...");
                 permissionManager.addCustomPermission("change_settings");
                 permissionManager.enablePermission("change_settings");
+                print("Adding \"change_settings\" as child to \"admin\" permission...");
                 permissionManager.addExistingChildPermission("change_settings", "admin");
-                print("Is change_settings enabled: " + permissionManager.isPermissionEnabled("change_settings"));
+                print("Is \"change_settings\" enabled: "
+                        + permissionManager.isPermissionEnabled("change_settings"));
                 permissionManager.setPermissionOnEnabled("change_settings", e -> {
                     Permission permission = e.getPermission();
-                    System.out.println("Permission " + permission.getName() + " Enabled!");
+                    System.out.println("EVENT: Permission " + permission.getName() + " Enabled!");
                 });
                 permissionManager.setPermissionOnDisabled("change_settings", e -> {
                     Permission permission = e.getPermission();
-                    System.out.println("Permission " + permission.getName() + " Disabled!");
+                    System.out.println("EVENT: Permission " + permission.getName() + " Disabled!");
                 });
+
+                print("Disabling \"admin\" Permission...");
                 permissionManager.setAdminPermission(false);
                 print("Is change_settings enabled: " + permissionManager.isPermissionEnabled("change_settings"));
-                print(permissionManager.removePermission("admin"));
-                print(permissionManager.removePermission("change_settings"));
 
+                print("Initializing MultiSession Manager...");
                 MultiSessionManager multiSessionManager = new MultiSessionManager(userManager);
 
                 multiSessionManager.setOnSessionOpened(e -> {
                     String username = e.getSession().getUsername();
-                    System.out.println(username + " Logged In Successfully!");
+                    System.out.println("EVENT: " + username + " Logged In Successfully!");
                 });
 
                 multiSessionManager.setOnSessionClosed(e -> {
                     String username = e.getSession().getUsername();
-                    System.out.println(username + " Logged Out Successfully!");
+                    System.out.println("EVENT: " + username + " Logged Out Successfully!");
                 });
 
-
-                multiSessionManager.setMaxSessions(-1);
-
-                print(multiSessionManager.loginUser("admin"));
-                print(multiSessionManager.loginUser("jlgager"));
-                print(multiSessionManager.getSessionsCount());
-                print(multiSessionManager.logoutUser("admin"));
-                print(multiSessionManager.logoutUser("jlgager"));
-                print(multiSessionManager.getSessionsCount());
+                print("Logging In \"admin\" and \"editor\" Users...");
+                multiSessionManager.loginUser("admin");
+                multiSessionManager.loginUser("editor");
+                print("Number Of Logged In Users: " + multiSessionManager.getSessionsCount());
+                print("Logging Out \"admin\" and \"editor\" Users...");
+                multiSessionManager.logoutUser("admin");
+                multiSessionManager.logoutUser("editor");
+                print("Number Of Logged In Users: " + multiSessionManager.getSessionsCount());
             }
             print("------------------------------------");
 

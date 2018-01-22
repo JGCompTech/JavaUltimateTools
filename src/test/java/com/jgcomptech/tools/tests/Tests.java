@@ -387,7 +387,7 @@ public class Tests {
                 userManager.checkPasswordMatches("1", "");
                 Assert.fail( "This method should have thrown IllegalArgumentException!" );
             } catch (IllegalArgumentException ignore) { }
-        } catch (SQLException | GeneralSecurityException ignored) { }
+        } catch (SQLException ignored) { }
     }
 
     /** Tests the {@link UserRole} object. */

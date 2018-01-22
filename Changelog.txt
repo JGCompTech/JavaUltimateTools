@@ -1,3 +1,15 @@
+Version 1.4.1 changes (1/22/2018):
+* Added UserManagerException
+* Added PasswordHashingFailedException
+* Added isAdminLoggedIn method
+* Added getAdminOverride and getUserVerification methods
+* Added requireAdmin and requireAndVerifyAdmin methods
+* Added isLoggedIn method
+* Fixed rare bugs with loginUser and logoutUser methods
+* Fixed exception that was thrown if user did not exist on login dialog
+* Limited number of SQLException and GeneralSecurityException checked exceptions
+* Changed Session Manager dialogs to use instance vars for parameters(old methods deprecated)
+
 Version 1.4.0 changes (1/19/2018):
 * Added User Management Classes (UserManager, UserAccount, UserRoleManager and UserRole)
 * Added Permission Management Classes (Permission Manager and Permission)
@@ -11,7 +23,7 @@ NOTE: Some API changes have occurred:
 * Moved Database.Users class to UsersManager class
 * Made Database class constructor auto-connect to database
 * Deprecated DatabaseConnectionInfo fields and replaced with getters/setters
-* Made all utility classes final and have have private constructors
+* Made all utility classes final and have private constructors
 * Made all method parameters and most existing classes final
 * Added period to first line of all javadoc comments
 * Updated SecurityTools.getFileHash to use Apache Commons Codec Library (Java 9 Fix)

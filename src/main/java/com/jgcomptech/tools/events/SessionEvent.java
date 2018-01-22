@@ -29,6 +29,24 @@ public class SessionEvent extends Event {
 
     public static final EventType<SessionEvent> MULTI_SESSION_CLOSED = ANY.createSubType("MULTI_SESSION_CLOSED");
 
+    public static final EventType<SessionEvent> SESSION_ADMIN_OVERRIDE_STARTED
+            = ANY.createSubType("SESSION_ADMIN_OVERRIDE_STARTED");
+
+    public static final EventType<SessionEvent> SESSION_ADMIN_OVERRIDE_SUCCESS
+            = ANY.createSubType("SESSION_ADMIN_OVERRIDE_SUCCESS");
+
+    public static final EventType<SessionEvent> SESSION_ADMIN_OVERRIDE_FAILURE
+            = ANY.createSubType("SESSION_ADMIN_OVERRIDE_FAILURE");
+
+    public static final EventType<SessionEvent> SESSION_USER_VERIFY_STARTED
+            = ANY.createSubType("SESSION_USER_VERIFY_STARTED");
+
+    public static final EventType<SessionEvent> SESSION_USER_VERIFY_SUCCESS
+            = ANY.createSubType("SESSION_USER_VERIFY_SUCCESS");
+
+    public static final EventType<SessionEvent> SESSION_USER_VERIFY_FAILURE
+            = ANY.createSubType("SESSION_USER_VERIFY_FAILURE");
+
     /**
      * Construct a new {@code Event} with the specified event target and type.
      * @param target    the event target to associate with the event

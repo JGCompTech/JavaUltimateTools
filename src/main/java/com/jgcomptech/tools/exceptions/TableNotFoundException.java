@@ -1,4 +1,4 @@
-package com.jgcomptech.tools.databasetools.jbdc;
+package com.jgcomptech.tools.exceptions;
 
 /**
  * Thrown to indicate that a table does not exist.
@@ -6,7 +6,7 @@ package com.jgcomptech.tools.databasetools.jbdc;
  */
 public class TableNotFoundException extends RuntimeException {
     /**
-     * Constructs an {@code TableNotFoundException} with the specified table name.
+     * Constructs an {@link TableNotFoundException} with the specified table name.
      * @param tableName the table name
      */
     public TableNotFoundException(final String tableName) { super('"' + tableName + "\" Table Not Found!"); }

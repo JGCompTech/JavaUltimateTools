@@ -7,7 +7,6 @@ import com.jgcomptech.tools.events.SessionEvent;
 import com.jgcomptech.tools.permissions.PermissionManager;
 import org.jetbrains.annotations.Contract;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,10 +16,8 @@ import java.util.Map;
  */
 public class SessionActivator extends EventTarget<SessionEvent> {
     private final boolean multiUser;
-    private final EventManager eventManager;
+    protected final EventManager eventManager;
     protected final UserManager userManager;
-    protected SessionEvent eventLoginSuccess;
-    protected SessionEvent eventLoginFailure;
     protected SessionEvent eventSessionOpened;
     protected SessionEvent eventSessionClosed;
     protected Session currentSession;
@@ -41,16 +38,26 @@ public class SessionActivator extends EventTarget<SessionEvent> {
     }
 
     /**
+     * Returns true if the specified username is logged in.
+     * @param username the username to lookup
+     * @return true if the specified username is logged in
+     */
+    public boolean isUserLoggedIn(final String username) {
+        return multiUser ? sessions.containsKey(username) : currentSession.getUsername().equals(username);
+    }
+
+    /**
      * Logs in a user with the specified username and user role, no password checking is used.
      * @param username the username of the user
      * @return false if username does not exist or if session already exists
      * or if multi user and if max sessions is reached or equals 0
-     * @throws SQLException if user lookup fails
      */
-    protected final boolean saLoginUser(final String username) throws SQLException {
+    protected final boolean saLoginUser(final String username) {
         if(username == null || username.isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty!");
         }
+
+        if(isUserLoggedIn(username)) return false;
 
         if(!multiUser && currentSession != null
                 || multiUser && (maxSessions == 0 || maxSessions != -1 && sessions.size() >= maxSessions))
@@ -76,13 +83,15 @@ public class SessionActivator extends EventTarget<SessionEvent> {
      * Logs out the specified user and, if single user, clears any set permissions.
      * NOTE: if user was deleted from the database while logged in, the getUser event method will return null.
      * @param username the username of the user
-     * @return false if username or session does not exist
-     * @throws SQLException if user lookup fails
+     * @return false if username or if session does not exist
      */
-    protected final boolean saLogoutUser(final String username) throws SQLException {
+    protected final boolean saLogoutUser(final String username) {
         if(multiUser && (username == null || username.isEmpty())) {
             throw new IllegalArgumentException("Username cannot be null or empty!");
         }
+
+        if(multiUser && !isUserLoggedIn(username) || !multiUser && currentSession == null) return false;
+
         String usernameObj = null;
         Session sessionObj = null;
         boolean sessionFound = false;
@@ -91,7 +100,7 @@ public class SessionActivator extends EventTarget<SessionEvent> {
             usernameObj = username;
             sessionObj = sessions.get(username);
             sessionFound = true;
-        } else if(!multiUser && currentSession != null) {
+        } else if(!multiUser) {
             PermissionManager.getInstance().loadPermissions(false);
             usernameObj = currentSession.getUsername();
             sessionObj = currentSession;
@@ -107,30 +116,6 @@ public class SessionActivator extends EventTarget<SessionEvent> {
             else currentSession = null;
             return true;
         } else return false;
-    }
-
-    /**
-     * Sets the event handler that will fire when a user login succeeds.
-     * The currently assigned event handler is removed if the parameter is null.
-     * The specified event handler is assigned to the sessionLoginSuccess event in the EventManager.
-     * @param e the event handler
-     */
-    protected final void saSetOnLoginSuccess(final EventHandler<SessionEvent> e) {
-        if(multiUser) throw new IllegalStateException("Login Success Event Not Used In Single Session Mode!");
-        if(e == null) removeEventHandler(SessionEvent.SESSION_LOGIN_SUCCESS);
-        else addEventHandler(SessionEvent.SESSION_LOGIN_SUCCESS, e);
-    }
-
-    /**
-     * Sets the event handler that will fire when a user login fails.
-     * The currently assigned event handler is removed if the parameter is null.
-     * The specified event handler is assigned to the sessionLoginFailure event in the EventManager.
-     * @param e the event handler
-     */
-    protected final void saSetOnLoginFailure(final EventHandler<SessionEvent> e) {
-        if(multiUser) throw new IllegalStateException("Login Failure Event Not Used In Single Session Mode!");
-        if(e == null) removeEventHandler(SessionEvent.SESSION_LOGIN_FAILURE);
-        else addEventHandler(SessionEvent.SESSION_LOGIN_FAILURE, e);
     }
 
     /**
@@ -186,24 +171,6 @@ public class SessionActivator extends EventTarget<SessionEvent> {
         } catch(Exception e) {
             if(multiUser) throw new IllegalStateException("multiSessionClosed Event Failed To Load!");
             else throw new IllegalStateException("sessionClosed Event Failed To Load!");
-        }
-        if(!multiUser) {
-            try {
-                eventLoginSuccess = eventManager.registerNewEvent("sessionLoginSuccess",
-                        SessionEvent.class,
-                        this,
-                        SessionEvent.SESSION_LOGIN_SUCCESS);
-            } catch(Exception e) {
-                throw new IllegalStateException("sessionLoginSuccess Event Failed To Load!");
-            }
-            try {
-                eventLoginFailure = eventManager.registerNewEvent("sessionLoginFailure",
-                        SessionEvent.class,
-                        this,
-                        SessionEvent.SESSION_LOGIN_FAILURE);
-            } catch(Exception e) {
-                throw new IllegalStateException("sessionLoginFailure Event Failed To Load!");
-            }
         }
     }
 

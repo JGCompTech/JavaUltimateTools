@@ -1,8 +1,5 @@
 package com.jgcomptech.tools.authenication;
 
-import java.security.GeneralSecurityException;
-import java.sql.SQLException;
-
 /**
  * An object representing a user account.
  * @since 1.4.0
@@ -36,18 +33,15 @@ public class UserAccount {
     /**
      * Returns the user type.
      * @return the user type
-     * @throws SQLException if an error occurs during lookup
      */
-    public UserRole getUserRole() throws SQLException { return userManager.getUserRole(getUsername()); }
+    public UserRole getUserRole() { return userManager.getUserRole(getUsername()); }
 
     /**
      * Sets a new password for the user using SHA-512 password hashing.
      * @param password the new password
      * @return true if password is changed successfully
-     * @throws SQLException if an error occurs while changing password
-     * @throws GeneralSecurityException if an error occurs while hashing the password
      */
-    public boolean setPassword(final String password) throws GeneralSecurityException, SQLException {
+    public boolean setPassword(final String password) {
         if(password == null) {
             throw new IllegalArgumentException("Password cannot be null!");
         }
@@ -58,9 +52,8 @@ public class UserAccount {
      * Sets the user role of the user.
      * @param userRole the system user role to change to
      * @return true if no errors occurred
-     * @throws SQLException if an error occurs while changing user type
      */
-    public boolean setUserRole(final UserRoleManager.SystemUserRoles userRole) throws SQLException {
+    public boolean setUserRole(final UserRoleManager.SystemUserRoles userRole) {
         if(userRole == null) {
             throw new IllegalArgumentException("User role cannot be null!");
         }
@@ -71,9 +64,8 @@ public class UserAccount {
      * Sets the user role of the user.
      * @param userRole the name of the user role to change to
      * @return true if no errors occurred
-     * @throws SQLException if an error occurs while changing user type
      */
-    public boolean setUserRole(final String userRole) throws SQLException {
+    public boolean setUserRole(final String userRole) {
         if(userRole == null || userRole.isEmpty()) {
             throw new IllegalArgumentException("User role cannot be empty!");
         }
@@ -84,10 +76,8 @@ public class UserAccount {
      * Checks to see if the specified password matches the stored password in the database.
      * @param password the password to check against
      * @return true if the passwords match
-     * @throws SQLException if an error occurs during lookup
-     * @throws GeneralSecurityException if an error occurs while hashing the password
      */
-    public boolean checkPasswordMatches(final String password) throws GeneralSecurityException, SQLException {
+    public boolean checkPasswordMatches(final String password)  {
         if(password == null) {
             throw new IllegalArgumentException("Password cannot be null!");
         }

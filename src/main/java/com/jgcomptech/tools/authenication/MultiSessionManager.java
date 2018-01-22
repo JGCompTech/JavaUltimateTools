@@ -3,7 +3,6 @@ package com.jgcomptech.tools.authenication;
 import com.jgcomptech.tools.events.EventHandler;
 import com.jgcomptech.tools.events.SessionEvent;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -25,9 +24,8 @@ public class MultiSessionManager extends SessionActivator {
      * @param username the username of the user
      * @return false if username does not exist or if session already exists
      * or if max sessions is reached or equals 0
-     * @throws SQLException if user lookup fails
      */
-    public boolean loginUser(final String username) throws SQLException { return saLoginUser(username); }
+    public boolean loginUser(final String username) { return saLoginUser(username); }
 
     /**
      * Logs out the specified user and clears any set permissions.
@@ -36,9 +34,8 @@ public class MultiSessionManager extends SessionActivator {
      * NOTE: if user was deleted from the database while logged in, the getUser event method will return null.
      * @param username the username of the user
      * @return false if username or session does not exist
-     * @throws SQLException if user lookup fails
      */
-    public boolean logoutUser(final String username) throws SQLException { return saLogoutUser(username); }
+    public boolean logoutUser(final String username) { return saLogoutUser(username); }
 
     /**
      * Sets the event handler that will fire when the session is opened.

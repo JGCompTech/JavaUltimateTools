@@ -43,7 +43,8 @@ public class SessionActivator extends EventTarget<SessionEvent> {
      * @return true if the specified username is logged in
      */
     public boolean isUserLoggedIn(final String username) {
-        return multiUser ? sessions.containsKey(username) : currentSession.getUsername().equals(username);
+        return multiUser ? sessions.containsKey(username)
+                : currentSession != null && currentSession.getUsername().equals(username);
     }
 
     /**

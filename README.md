@@ -1,4 +1,4 @@
-# JavaUltimateTools v1.4.1 [![Build Status](https://travis-ci.org/JGCompTech/JavaUltimateTools.svg?branch=master)](https://travis-ci.org/JGCompTech/JavaUltimateTools) [![Dependency Status](https://www.versioneye.com/user/projects/58e2fbb124ef3e003b526de5/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58e2fbb124ef3e003b526de5) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.jgcomptech.tools/java-ultimate-tools/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.jgcomptech.tools/java-ultimate-tools/) [![Javadocs](http://www.javadoc.io/badge/com.jgcomptech.tools/java-ultimate-tools.svg?style=flat-square)](http://www.javadoc.io/doc/com.jgcomptech.tools/java-ultimate-tools)
+# JavaUltimateTools v1.4.2 [![Build Status](https://travis-ci.org/JGCompTech/JavaUltimateTools.svg?branch=master)](https://travis-ci.org/JGCompTech/JavaUltimateTools) [![Dependency Status](https://www.versioneye.com/user/projects/58e2fbb124ef3e003b526de5/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58e2fbb124ef3e003b526de5) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.jgcomptech.tools/java-ultimate-tools/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.jgcomptech.tools/java-ultimate-tools/) [![Javadocs](http://www.javadoc.io/badge/com.jgcomptech.tools/java-ultimate-tools.svg?style=flat-square)](http://www.javadoc.io/doc/com.jgcomptech.tools/java-ultimate-tools)
 
 Java Ultimate Tools is a large repository of scripts for use in any Java program. It contains the following:
 - OSInfo - Contains many classes that return information about the current Windows installation. This includes Architecture, Edition, Name, Product Key, Service Pack, User Info and Version.
@@ -23,7 +23,7 @@ Want to contribute? Great!
 Any help with development is greatly appreciated. If you want to add something or fix any issues please submit a pull request and if it is helpful it may be merged. Please check out our [Code of Conduct for Contributors](https://github.com/JGCompTech/JavaUltimateTools/blob/master/code-of-conduct.md).
 
 # Download
-**[Download v1.4.1](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.4.1)**
+**[Download v1.4.2](https://github.com/JGCompTech/JavaUltimateTools/releases/tag/v1.4.2)**
 
 The changelog can be found [here](https://github.com/JGCompTech/JavaUltimateTools/blob/master/Changelog.txt)
 
@@ -35,7 +35,7 @@ fragments into your pom.xml file. With those settings, your Maven will automatic
        <dependency>
           <groupId>com.jgcomptech.tools</groupId>
          <artifactId>java-ultimate-tools</artifactId>
-         <version>1.4.1</version>
+         <version>1.4.2</version>
        </dependency>
     </dependencies>
 

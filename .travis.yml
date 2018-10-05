@@ -1,11 +1,11 @@
 language: java
 
 jdk:
-  - oraclejdk8
+  - oraclejdk10
 
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+      - oracle-java10-installer
 
 install: mvn install -Dgpg.skip

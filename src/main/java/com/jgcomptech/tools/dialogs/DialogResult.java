@@ -54,7 +54,7 @@ public final class DialogResult {
 
         if (!(o instanceof DialogResult)) return false;
 
-        DialogResult dialogResult = (DialogResult) o;
+        final var dialogResult = (DialogResult) o;
 
         return new EqualsBuilder()
                 .append(value, dialogResult.value)
@@ -73,7 +73,5 @@ public final class DialogResult {
      * @return a string representation of the object
      */
     @Override
-    public String toString() {
-        return value.getText();
-    }
+    public String toString() { return value.getText(); }
 }

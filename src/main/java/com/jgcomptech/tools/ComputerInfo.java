@@ -1,5 +1,9 @@
 package com.jgcomptech.tools;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.io.IOException;
 
 /**
@@ -17,7 +21,7 @@ public final class ComputerInfo {
 
     /* Reprocesses the OS information and returns a new OSObject. */
     public static OSInfo.OSObject ReInitializeOS() throws IOException, InterruptedException {
-        final OSInfo.VersionObject vobj = new OSInfo.VersionObject();
+        final var vobj = new OSInfo.VersionObject();
         vobj.Build = OSInfo.Windows.Version.Build();
         vobj.Main = OSInfo.Windows.Version.Main();
         vobj.Major = OSInfo.Windows.Version.Major();
@@ -25,7 +29,7 @@ public final class ComputerInfo {
         vobj.Number = OSInfo.Windows.Version.Number();
         vobj.Revision = OSInfo.Windows.Version.Revision();
 
-        final OSInfo.InstallInfoObject iiobj = new OSInfo.InstallInfoObject();
+        final var iiobj = new OSInfo.InstallInfoObject();
         iiobj.ActivationStatus = OSInfo.Windows.Activation.getStatusString();
         iiobj.Architecture = OSInfo.Architecture.String();
         iiobj.NameExpanded = OSInfo.Name.StringExpanded();
@@ -35,7 +39,7 @@ public final class ComputerInfo {
         iiobj.ServicePackNumber = OSInfo.Windows.ServicePack.Number();
         iiobj.Version = vobj;
 
-        final OSInfo.OSObject osobj = new OSInfo.OSObject();
+        final var osobj = new OSInfo.OSObject();
         osobj.ComputerName = OSInfo.Name.ComputerNameActive();
         osobj.ComputerNamePending = OSInfo.Name.ComputerNamePending();
         osobj.DomainName = OSInfo.Windows.UserInfo.CurrentDomainName();
@@ -49,31 +53,31 @@ public final class ComputerInfo {
 
     /* Reprocesses the Hardware information and returns a new HWObject. */
     public static HWInfo.HWObject ReInitializeHW() throws IOException {
-        final HWInfo.BIOSObject biosobj = new HWInfo.BIOSObject();
+        final var biosobj = new HWInfo.BIOSObject();
         biosobj.Name = HWInfo.BIOS.getVendor() + ' ' + HWInfo.BIOS.getVersion();
         biosobj.ReleaseDate = HWInfo.BIOS.getReleaseDate();
         biosobj.Vendor = HWInfo.BIOS.getVendor();
         biosobj.Version = HWInfo.BIOS.getVersion();
 
-        final HWInfo.NetworkObject nwobj = new HWInfo.NetworkObject();
+        final var nwobj = new HWInfo.NetworkObject();
         nwobj.ConnectionStatus = HWInfo.Network.isConnectedToInternet();
         nwobj.InternalIPAddress = HWInfo.Network.getInternalIPAddress();
         nwobj.ExternalIPAddress = HWInfo.Network.getExternalIPAddress();
 
-        final HWInfo.ProcessorObject pobj = new HWInfo.ProcessorObject();
+        final var pobj = new HWInfo.ProcessorObject();
         pobj.Name = HWInfo.Processor.Name();
         pobj.Cores = HWInfo.Processor.Cores();
 
-        final HWInfo.RAMObject robj = new HWInfo.RAMObject();
+        final var robj = new HWInfo.RAMObject();
         robj.TotalInstalled = HWInfo.RAM.getTotalRam();
 
-        final HWInfo.StorageObject sobj = new HWInfo.StorageObject();
+        final var sobj = new HWInfo.StorageObject();
         sobj.SystemDrive = new HWInfo.DriveObject();
         sobj.SystemDrive.DriveType = "Fixed";
         sobj.SystemDrive.TotalFree = HWInfo.Storage.getSystemDriveFreeSpace();
         sobj.SystemDrive.TotalSize = HWInfo.Storage.getSystemDriveSize();
 
-        final HWInfo.HWObject hwobj = new HWInfo.HWObject();
+        final var hwobj = new HWInfo.HWObject();
         hwobj.SystemOEM = HWInfo.OEM.Name();
         hwobj.ProductName = HWInfo.OEM.ProductName();
         hwobj.BIOS = biosobj;
@@ -83,5 +87,35 @@ public final class ComputerInfo {
         hwobj.Storage = sobj;
 
         return hwobj;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof ComputerInfo)) return false;
+
+        final var computerInfo = (ComputerInfo) o;
+
+        return new EqualsBuilder()
+                .append(OS, computerInfo.OS)
+                .append(HW, computerInfo.HW)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(OS)
+                .append(HW)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("OS", OS)
+                .append("HW", HW)
+                .toString();
     }
 }

@@ -1,7 +1,7 @@
 package com.jgcomptech.tools.events;
 
-import com.jgcomptech.tools.authenication.Session;
-import com.jgcomptech.tools.authenication.UserAccount;
+import com.jgcomptech.tools.authc.Session;
+import com.jgcomptech.tools.authc.UserAccount;
 
 import java.util.List;
 
@@ -77,6 +77,7 @@ public class SessionEvent extends Event {
      * @return the event type
      */
     @Override
+    @SuppressWarnings("unchecked")
     public EventType<? extends SessionEvent> getEventType() {
         return (EventType<? extends SessionEvent>) super.getEventType();
     }

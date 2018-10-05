@@ -10,10 +10,12 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static com.jgcomptech.tools.OSInfo.CheckIf.*;
 import static com.jgcomptech.tools.OSInfo.Windows.CheckIf.isWin8OrLater;
 import static com.jgcomptech.tools.OSInfo.Windows.CheckIf.isWindowsServer;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Returns information about the operating system. */
 public final class OSInfo {
@@ -93,7 +95,7 @@ public final class OSInfo {
          */
         public static String StringExpanded() throws IOException, InterruptedException {
             if(isWindows()) {
-                final String SPString = isWin8OrLater() ? " - " + Windows.Version.Build()
+                final var SPString = isWin8OrLater() ? " - " + Windows.Version.Build()
                         : " SP" + Windows.ServicePack.String().replace("Service Pack ", "");
 
                 return String() + ' ' + Windows.Edition.String() + ' '
@@ -109,12 +111,12 @@ public final class OSInfo {
          */
         public static String StringExpandedFromRegistry() throws IOException, InterruptedException {
             if(isWindows()) {
-                final String SPString = isWin8OrLater() ? " - " + Windows.Version.Build()
+                final var SPString = isWin8OrLater() ? " - " + Windows.Version.Build()
                         : " SP" + Windows.ServicePack.String().replace("Service Pack ", "");
 
-                final String key = "Software\\\\Microsoft\\\\Windows NT\\\\CurrentVersion";
-                final String value = "ProductName";
-                final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+                final var key = "Software\\\\Microsoft\\\\Windows NT\\\\CurrentVersion";
+                final var value = "ProductName";
+                final var text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
                 return text + ' ' + SPString + " (" + Architecture.Number() + " Bit)";
             } else return OS;
         }
@@ -152,8 +154,8 @@ public final class OSInfo {
          * @return String value of current computer name
          */
         public static String ComputerNameActive() {
-            final String key = "System\\ControlSet001\\Control\\ComputerName\\ActiveComputerName";
-            final String value = "ComputerName";
+            final var key = "System\\ControlSet001\\Control\\ComputerName\\ActiveComputerName";
+            final var value = "ComputerName";
             return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
         }
 
@@ -162,10 +164,10 @@ public final class OSInfo {
          * @return String value of the pending computer name
          */
         public static String ComputerNamePending() {
-            final String key = "System\\ControlSet001\\Control\\ComputerName\\ComputerName";
-            final String value = "ComputerName";
-            final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
-            return text.isEmpty() ? "N/A" : text;
+            final var key = "System\\ControlSet001\\Control\\ComputerName\\ComputerName";
+            final var value = "ComputerName";
+            final var text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+            return text.trim().isEmpty() ? "N/A" : text;
         }
 
         /** Prevents instantiation of this utility class. */
@@ -232,9 +234,9 @@ public final class OSInfo {
              * @throws InterruptedException if command is interrupted
              */
             public static String getStatusFromWMI() throws IOException, InterruptedException {
-                final String ComputerName = "localhost";
+                final var ComputerName = "localhost";
 
-                final String LicenseStatus = WMI.getWMIValue("SELECT * "
+                final var LicenseStatus = WMI.getWMIValue("SELECT * "
                         + "FROM SoftwareLicensingProduct "
                         + "Where PartialProductKey <> null "
                         + "AND ApplicationId='55c92734-d682-4d71-983e-d6ec3f16059f' "
@@ -268,9 +270,9 @@ public final class OSInfo {
              */
             public static String getStatusFromSLMGR() throws IOException {
                 while(true) {
-                    final Process p = Runtime.getRuntime().exec(
+                    final var p = Runtime.getRuntime().exec(
                             "cscript C:\\Windows\\System32\\Slmgr.vbs /dli");
-                    try(BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                    try(final var stdOut = new BufferedReader(new InputStreamReader(p.getInputStream(), UTF_8))) {
                         String s;
                         while((s = stdOut.readLine()) != null) {
                             //System.out.println(s);
@@ -340,10 +342,10 @@ public final class OSInfo {
              */
             //TODO Add C# implementation
             public static boolean isCurrentUserAdmin() {
-                boolean isAdmin = false;
-                final Advapi32Util.Account[] groups = Advapi32Util.getCurrentUserGroups();
-                for(final Advapi32Util.Account group : groups) {
-                    final WinNT.PSIDByReference sid = new WinNT.PSIDByReference();
+                var isAdmin = false;
+                final var groups = Advapi32Util.getCurrentUserGroups();
+                for(final var group : groups) {
+                    final var sid = new WinNT.PSIDByReference();
                     Advapi32.INSTANCE.ConvertStringSidToSid(group.sidString, sid);
                     if(Advapi32.INSTANCE.IsWellKnownSid(sid.getValue(),
                             WinNT.WELL_KNOWN_SID_TYPE.WinBuiltinAdministratorsSid)) {
@@ -428,7 +430,7 @@ public final class OSInfo {
              * @return integer equivalent of the operating system product type
              */
             public static int ProductType() {
-                final WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
+                final var osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 if(NativeMethods.getVersionInfoFailed(osVersionInfo)) return ProductEdition.Undefined.getValue();
                 return osVersionInfo.wProductType;
             }
@@ -458,9 +460,9 @@ public final class OSInfo {
              * @return the version string
              */
             private static String GetVersion5() throws IOException, InterruptedException {
-                final WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
+                final var osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 if(NativeMethods.getVersionInfoFailed(osVersionInfo)) return "";
-                final WinDef.WORD wSuiteMask = osVersionInfo.wSuiteMask;
+                final var wSuiteMask = osVersionInfo.wSuiteMask;
 
                 if(NativeMethods.getSystemMetrics(OtherConsts.SMMediaCenter)) return " Media Center";
                 if(NativeMethods.getSystemMetrics(OtherConsts.SMTabletPC)) return " Tablet PC";
@@ -702,8 +704,8 @@ public final class OSInfo {
              * @throws InterruptedException if command is interrupted
              */
             public static String String() throws IOException, InterruptedException {
-                final String sp = Integer.toString(Number());
-                return isWin8OrLater() ? "" : sp.isEmpty() ? "Service Pack 0" : "Service Pack " + sp;
+                final var sp = Integer.toString(Number());
+                return isWin8OrLater() ? "" : sp.trim().isEmpty() ? "Service Pack 0" : "Service Pack " + sp;
             }
 
             /**
@@ -711,7 +713,7 @@ public final class OSInfo {
              * @return A int containing the operating system service pack number
              */
             public static int Number() {
-                final WinNT.OSVERSIONINFOEX osVersionInfo = new WinNT.OSVERSIONINFOEX();
+                final var osVersionInfo = new WinNT.OSVERSIONINFOEX();
                 return NativeMethods.getVersionInfoFailed(osVersionInfo)
                         ? -1
                         : osVersionInfo.wServicePackMajor.intValue();
@@ -729,21 +731,16 @@ public final class OSInfo {
              * @throws IOException if command cannot be run
              */
             public static String getInfo() throws IOException {
-                final Runtime runtime = Runtime.getRuntime();
-                final Process process = runtime.exec("systeminfo");
+                final var runtime = Runtime.getRuntime();
+                final var process = runtime.exec("systeminfo");
 
-                try(BufferedReader systemInformationReader =
-                            new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-
-                    final StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-
-                    while((line = systemInformationReader.readLine()) != null) {
-                        stringBuilder.append(line);
-                        stringBuilder.append(System.lineSeparator());
-                    }
-
-                    return stringBuilder.toString().trim();
+                try(final var systemInformationReader =
+                            new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))) {
+                    return systemInformationReader
+                            .lines()
+                            .map(line -> line + System.lineSeparator())
+                            .collect(Collectors.joining())
+                            .trim();
                 }
             }
 
@@ -752,7 +749,7 @@ public final class OSInfo {
              * @return Current time as string
              */
             public static String getTime() {
-                final WinBase.SYSTEMTIME time = new WinBase.SYSTEMTIME();
+                final var time = new WinBase.SYSTEMTIME();
                 NativeMethods.Kernel32.INSTANCE.GetSystemTime(time);
                 return time.wMonth + "/" + time.wDay + '/' + time.wYear + ' ' + time.wHour + ':' + time.wMinute;
             }
@@ -768,8 +765,8 @@ public final class OSInfo {
              * @return Registered Organization as string
              */
             public static String RegisteredOrganization() {
-                final String key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
-                final String value = "RegisteredOrganization";
+                final var key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
+                final var value = "RegisteredOrganization";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
 
@@ -778,8 +775,8 @@ public final class OSInfo {
              * @return Registered Owner as string
              */
             public static String RegisteredOwner() {
-                final String key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
-                final String value = "RegisteredOwner";
+                final var key = "Software\\Microsoft\\Windows NT\\CurrentVersion";
+                final var value = "RegisteredOwner";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
 
@@ -788,16 +785,17 @@ public final class OSInfo {
              * @return Logged in username as string
              * @throws IllegalStateException if cannot retrieve the logged-in username
              */
+            @SuppressWarnings("StringSplitter")
             public static String LoggedInUserName() {
-                final char[] userNameBuf = new char[10000];
-                final IntByReference size = new IntByReference(userNameBuf.length);
-                final boolean result = NativeMethods.Secur32.INSTANCE.GetUserNameEx(
+                final var userNameBuf = new char[10000];
+                final var size = new IntByReference(userNameBuf.length);
+                final var result = NativeMethods.Secur32.INSTANCE.GetUserNameEx(
                         Secur32.EXTENDED_NAME_FORMAT.NameSamCompatible, userNameBuf, size);
 
                 if(!result)
                     throw new IllegalStateException("Cannot retrieve name of the currently logged-in user");
 
-                final String[] username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
+                final var username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
                 return username[1];
             }
 
@@ -806,16 +804,17 @@ public final class OSInfo {
              * @return Current domain name as string
              * @throws IllegalStateException if cannot retrieve the joined domain
              */
+            @SuppressWarnings("StringSplitter")
             public static String CurrentDomainName() {
-                final char[] userNameBuf = new char[10000];
-                final IntByReference size = new IntByReference(userNameBuf.length);
-                final boolean result = NativeMethods.Secur32.INSTANCE.GetUserNameEx(
+                final var userNameBuf = new char[10000];
+                final var size = new IntByReference(userNameBuf.length);
+                final var result = NativeMethods.Secur32.INSTANCE.GetUserNameEx(
                         Secur32.EXTENDED_NAME_FORMAT.NameSamCompatible, userNameBuf, size);
 
                 if(!result)
                     throw new IllegalStateException("Cannot retrieve name of the currently joined domain");
 
-                final String[] username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
+                final var username = new String(userNameBuf, 0, size.getValue()).split("\\\\");
                 return username[0];
             }
 
@@ -825,7 +824,7 @@ public final class OSInfo {
              * @throws UnknownHostException if error occurs
              */
             public static String CurrentMachineName() throws UnknownHostException {
-                final InetAddress localMachineIP = InetAddress.getLocalHost();
+                final var localMachineIP = InetAddress.getLocalHost();
                 return localMachineIP.getHostName();
             }
 
@@ -888,13 +887,13 @@ public final class OSInfo {
             public static int Number() throws IOException, InterruptedException { return (Major() * 10 + Minor()); }
 
             static String getVersionInfo(final Type type) throws IOException, InterruptedException {
-                final String VersionString = WMI.getWMIValue("SELECT * FROM "
+                final var VersionString = WMI.getWMIValue("SELECT * FROM "
                         + WMIClasses.OS.OperatingSystem,"Version");
 
                 String Temp;
-                final String Major = VersionString.substring(0, VersionString.indexOf("."));
+                final var Major = VersionString.substring(0, VersionString.indexOf("."));
                 Temp = VersionString.substring(Major.length() + 1);
-                final String Minor = Temp.substring(0, VersionString.indexOf(".") - 1);
+                final var Minor = Temp.substring(0, VersionString.indexOf(".") - 1);
                 Temp = VersionString.substring(Major.length() + 1 + Minor.length() + 1);
                 final String Build;
                 if(Temp.contains(".")) {
@@ -904,7 +903,7 @@ public final class OSInfo {
                     Build = Temp;
                     Temp = "0";
                 }
-                final String Revision = Temp;
+                final var Revision = Temp;
 
                 switch(type) {
                     case Main:
@@ -947,15 +946,16 @@ public final class OSInfo {
              *                                   results. <br>i.e. "Model"
              * @return the vbscript string.
              */
+            @SuppressWarnings("StringSplitter")
             private static String getVBScript(final String wmiQueryStr, final String wmiCommaSeparatedFieldName) {
-                final StringBuilder vbs = new StringBuilder();
+                final var vbs = new StringBuilder();
                 vbs.append("Dim oWMI : Set oWMI = GetObject(\"winmgmts:\")").append(CRLF);
                 vbs.append(String.format("Dim classComponent : Set classComponent = oWMI.ExecQuery(\"%s\")",
                         wmiQueryStr)).append(CRLF);
                 vbs.append("Dim obj, strData").append(CRLF);
                 vbs.append("For Each obj in classComponent").append(CRLF);
-                final String[] wmiFieldNameArray = wmiCommaSeparatedFieldName.split(",");
-                for(final String fieldName : wmiFieldNameArray) {
+                final var wmiFieldNameArray = wmiCommaSeparatedFieldName.split(",");
+                for(final var fieldName : wmiFieldNameArray) {
                     vbs.append(String.format("  strData = strData & obj.%s & VBCrLf", fieldName)).append(CRLF);
                 }
                 vbs.append("Next").append(CRLF);
@@ -972,8 +972,8 @@ public final class OSInfo {
              * @throws IllegalArgumentException if Environment Variable does't exist
              */
             public static String getEnvironmentVar(final String variableName) throws IOException, InterruptedException {
-                final String varName = '%' + variableName + '%';
-                String variableValue = CommandInfo.Run("cmd", "/C echo " + varName).Result.get(0);
+                final var varName = '%' + variableName + '%';
+                var variableValue = CommandInfo.Run("cmd", "/C echo " + varName).Result.get(0);
                 //execute(new String[] {"cmd.exe", "/C", "echo " + varName});
                 variableValue = variableValue.replace("\"", "");
                 if(variableValue.equals(varName)) {
@@ -990,10 +990,9 @@ public final class OSInfo {
              * @throws IOException if error occurs
              */
             private static void writeStringToFile(final String filename, final String data) throws IOException {
-                try(FileWriter output = new FileWriter(filename)) {
+                try(final Writer output = Files.newBufferedWriter(Paths.get(filename), UTF_8)) {
                     output.write(data);
                     output.flush();
-                    output.close();
                 }
             }
 
@@ -1007,10 +1006,10 @@ public final class OSInfo {
              */
             public static String getWMIValue(final String wmiQueryStr, final String wmiCommaSeparatedFieldName)
                     throws IOException, InterruptedException {
-                final String tmpFileName = getEnvironmentVar(
+                final var tmpFileName = getEnvironmentVar(
                         "TEMP").trim() + File.separator + "javawmi.vbs";
                 writeStringToFile(tmpFileName, getVBScript(wmiQueryStr, wmiCommaSeparatedFieldName));
-                final String output = CommandInfo.Run("cmd.exe", "/C cscript.exe " + tmpFileName)
+                final var output = CommandInfo.Run("cmd.exe", "/C cscript.exe " + tmpFileName)
                         .Result.toString();
                 Files.delete(Paths.get(tmpFileName));
 

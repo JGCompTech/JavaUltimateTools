@@ -1,7 +1,6 @@
 package com.jgcomptech.tools.events;
 
 import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * This class represents a specific event type associated with an {@link Event}.
@@ -56,11 +55,7 @@ public final class EventType<T extends Event> {
      */
     public EventType(final EventType<? super T> superType,
                      final String name) {
-        if (superType == null) {
-            throw new IllegalArgumentException(
-                    "Event super type must not be null!");
-        }
-
+        if (superType == null) throw new IllegalArgumentException("Event super type must not be null!");
         this.superType = superType;
         this.name = name;
         superType.createSubType(this);
@@ -77,12 +72,8 @@ public final class EventType<T extends Event> {
         this.name = name;
         if (superType != null) {
             if (superType.subTypes != null) {
-                for (Iterator i = superType.subTypes.iterator(); i.hasNext();) {
-                    EventType t  = (EventType) i.next();
-                    if (name == null && t.name == null || (name != null && name.equals(t.name))) {
-                        i.remove();
-                    }
-                }
+                superType.subTypes
+                        .removeIf(t -> name == null ? t.name == null : name.equals(t.name));
             }
             superType.createSubType(this);
         }
@@ -111,17 +102,13 @@ public final class EventType<T extends Event> {
     public EventType<T> createSubType(final String name) { return new EventType<>(this, name); }
 
     private void createSubType(final EventType<? extends T> subType) {
-        if (subType == null) {
-            throw new IllegalArgumentException(
-                    "Event super type must not be null!");
-        }
+        if (subType == null) throw new IllegalArgumentException("Event super type must not be null!");
         if (subTypes == null) subTypes = new HashSet<>();
-        for (EventType<? extends T> t : subTypes) {
-            if (((t.name == null && subType.name == null) || (t.name != null && t.name.equals(subType.name)))) {
-                throw new IllegalArgumentException("EventType \"" + subType + '"'
-                        + "with parent \"" + subType.getSuperType() + "\" already exists");
-            }
-        }
+        subTypes.parallelStream().filter(t -> (t.name == null ? subType.name == null : t.name.equals(subType.name)))
+                .forEach(t -> {
+            throw new IllegalArgumentException("EventType \"" + subType + '"'
+                    + "with parent \"" + subType.superType + "\" already exists");
+        });
         subTypes.add(subType);
     }
 }

@@ -1,5 +1,9 @@
 package com.jgcomptech.tools.events;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,11 +43,39 @@ public class EventTarget<T extends Event> {
      * @param event the event
      * @param eventType the event type
      */
+    @SuppressWarnings("unchecked")
     public final void fire(final Event event, final EventType<? extends Event> eventType) {
-        for (Map.Entry<EventType<? extends Event>, EventHandler<T>> entry : eventHandlers.entrySet()) {
+        for (final var entry : eventHandlers.entrySet()) {
             if(entry.getKey().equals(eventType)) {
                 entry.getValue().handle((T) event);
             }
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof EventTarget)) return false;
+
+        final var eventTarget = (EventTarget<?>) o;
+
+        return new EqualsBuilder()
+                .append(eventHandlers, eventTarget.eventHandlers)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(eventHandlers)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("eventHandlers", eventHandlers)
+                .toString();
     }
 }

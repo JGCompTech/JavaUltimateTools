@@ -1,5 +1,7 @@
 package com.jgcomptech.tools;
 
+import java.util.stream.IntStream;
+
 /**
  * Contains methods dealing with numbers.
  * @since 1.4.0
@@ -14,10 +16,7 @@ public final class NumberUtils {
         // fast even test.
         if(input > 2 && (input & 1) == 0) return false;
         // only odd factors need to be tested up to input^0.5
-        for(int i = 3; i * i <= input; i += 2) {
-            if(input % i == 0) return false;
-        }
-        return true;
+        return IntStream.iterate(3, i -> i * i <= input, i -> i + 2).noneMatch(i -> input % i == 0);
     }
 
     /**

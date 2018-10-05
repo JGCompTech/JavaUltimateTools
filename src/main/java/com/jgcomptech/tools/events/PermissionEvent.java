@@ -1,6 +1,6 @@
 package com.jgcomptech.tools.events;
 
-import com.jgcomptech.tools.permissions.Permission;
+import com.jgcomptech.tools.authz.Permission;
 
 import java.util.List;
 
@@ -39,6 +39,7 @@ public class PermissionEvent extends Event {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public EventType<? extends PermissionEvent> getEventType() {
         return (EventType<? extends PermissionEvent>) super.getEventType();
     }

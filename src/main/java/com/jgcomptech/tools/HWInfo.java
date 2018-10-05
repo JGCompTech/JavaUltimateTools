@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 
 import static com.jgcomptech.tools.Misc.ConvertBytes;
 import static com.jgcomptech.tools.OSInfo.CheckIf.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Returns information about the system hardware. */
 public final class HWInfo {
@@ -28,8 +29,8 @@ public final class HWInfo {
          */
         public static String getReleaseDate() {
             if(isWindows()) {
-                final String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-                final String value = "BIOSReleaseDate";
+                final var key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+                final var value = "BIOSReleaseDate";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
             return "Unknown";
@@ -41,8 +42,8 @@ public final class HWInfo {
          */
         public static String getVersion() {
             if(isWindows()) {
-                final String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-                final String value = "BIOSVersion";
+                final var key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+                final var value = "BIOSVersion";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
             return "Unknown";
@@ -54,8 +55,8 @@ public final class HWInfo {
          */
         public static String getVendor() {
             if(isWindows()) {
-                final String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-                final String value = "BIOSVendor";
+                final var key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+                final var value = "BIOSVendor";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
             }
             return "Unknown";
@@ -73,9 +74,9 @@ public final class HWInfo {
          */
         public static String getInternalIPAddress() {
             try {
-                final String ip = (InetAddress.getLocalHost().getHostAddress()).trim();
+                final var ip = (InetAddress.getLocalHost().getHostAddress()).trim();
                 return ip.equals("127.0.0.1") ? "N/A" : ip;
-            } catch(UnknownHostException ex) { return ex.getMessage(); }
+            } catch(final UnknownHostException ex) { return ex.getMessage(); }
         }
 
         /**
@@ -85,10 +86,10 @@ public final class HWInfo {
         public static String getExternalIPAddress() {
             final URL url;
             try { url = new URL("http://api.ipify.org"); }
-            catch(MalformedURLException e) { return e.getMessage(); }
-            try(BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            catch(final MalformedURLException e) { return e.getMessage(); }
+            try(final var in = new BufferedReader(new InputStreamReader(url.openStream(), UTF_8))) {
                 return (in.readLine()).trim();
-            } catch(IOException ex) {
+            } catch(final IOException ex) {
                 return ex.toString().contains("java.net.UnknownHostException:") ? "N/A" : ex.getMessage();
             }
         }
@@ -110,10 +111,10 @@ public final class HWInfo {
          * @return OEM name as string
          * */
         public static String Name() {
-            String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-            String value = "SystemManufacturer";
-            final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
-            if(text.isEmpty()) {
+            var key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+            var value = "SystemManufacturer";
+            final var text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+            if(text.trim().isEmpty()) {
                 key = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInFormation";
                 value = "Manufacturer";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
@@ -126,10 +127,10 @@ public final class HWInfo {
          * @return Product name as string
          * */
         public static String ProductName() {
-            String key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
-            String value = "SystemProductName";
-            final String text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
-            if(text.isEmpty()) {
+            var key = "HARDWARE\\DESCRIPTION\\System\\BIOS";
+            var value = "SystemProductName";
+            final var text = RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
+            if(text.trim().isEmpty()) {
                 key = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInFormation";
                 value = "Model";
                 return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
@@ -148,8 +149,8 @@ public final class HWInfo {
          * @return Processor name as string
          * */
         public static String Name() {
-            final String key = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-            final String value = "ProcessorNameString";
+            final var key = "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+            final var value = "ProcessorNameString";
             return RegistryInfo.getStringValue(RegistryInfo.HKEY.LOCAL_MACHINE, key, value);
         }
 
@@ -159,27 +160,27 @@ public final class HWInfo {
          * @throws IOException if error occurs
          * */
         public static int Cores() throws IOException {
-            String command = "";
+            var command = "";
 
             if(isMac()) command = "sysctl -n machdep.cpu.core_count";
             else if(isLinux()) command = "lscpu";
             else if(isWindows()) command = "cmd /C WMIC CPU Get /Format:List";
 
             final Process process;
-            int numberOfCores = 0;
-            int sockets = 0;
+            var numberOfCores = 0;
+            var sockets = 0;
             if(isMac()) {
                 final String[] cmd = {"/bin/sh", "-c", command};
                 process = Runtime.getRuntime().exec(cmd);
             } else process = Runtime.getRuntime().exec(command);
 
             assert process != null;
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            try(final var reader = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))) {
                 String line;
 
                 while((line = reader.readLine()) != null) {
                     if(isMac()) {
-                        numberOfCores = line.isEmpty() ? 0 : Integer.parseInt(line);
+                        numberOfCores = line.trim().isEmpty() ? 0 : Integer.parseInt(line);
                     } else if(isLinux()) {
                         if(line.contains("Core(s) per socket:")) {
                             numberOfCores =
@@ -211,7 +212,7 @@ public final class HWInfo {
          * @return Total Ram as string
          * */
         public static String getTotalRam() {
-            final long memorySize = ((OperatingSystemMXBean)
+            final var memorySize = ((OperatingSystemMXBean)
                     ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
             return ConvertBytes((double) memorySize);
         }
@@ -227,7 +228,7 @@ public final class HWInfo {
          * @return System drive file path as string
          * */
         public static String getSystemDrivePath() {
-            final char[] pszPath = new char[WinDef.MAX_PATH];
+            final var pszPath = new char[WinDef.MAX_PATH];
             NativeMethods.Shell32.INSTANCE.SHGetFolderPath(
                     null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
             return Native.toString(pszPath).replace("WINDOWS", "");
@@ -238,7 +239,7 @@ public final class HWInfo {
          * @return Windows directory file path as string
          * */
         public static String getWindowsPath() {
-            final char[] pszPath = new char[WinDef.MAX_PATH];
+            final var pszPath = new char[WinDef.MAX_PATH];
             NativeMethods.Shell32.INSTANCE.SHGetFolderPath(
                     null, ShlObj.CSIDL_WINDOWS, null, ShlObj.SHGFP_TYPE_CURRENT, pszPath);
             return Native.toString(pszPath);
@@ -258,7 +259,7 @@ public final class HWInfo {
          * @return Drive size of the specified drive letter
          * */
         public static String getDriveSize(final char driveLetter) {
-            final File aDrive = new File(driveLetter + ":");
+            final var aDrive = new File(driveLetter + ":");
             return aDrive.exists() ? ConvertBytes((double) aDrive.getTotalSpace()) : "N/A";
         }
 
@@ -276,7 +277,7 @@ public final class HWInfo {
          * @return Drive free space of the specified drive letter
          * */
         public static String getDriveFreeSpace(final char driveLetter) {
-            final File aDrive = new File(driveLetter + ":");
+            final var aDrive = new File(driveLetter + ":");
             return aDrive.exists() ? ConvertBytes((double) aDrive.getUsableSpace()) : "N/A";
         }
 

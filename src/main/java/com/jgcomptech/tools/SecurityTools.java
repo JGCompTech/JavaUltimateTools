@@ -2,14 +2,16 @@ package com.jgcomptech.tools;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.crypto.Cipher;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Locale;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Contains methods dealing with encryption and hashing. */
 public final class SecurityTools {
@@ -58,8 +60,8 @@ public final class SecurityTools {
          */
         public static String getFileHash(final HashType type, final String filename, final boolean toUpperCase)
                 throws IOException {
-            try(InputStream stream = new FileInputStream(filename)) {
-                String hash = "";
+            try(final InputStream stream = new FileInputStream(filename)) {
+                var hash = "";
                 switch (type) {
                     case MD2:
                         hash = DigestUtils.md2Hex(stream);
@@ -94,9 +96,9 @@ public final class SecurityTools {
          * @throws IOException           if an I/O error occurs
          */
         public static void saveToFile(final String hash, final String fileName) throws IOException {
-            final byte[] encoded = hash.getBytes(StandardCharsets.UTF_8);
+            final var encoded = hash.getBytes(UTF_8);
 
-            try(FileOutputStream out = new FileOutputStream(fileName)) {
+            try(final var out = new FileOutputStream(fileName)) {
                 out.write(encoded);
             }
         }
@@ -110,9 +112,9 @@ public final class SecurityTools {
          * @throws IOException           if an I/O error occurs
          */
         public static void saveToFile(final Key key, final String fileName) throws IOException {
-            final byte[] encoded = key.getEncoded();
+            final var encoded = key.getEncoded();
 
-            try(FileOutputStream out = new FileOutputStream(fileName)) {
+            try(final var out = new FileOutputStream(fileName)) {
                 out.write(encoded);
             }
         }
@@ -127,8 +129,8 @@ public final class SecurityTools {
          */
         public static byte[] readFromFile(final String fileName) throws IOException {
 
-            try(FileInputStream in = new FileInputStream(fileName)) {
-                final byte[] bytes = new byte[in.available()];
+            try(final var in = new FileInputStream(fileName)) {
+                final var bytes = new byte[in.available()];
                 in.read(bytes);
                 return bytes;
             }
@@ -141,20 +143,24 @@ public final class SecurityTools {
     /** Contains methods dealing with hashing passwords. */
     public static final class PasswordHashes {
         /**
+         * Creates a BCrypt salt to use for hashing.
+         * @param size Size as int to use as length of salt
+         * @return Salt as string
+         */
+        public static String createBCryptSaltString(final int size) {
+            return BCrypt.gensalt(size);
+        }
+
+        /**
          * Creates a Secure Random salt to use for hashing.
          * @param size Size as int to use as length of salt
          * @return Salt as string
          * @throws GeneralSecurityException if error occurs
          */
         public static String createSaltString(final int size) throws GeneralSecurityException {
-            final SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            final byte[] salt = new byte[size];
+            final var sr = SecureRandom.getInstance("SHA1PRNG");
+            final var salt = new byte[size];
             sr.nextBytes(salt);
-                /*for(int i = 0; i < 16; i++) {
-                    System.out.print(salt[i] & 255);
-                    System.out.print(" ");
-                }*/
-
             // Return a Base64 string representation of the random number.
             return Base64.encodeBase64String(salt);
         }
@@ -163,7 +169,7 @@ public final class SecurityTools {
          * Creates a Secure Random number.
          * @return Secure random number as a SecureRandom object
          * @throws GeneralSecurityException if error occurs
-         * */
+         */
         public static SecureRandom createSecureRandom() throws GeneralSecurityException {
             return SecureRandom.getInstance("SHA1PRNG", "SUN");
         }
@@ -173,13 +179,23 @@ public final class SecurityTools {
          * @param size Size as int to use as length of salt
          * @return Salt as byte array
          * @throws GeneralSecurityException if error occurs
-         * */
+         */
         public static byte[] createSaltByte(final int size) throws GeneralSecurityException {
-            final byte[] salt = new byte[size];
+            final var salt = new byte[size];
             createSecureRandom().nextBytes(salt);
 
             // Return a Base64 string representation of the random number.
             return salt;
+        }
+
+        /**
+         * Creates a BCrypt Hash.
+         * @param passwordToHash Password to hash
+         * @param salt Salt as string to use for hashing
+         * @return Hashed password as string
+         */
+        public static String createBCryptHash(final String passwordToHash, final String salt) {
+            return BCrypt.hashpw(passwordToHash, salt);
         }
 
         /**
@@ -188,15 +204,15 @@ public final class SecurityTools {
          * @param salt Salt as byte array to use for hashing
          * @return Hashed password as string
          * @throws GeneralSecurityException if error occurs
-         * */
+         */
         public static String createHash(final String passwordToHash, final byte[] salt)
                 throws GeneralSecurityException {
-            final MessageDigest md = MessageDigest.getInstance("SHA-512");
+            final var md = MessageDigest.getInstance("SHA-512");
             md.update(salt);
-            final byte[] bytes = md.digest(passwordToHash.getBytes());
-            final StringBuilder sb = new StringBuilder();
+            final var bytes = md.digest(passwordToHash.getBytes(UTF_8));
+            final var sb = new StringBuilder();
 
-            for(final byte aByte : bytes) {
+            for(final var aByte : bytes) {
                 sb.append(Integer.toString((aByte & 255) + 256, 16).substring(1));
             }
             return sb.toString();
@@ -208,18 +224,31 @@ public final class SecurityTools {
          * @param salt Salt as string to use for hashing
          * @return Hashed password as string
          * @throws GeneralSecurityException if error occurs
-         * */
+         */
         public static String createHash(final String passwordToHash, final String salt)
                 throws GeneralSecurityException {
-            final MessageDigest md = MessageDigest.getInstance("SHA-512");
+            final var md = MessageDigest.getInstance("SHA-512");
             md.update(Base64.decodeBase64(salt));
-            final byte[] bytes = md.digest(passwordToHash.getBytes());
-            final StringBuilder sb = new StringBuilder();
+            final var bytes = md.digest(passwordToHash.getBytes(UTF_8));
+            final var sb = new StringBuilder();
 
-            for(final byte aByte : bytes) {
+            for(final var aByte : bytes) {
                 sb.append(Integer.toString((aByte & 255) + 256, 16).substring(1));
             }
             return sb.toString();
+        }
+
+        /**
+         * Checks if login hashes match.
+         * @param enteredPassword  Password to validate.
+         * @param databasePassword Password from database to check against.
+         * @param databaseSalt     Password salt from database.
+         * @return True if hashes match.
+         */
+        public static boolean checkBCryptHashesMatch(final String enteredPassword,
+                                               final String databasePassword,
+                                               final String databaseSalt) {
+            return (databasePassword.equals(createBCryptHash(enteredPassword, databaseSalt)));
         }
 
         /**
@@ -250,7 +279,7 @@ public final class SecurityTools {
          * @throws FileNotFoundException if the file is a directory rather than a regular file, or for
          *                               some other reason cannot be opened for writing
          * @throws IOException           if an I/O error occurs
-         * */
+         */
         public static void saveKeyPairToFile(final KeyPair pair, final String filename) throws IOException {
             FileHashes.saveToFile(pair.getPrivate(), filename);
             FileHashes.saveToFile(pair.getPublic(), filename + ".pub");
@@ -313,10 +342,10 @@ public final class SecurityTools {
          */
         public static KeyPair generateKeyPair(final boolean saveToFiles, final String fileName)
                 throws IOException, GeneralSecurityException {
-            final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            final var keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048, PasswordHashes.createSecureRandom());
 
-            final KeyPair pair = keyGen.generateKeyPair();
+            final var pair = keyGen.generateKeyPair();
 
             if(saveToFiles) {
                 RSAFiles.saveKeyPairToFile(pair, fileName);
@@ -332,8 +361,8 @@ public final class SecurityTools {
          * @throws GeneralSecurityException if error occurs
          */
         public static PublicKey readPublicKeyFromBytes(final byte[] bytes) throws GeneralSecurityException {
-            final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
-            final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            final var keySpec = new X509EncodedKeySpec(bytes);
+            final var keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(keySpec);
         }
 
@@ -344,8 +373,8 @@ public final class SecurityTools {
          * @throws GeneralSecurityException if error occurs
          */
         public static PrivateKey readPrivateKeyFromBytes(final byte[] bytes) throws GeneralSecurityException {
-            final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
-            final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            final var keySpec = new PKCS8EncodedKeySpec(bytes);
+            final var keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(keySpec);
         }
 
@@ -357,9 +386,9 @@ public final class SecurityTools {
          * @throws GeneralSecurityException if error occurs
          */
         public static byte[] encrypt(final PublicKey key, final String plainText) throws GeneralSecurityException {
-            final Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
+            final var cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            return cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+            return cipher.doFinal(plainText.getBytes(UTF_8));
         }
 
         /**
@@ -380,9 +409,9 @@ public final class SecurityTools {
          * @param cipherText String to decrypt
          * @return Decrypted text as byte array
          * @throws GeneralSecurityException if error occurs
-         * */
+         */
         public static byte[] decrypt(final PrivateKey key, final byte[] cipherText) throws GeneralSecurityException {
-            final Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
+            final var cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
             cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(cipherText);
         }
@@ -393,7 +422,7 @@ public final class SecurityTools {
          * @param cipherText String to decrypt
          * @return Decrypted text as string
          * @throws GeneralSecurityException if error occurs
-         * */
+         */
         public static byte[] decryptFromString(final PrivateKey key, final String cipherText)
                 throws GeneralSecurityException {
             return decrypt(key, Base64.decodeBase64(cipherText));

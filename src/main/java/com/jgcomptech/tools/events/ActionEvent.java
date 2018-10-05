@@ -45,6 +45,7 @@ public class ActionEvent extends Event {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public EventType<? extends ActionEvent> getEventType() {
         return (EventType<? extends ActionEvent>) super.getEventType();
     }

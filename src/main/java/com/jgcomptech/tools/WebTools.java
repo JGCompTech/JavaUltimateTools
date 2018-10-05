@@ -17,19 +17,16 @@ public final class WebTools {
          * @throws MalformedURLException if url is invalid
          */
         public static String getHTML(final String url) throws IOException {
-            final URL newurl = new URL(url);
+            final var newurl = new URL(url);
             final StringBuilder sb;
 
-            try(BufferedInputStream buf = new BufferedInputStream(newurl.openStream())) {
-
+            try(final var buf = new BufferedInputStream(newurl.openStream())) {
                 sb = new StringBuilder();
-
                 int data;
                 while((data = buf.read()) != -1) {
                     sb.append((char) data);
                 }
             }
-
             return sb.toString();
         }
 

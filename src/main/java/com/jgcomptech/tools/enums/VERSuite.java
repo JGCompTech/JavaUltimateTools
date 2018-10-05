@@ -3,8 +3,9 @@ package com.jgcomptech.tools.enums;
 import com.sun.jna.platform.win32.WinDef;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A list of WindowsVersion Suite Masks according to
@@ -44,21 +45,16 @@ public enum VERSuite implements BaseEnum {
     }
 
     public static List<VERSuite> parse(final WinDef.WORD value) {
-        final List<VERSuite> verSuiteList = new ArrayList<>();
-        for(final VERSuite vs : values()) {
-            if((value.intValue() & vs.getValue()) != 0)
-                verSuiteList.add(vs);
-        }
-        return verSuiteList;
+        return Arrays.stream(values())
+                .filter(vs -> (value.intValue() & vs.value) != 0)
+                .collect(Collectors.toList());
     }
 
     public static VERSuite parse(final int value) {
-        for(final VERSuite type : VERSuite.values()) {
-            if(type.getValue() == value) {
-                return type;
-            }
-        }
-        return Unknown;
+        return Arrays.stream(VERSuite.values())
+                .filter(type -> type.value == value)
+                .findFirst()
+                .orElse(Unknown);
     }
 
     @Override

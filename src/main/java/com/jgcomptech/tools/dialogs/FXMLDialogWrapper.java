@@ -5,6 +5,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Dialog;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -103,19 +106,19 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      */
     public FXMLDialogWrapper(final String title, final Image icon, final Stage owner, final String fxmlPath)
             throws IOException {
-        if(fxmlPath == null || fxmlPath.isEmpty()) {
+        if(fxmlPath == null || fxmlPath.trim().isEmpty()) {
             throw new IllegalArgumentException("FXML path cannot be null or an empty string.");
         }
         else loader = new FXMLLoader(getClass().getResource(fxmlPath));
 
         dialog = loader.load();
 
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.setResizable(false);
         dialogStage.initOwner(owner);
 
         if(title != null) {
-            if(title.isEmpty()) throw new IllegalArgumentException("Title cannot be an empty string.");
+            if(title.trim().isEmpty()) throw new IllegalArgumentException("Title cannot be an empty string.");
             else dialogStage.setTitle(title);
         }
         if(title != null) {
@@ -174,10 +177,10 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param value the title to set.
      */
     public void setTitle(final String value) {
-        if(value == null || value.isEmpty()) throw new IllegalArgumentException(
+        if(value == null || value.trim().isEmpty()) throw new IllegalArgumentException(
                 "Title cannot be null or an empty string.");
         else {
-            final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
             dialogStage.setTitle(value);
         }
     }
@@ -190,7 +193,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
         if(value == null || value.isError()) throw new IllegalArgumentException(
                 "Icon cannot be null or have loading errors.");
         else {
-            final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
             dialogStage.getIcons().add(value);
         }
     }
@@ -207,7 +210,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @throws IllegalStateException if this stage is the primary stage.
      */
     public void setOwner(final Stage value) {
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.initOwner(value);
     }
 
@@ -229,7 +232,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @param value the value to set.
      */
     public void setAlwaysOnTop(final boolean value) {
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.setAlwaysOnTop(value);
     }
 
@@ -239,16 +242,16 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @return the title
      */
     public String getTitle() {
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         return dialogStage.getTitle();
     }
 
     /**
      * Returns the icon image for the {@code Dialog} that is used in the window decorations and when minimized.
-     * @return the icon image, null if no icon userExists
+     * @return the icon image, null if no icon exists
      */
     public Image getIcon() {
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         return dialogStage.getIcons().isEmpty() ? null : dialogStage.getIcons().get(0);
     }
 
@@ -259,7 +262,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @return the owner for this dialog.
      */
     public Stage getOwner() {
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         return (Stage) dialogStage.getOwner();
     }
 
@@ -281,7 +284,37 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
      * @return if dialog is kept on top of other windows
      */
     public boolean isAlwaysOnTop() {
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final var dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         return dialogStage.isAlwaysOnTop();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof FXMLDialogWrapper)) return false;
+
+        final var fxmlDialogWrapper = (FXMLDialogWrapper<?, ?>) o;
+
+        return new EqualsBuilder()
+                .append(dialog, fxmlDialogWrapper.dialog)
+                .append(loader, fxmlDialogWrapper.loader)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(dialog)
+                .append(loader)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("dialog", dialog)
+                .append("loader", loader)
+                .toString();
     }
 }

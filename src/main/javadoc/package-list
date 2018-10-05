@@ -1,10 +1,10 @@
 com.jgcomptech.tools
-com.jgcomptech.tools.authenication
-com.jgcomptech.tools.databasetools.jbdc
+com.jgcomptech.tools.authc
+com.jgcomptech.tools.authz
+com.jgcomptech.tools.databasetools.jdbc
+com.jgcomptech.tools.databasetools.jdbc.builders
 com.jgcomptech.tools.demo
 com.jgcomptech.tools.dialogs
 com.jgcomptech.tools.enums
 com.jgcomptech.tools.events
-com.jgcomptech.tools.exceptions
-com.jgcomptech.tools.permissions
 com.jgcomptech.tools.tests

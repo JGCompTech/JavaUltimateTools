@@ -25,11 +25,11 @@ public final class EventManager {
 
     private Event registerNewEvent(final String eventName,
                                    final EventTarget<? extends Event> target) {
-        if (eventName == null || eventName.isEmpty()) {
-            throw new NullPointerException("Event name cannot be null!");
+        if (eventName == null || eventName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Event name cannot be null!");
         }
         if (target == null) {
-            throw new NullPointerException("Event target cannot be null!");
+            throw new IllegalArgumentException("Event target cannot be null!");
         }
 
         return events.put(eventName, new Event(target));
@@ -64,7 +64,7 @@ public final class EventManager {
                                                 final EventType<? extends T> eventType,
                                                 final List<Object> args)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
-        if (eventName == null || eventName.isEmpty()) {
+        if (eventName == null || eventName.trim().isEmpty()) {
             throw new IllegalArgumentException("Event name cannot be null!");
         }
         if (classRef == null) {
@@ -80,15 +80,16 @@ public final class EventManager {
             throw new IllegalArgumentException("Event Args cannot be null!");
         }
 
-        Constructor<T> constructor = classRef.getConstructor(EventTarget.class, EventType.class, List.class);
+        final Constructor<T> constructor = classRef.getConstructor(EventTarget.class, EventType.class, List.class);
 
-        T event = constructor.newInstance(target, eventType, args);
+        final T event = constructor.newInstance(target, eventType, args);
 
         events.put(eventName, event);
 
         return event;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Event> T getEvent(final String eventName) { return (T) events.get(eventName); }
 
     /**

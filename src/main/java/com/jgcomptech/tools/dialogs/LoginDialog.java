@@ -1,115 +1,136 @@
 package com.jgcomptech.tools.dialogs;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Dialog;
 import javafx.util.Pair;
+
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Creates a Login Dialog for use to authenticate passwords.
  * <p>
  *     Use setTitle to set the title of the window<br>
- *     Use setHeader to set the header of the window<br>
+ *     Use setHeaderText to set the header of the window<br>
  *     Use setIconPath to set the icon of the window, path must be in the resource folder
  * </p>
  * @since 1.3.0
+ * @since 1.5.0 changed to wrapper class removing Platform.runLater() requirement.
  */
-public final class LoginDialog extends Dialog {
-    private String iconPath = "";
+public final class LoginDialog {
+    private final ObjectProperty<LoginDialogImpl> dialog = new SimpleObjectProperty<>();
+
+    public LoginDialog(final String warningText, final boolean redText) {
+        if(Platform.isFxApplicationThread()) dialog.set(new LoginDialogImpl(warningText, redText));
+        else {
+            Platform.runLater(() -> dialog.set(new LoginDialogImpl(warningText, redText)));
+
+            while(dialog.get() == null) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (final InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Shows the dialog and waits for the user response (in other words, brings
+     * up a blocking dialog, with the returned value the users input).
+     * The first string value is the username and the second is the password.
+     * @return An {@link Optional} that contains the result.
+     *         Refer to the {@link Dialog} class documentation for more detail.
+     * @throws IllegalStateException if this method is called during
+     *     animation or layout processing.
+     */
+    public Optional<Pair<String, String>> showAndWait() {
+        if(Platform.isFxApplicationThread()) return dialog.get().showAndWait();
+        else {
+            final ObjectProperty<Optional<Pair<String, String>>> result = new SimpleObjectProperty<>();
+            Platform.runLater(() -> result.set(dialog.get().showAndWait()));
+
+            while(!result.get().isPresent()) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (final InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return result.get();
+        }
+    }
 
     /**
      * Returns the path in the resource folder of the window icon.
      * @return the icon path
      */
-    public String getIconPath() { return iconPath; }
+    public String getIconPath() { return dialog.get().getIconPath(); }
 
     /**
      * Sets the path in the resource folder of the window icon.
      * @param iconPath the icon path
      */
     public void setIconPath(final String iconPath) {
-        this.iconPath = iconPath;
-
-        final Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        if(!iconPath.isEmpty()) stage.getIcons().add(new Image(iconPath));
+        if(Platform.isFxApplicationThread()) dialog.get().setIconPath(iconPath);
+        else Platform.runLater(() -> dialog.get().setIconPath(iconPath));
     }
 
-    public LoginDialog(final String warningText, final boolean redText) {
-        setTitle("Login");
-        setHeaderText("Please Login to Continue!");
-
-        // Create the username and password labels and fields.
-        final GridPane mainGrid = new GridPane();
-
-        final Label status = new Label(warningText);
-        status.setPadding(new Insets(0, 0, 0, 10));
-        status.setFont(new Font("Arial", 16));
-        if(redText) status.setTextFill(Color.RED);
-        if(redText) status.setGraphic(new ImageView(getClass().getResource("/img/Lock-Red.png").toString()));
-        mainGrid.add(status, 0, 0);
-
-        final GridPane buttonGrid = new GridPane();
-        buttonGrid.setHgap(10);
-        buttonGrid.setVgap(10);
-        buttonGrid.setPadding(new Insets(0, 100, 10, 10));
-
-        buttonGrid.getStylesheets().add(getClass().getResource("/css/LoginDialog.css").toExternalForm());
-
-        // Set the icon (must be included in the project).
-        setGraphic(new ImageView(getClass().getResource("/img/Data-Secure.png").toString()));
-
-        final Label usernamelbl = new Label("Username:");
-        usernamelbl.setFont(new Font("Arial", 16));
-        final TextField username = new TextField();
-        username.setId("txtUsername");
-        username.setPromptText("Username");
-        username.setFont(new Font("Arial", 16));
-
-        final Label passwordlbl = new Label("Password:");
-        passwordlbl.setFont(new Font("Arial", 16));
-        final PasswordField password = new PasswordField();
-        password.setId("txtPassword");
-        password.setPromptText("Password");
-        password.setFont(new Font("Arial", 16));
-
-        buttonGrid.add(usernamelbl, 0, 1);
-        buttonGrid.add(username, 1, 1);
-        buttonGrid.add(passwordlbl, 0, 2);
-        buttonGrid.add(password, 1, 2);
-
-        mainGrid.add(buttonGrid, 0, 1);
-
-        getDialogPane().setContent(mainGrid);
-
-        //Set dialog result data for login button
-        final ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-        getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-
-        //By default disable the login button
-        final Node loginButton = getDialogPane().lookupButton(loginButtonType);
-        loginButton.setDisable(true);
-
-        // Enable/Disable login button depending on whether a username was entered.
-        // Do some validation (using the Java 8 lambda syntax).
-        username.textProperty().addListener((observable, oldValue, newValue) ->
-                loginButton.setDisable(newValue.trim().isEmpty()));
-
-        // Request focus on the username field by default.
-        Platform.runLater(username::requestFocus);
-
-        // Convert the result to a username-password-pair when the login button is clicked.
-        setResultConverter(dialogButton -> {
-            if (dialogButton == loginButtonType) {
-                return new Pair<>(username.getText(), password.getText());
-            }
-            return null;
-        });
+    /** Closes the dialog. */
+    public void close() {
+        if(Platform.isFxApplicationThread()) dialog.get().close();
+        else Platform.runLater(() -> dialog.get().close());
     }
+
+    /** Hides the dialog. */
+    public void hide() {
+        if(Platform.isFxApplicationThread()) dialog.get().hide();
+        else Platform.runLater(() -> dialog.get().hide());
+    }
+
+    /**
+     * Return the title of the dialog.
+     * @return the title of the dialog
+     */
+    public String getTitle() { return dialog.get().getTitle(); }
+
+    /**
+     * Change the title of the dialog.
+     * @param title the title to set
+     */
+    public void setTitle(final String title) {
+        if(Platform.isFxApplicationThread()) dialog.get().setTitle(title);
+        else Platform.runLater(() -> dialog.get().setTitle(title));
+    }
+
+    /**
+     * Returns the string to show in the dialog header area.
+     * @return the string to show in the dialog header area
+     */
+    public String getHeaderText() { return dialog.get().getHeaderText(); }
+
+    /**
+     * Sets the string to show in the dialog header area.
+     * @param headerText the header text to set
+     */
+    public void setHeaderText(final String headerText) {
+        if(Platform.isFxApplicationThread()) dialog.get().setHeaderText(headerText);
+        else Platform.runLater(() -> dialog.get().setHeaderText(headerText));
+    }
+
+    /**
+     * Returns whether or not the dialog is showing.
+     * @return true if dialog is showing
+     */
+    public boolean isShowing() { return dialog.get().isShowing(); }
+
+
+    /**
+     * Returns the LoginDialog Dialog implementation object.
+     * @return the LoginDialog Dialog implementation object
+     */
+    public LoginDialogImpl getDialog() { return dialog.get(); }
 }

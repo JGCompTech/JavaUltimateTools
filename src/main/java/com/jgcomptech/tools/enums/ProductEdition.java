@@ -2,6 +2,8 @@ package com.jgcomptech.tools.enums;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Arrays;
+
 /**
  * A list of Product Editions according to
  * <a href="http://msdn.microsoft.com/en-us/library/ms724358(VS.85).aspx">Microsoft Documentation</a>.
@@ -125,12 +127,10 @@ public enum ProductEdition implements BaseEnum {
     }
 
     public static ProductEdition parse(final int value) {
-        for(final ProductEdition type : ProductEdition.values()) {
-            if(type.getValue() == value) {
-                return type;
-            }
-        }
-        return Undefined;
+        return Arrays.stream(ProductEdition.values())
+                .filter(type -> type.value == value)
+                .findFirst()
+                .orElse(Undefined);
     }
 
     @Override

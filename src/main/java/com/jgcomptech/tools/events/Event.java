@@ -1,8 +1,13 @@
 package com.jgcomptech.tools.events;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,7 +34,7 @@ public class Event implements Cloneable, Serializable {
     private boolean consumed;
 
     /** Event arguments to make available to the EventHandler. */
-    private List<Object> args = new ArrayList<>();
+    private final List<Object> args = new ArrayList<>();
 
     /**
      * Construct a new {@code Event} with the specified event target.
@@ -83,7 +88,8 @@ public class Event implements Cloneable, Serializable {
         }
         this.target = target;
         this.eventType = eventType;
-        this.args = args;
+        this.args.clear();
+        this.args.addAll(args);
     }
 
     /**
@@ -120,7 +126,7 @@ public class Event implements Cloneable, Serializable {
         if (newTarget == null) {
             throw new IllegalArgumentException("Event target cannot be null!");
         }
-        final Event newEvent = (Event) clone();
+        final var newEvent = (Event) clone();
 
         newEvent.source = newSource;
         newEvent.target = newTarget;
@@ -154,7 +160,7 @@ public class Event implements Cloneable, Serializable {
      * Returns the Event arguments.
      * @return the Event arguments
      */
-    public final List<Object> getArgs() { return args; }
+    public final List<Object> getArgs() { return Collections.unmodifiableList(args); }
 
     /**
      * Creates and returns a copy of this {@code Event}.
@@ -176,7 +182,7 @@ public class Event implements Cloneable, Serializable {
      */
     public final void fireEvent(final Object source) {
         this.source = source;
-        if(!isConsumed()) target.fire(this, eventType);
+        if(!consumed) target.fire(this, eventType);
         args.clear();
     }
 
@@ -188,7 +194,46 @@ public class Event implements Cloneable, Serializable {
     public final void fireEvent(final Object source, final Object... args) {
         this.source = source;
         this.args.addAll(Arrays.asList(args));
-        if(!isConsumed()) target.fire(this, eventType);
+        if(!consumed) target.fire(this, eventType);
         this.args.clear();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof Event)) return false;
+
+        final var event = (Event) o;
+
+        return new EqualsBuilder()
+                .append(consumed, event.consumed)
+                .append(source, event.source)
+                .append(eventType, event.eventType)
+                .append(target, event.target)
+                .append(args, event.args)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(source)
+                .append(eventType)
+                .append(target)
+                .append(consumed)
+                .append(args)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("source", source)
+                .append("eventType", eventType)
+                .append("target", target)
+                .append("consumed", consumed)
+                .append("args", args)
+                .toString();
     }
 }

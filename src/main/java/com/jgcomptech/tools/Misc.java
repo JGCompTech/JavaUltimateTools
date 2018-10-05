@@ -11,10 +11,10 @@ public final class Misc {
      * @return Specified number converted to a readable string
      */
     public static String ConvertBytes(final double input) {
-        final DecimalFormat df = new DecimalFormat("#.##");
+        final var df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.DOWN);
-        final double factor = 1024d;
-        double newNum = input;
+        final var factor = 1024d;
+        var newNum = input;
         if(newNum >= factor) {
             newNum /= factor;
             if(newNum >= factor) {
@@ -82,7 +82,7 @@ public final class Misc {
         }
 
         private static String structureTime(final long seconds) {
-            final TimeObj obj = new TimeObj();
+            final var obj = new TimeObj();
             if(seconds >= 60) {
                 obj.minutes = (int)(seconds / 60);
                 obj.seconds = (int)(seconds % 60);

@@ -2,6 +2,8 @@ package com.jgcomptech.tools.enums;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Arrays;
+
 /**
  * A list of Product Types according to
  * <a href="http://msdn.microsoft.com/en-us/library/ms724833(VS.85).aspx">Microsoft Documentation</a>.
@@ -23,12 +25,10 @@ public enum ProductType implements BaseEnum {
     }
 
     public static ProductType parse(final int value) {
-        for(final ProductType type : ProductType.values()) {
-            if(type.getValue() == value) {
-                return type;
-            }
-        }
-        return null;
+        return Arrays.stream(ProductType.values())
+                .filter(type -> type.value == value)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

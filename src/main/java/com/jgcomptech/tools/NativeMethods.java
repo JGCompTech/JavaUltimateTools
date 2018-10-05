@@ -32,15 +32,14 @@ public final class NativeMethods {
      * @return Product Info as an int
      */
     public static int getProductInfo(final int major, final int minor) {
-        final IntByReference strProductType = new IntByReference();
+        final var strProductType = new IntByReference();
         Kernel32.INSTANCE.GetProductInfo(major, minor, 0, 0, strProductType);
         return strProductType.getValue();
     }
 
     /** Interface object to hold all the Kernel32 Instances. */
     public interface Kernel32 extends com.sun.jna.platform.win32.Kernel32 {
-        Kernel32 INSTANCE = (Kernel32)
-                Native.loadLibrary("kernel32", Kernel32.class, W32APIOptions.DEFAULT_OPTIONS);
+        Kernel32 INSTANCE = Native.loadLibrary("kernel32", Kernel32.class, W32APIOptions.DEFAULT_OPTIONS);
 
         boolean GetProductInfo(
                 int dwOSMajorVersion,
@@ -54,8 +53,7 @@ public final class NativeMethods {
 
     /** Interface object to hold all the Shell32 Instances. */
     public interface Shell32 extends com.sun.jna.platform.win32.Shell32 {
-        Shell32 INSTANCE = (Shell32)
-                Native.loadLibrary("shell32", Shell32.class, W32APIOptions.DEFAULT_OPTIONS);
+        Shell32 INSTANCE = Native.loadLibrary("shell32", Shell32.class, W32APIOptions.DEFAULT_OPTIONS);
 
         WinDef.HINSTANCE ShellExecuteW(WinDef.HWND hwnd,
                                        String lpOperation,
@@ -67,8 +65,7 @@ public final class NativeMethods {
 
     /** Interface object to hold all the Secur32 Instances. */
     public interface Secur32 extends com.sun.jna.platform.win32.Secur32 {
-        Secur32 INSTANCE = (Secur32)
-                Native.loadLibrary("secur32", Secur32.class, W32APIOptions.DEFAULT_OPTIONS);
+        Secur32 INSTANCE = Native.loadLibrary("secur32", Secur32.class, W32APIOptions.DEFAULT_OPTIONS);
     }
 
     /** Prevents instantiation of this utility class. */

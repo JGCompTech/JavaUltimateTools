@@ -1,14 +1,14 @@
 package com.jgcomptech.tools.demo;
 
-import com.jgcomptech.tools.authenication.*;
-import com.jgcomptech.tools.databasetools.jbdc.Database;
-import com.jgcomptech.tools.databasetools.jbdc.DatabaseType;
+import com.jgcomptech.tools.authc.AuthManager;
+import com.jgcomptech.tools.authc.UserManager;
+import com.jgcomptech.tools.authc.UserRoleManager;
+import com.jgcomptech.tools.authc.UsernamePasswordToken;
+import com.jgcomptech.tools.authz.PermissionManager;
+import com.jgcomptech.tools.databasetools.jdbc.Database;
+import com.jgcomptech.tools.databasetools.jdbc.DatabaseType;
 import com.jgcomptech.tools.dialogs.MessageBox;
 import com.jgcomptech.tools.dialogs.MessageBoxIcon;
-import com.jgcomptech.tools.events.EventHandler;
-import com.jgcomptech.tools.events.PermissionEvent;
-import com.jgcomptech.tools.permissions.Permission;
-import com.jgcomptech.tools.permissions.PermissionManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -16,9 +16,17 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Main extends Application {
     private static void print(final String str) { System.out.println(str); }
@@ -37,18 +45,18 @@ public class Main extends Application {
     public static void main(final String[] args) { launch(args); }
 
     @Override
-    public void start(final Stage primaryStage) throws IOException, SQLException, XmlPullParserException {
-        final MavenXpp3Reader reader = new MavenXpp3Reader();
+    public void start(final Stage primaryStage) throws IOException, XmlPullParserException, SQLException, InterruptedException {
+        final var reader = new MavenXpp3Reader();
         final Model model;
 
         if((new File("pom.xml")).exists())
-            model = reader.read(new FileReader("pom.xml"));
+            model = reader.read(Files.newBufferedReader(Paths.get("pom.xml"), UTF_8));
         else {
-            InputStream file = getClass().getResourceAsStream(
+            final var file = getClass().getResourceAsStream(
                     "/META-INF/maven/com.jgcomptech.tools/java-ultimate-tools/pom.xml"
             );
             if(file == null) MessageBox.show("File = null", "Error", MessageBoxIcon.ERROR);
-            model = reader.read(new InputStreamReader(file));
+            model = reader.read(new InputStreamReader(file, UTF_8));
         }
 
         print("------------------------------------");
@@ -62,146 +70,174 @@ public class Main extends Application {
         //print("------------------------------------");
         print("");
         print("Creating New Database userdb.db...");
-        try(Database db = new Database("./userdb.db", DatabaseType.H2)) {
-            UserManager userManager = new UserManager(db, null, "Java Ultimate Tools");
+        print("------------------------------------");
+
+        permissionsManager();
+
+        subjectAuth();
+
+        basicAuth();
+
+        Platform.exit();
+    }
+
+    private void permissionsManager() {
+        print("Initializing Permissions Manager...");
+        final var permissionManager = PermissionManager.getInstance();
+
+        permissionManager.enableDebugLogging();
+
+        permissionManager.loadPermissions(false);
+
+        print("Enabling \"admin\" Permission...");
+        permissionManager.setAdminPermission(true);
+
+        print("Adding Custom Permission \"change_settings\"...");
+        final var custom = "admin:change_settings";
+        permissionManager.addAndEnableCustomPermission("change_settings", "admin");
+        permissionManager.getPermission("admin:change_settings").enableDebugLogging();
+        permissionManager.addAndEnableCustomPermission("color", "admin:change_settings");
+        permissionManager.getPermission("admin:change_settings:color").enableDebugLogging();
+        permissionManager.getPermission("admin:change_settings").copyToNewParent("edit");
+        permissionManager.getPermission("edit:change_settings").enableDebugLogging();
+        permissionManager.getPermission("edit:change_settings:color").enableDebugLogging();
+
+        print("Is \"admin:change_settings\" enabled: " + permissionManager.isPermissionEnabled(custom));
+
+//        permissionManager.setPermissionOnEnabled(custom, e -> {
+//            System.out.println("EVENT: Permission " + e.getPermission().getName() + " Enabled!");
+//        });
+//        permissionManager.setPermissionOnDisabled(custom, e -> {
+//            System.out.println("EVENT: Permission " + e.getPermission().getName() + " Disabled!");
+//        });
+
+        print("Disabling \"admin\" Permission...");
+        permissionManager.setAdminPermission(false);
+        print("Is \"admin:change_settings\" enabled: " + permissionManager.isPermissionEnabled(custom));
+        print("------------------------------------");
+    }
+
+    private void subjectAuth() throws SQLException {
+        try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
+            final var manager =
+                    AuthManager.getNewInstance(db, null, "Java Ultimate Tools");
+            final var subject = manager.getSubject();
+
+            manager.createUser("admin", "1234", UserRoleManager.SystemUserRoles.ADMIN);
+            manager.createUser("editor", "1234", UserRoleManager.SystemUserRoles.EDITOR);
+
+            manager.enableDebugLogging();
+
+            final var creationDate = manager.getUserCreationDate("admin", "yyyy-MM-dd hh:mm:ss a");
+
+            print("Admin User Exists: " + manager.userExists("admin"));
+
+            print("Admin User Creation Date: " + creationDate);
+
+            print("Admin User Role: " + manager.getUserRole("admin"));
+
+            print("Admin User Locked Status: " + manager.isUserLocked("admin"));
+
+            //manager.setPasswordExpirationDate("admin", LocalDateTime.now());
+            manager.disablePasswordExpiration("admin");
+            manager.unlockUser("admin");
+
+            print("Admin Password Expired: " + manager.isPasswordExpired("admin"));
+
+            print("Admin Password Set To Expire: " + manager.isPasswordSetToExpire("admin"));
+
+            print("Admin Password Expiration Date: "
+                    + manager.getPasswordExpirationDate("admin", "yyyy-MM-dd hh:mm:ss a"));
+
+            print("Admin Password Matches \"1234\": " +
+                    manager.checkPasswordMatches("admin", "1234"));
+
+            print("Attempting to login user...");
+            var token = new UsernamePasswordToken("admin", "1234".toCharArray());
+            final var result = subject.login(token);
+            if(!result) print("Login Failed!");
+            else {
+                //print("Changed Admin Password To \"pass\": " + subject.setPassword("pass"));
+
+                print("Attempting to logout user...");
+                if(subject.logout()) print("Logout Succeeded!");
+                else print("Logout Failed!");
+            }
+
+            print(subject.getLastSessionDurationString());
+
+            print("Attempting to login user...");
+            token.setUsername("admin");
+            token.setPassword("pass".toCharArray());
+            print(token.toString());
+            final var result2 = subject.login(token);
+            if(!result2) print("Login Failed!");
+
+//            //for (int i = 0; i < 60; i++) {
+//                Thread.sleep(1000);
+//
+//                print(subject.getSession().getDurationString());
+//            //}
+
+            print("Admin has admin permission: " +
+                    subject.hasPermission("admin"));
+
+            print("Admin has admin:change_settings permission: " +
+                    subject.hasPermission("admin:change_settings"));
+
+            print(subject.hasPermissions(new HashSet<>(Arrays.asList("admin", "admin:change_settings"))));
+
+            print(String.valueOf(subject.getUserRole().getPermissions()));
+
+            print("Attempting to logout user...");
+            if(subject.logout()) print("Logout Succeeded!");
+            else print("Logout Failed!");
+
+            print(subject.getLastSessionDurationString());
+
+            token.clear();
+            token = null;
+        }
+        print("------------------------------------");
+    }
+
+    private void basicAuth() throws SQLException {
+        try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
+            final var userManager = new UserManager(db, null, "Java Ultimate Tools");
             userManager.createUser("admin", "1234", UserRoleManager.SystemUserRoles.ADMIN);
             userManager.createUser("editor", "1234", UserRoleManager.SystemUserRoles.EDITOR);
 
             print("Admin User Exists: " + userManager.userExists("admin"));
 
-            UserAccount account = userManager.getUser("admin");
-            print("Admin User Role: " + account.getUserRole());
-            print("Admin Password Matches \"1234\": " + account.checkPasswordMatches("1234"));
+            final var account = userManager.getUser("admin");
+            print("Admin User Role: " + userManager.getUserRole("admin"));
+            print("Admin Password Matches \"1234\": "
+                    + userManager.checkPasswordMatches("admin", "1234"));
 
             print("Changed Admin Password To \"pass\": "
                     + userManager.setPassword("admin", "pass"));
 
-            print("Initializing Permissions Manager...");
-            PermissionManager permissionManager = PermissionManager.getInstance();
-            permissionManager.setOnPermissionsApplied(e -> {
-                UserRole userRole = (UserRole) e.getArgs().get(0);
-                System.out.println("EVENT: " + userRole.getName() + " Permissions Applied!");
-            });
-            permissionManager.setOnAllPermissionsEnabled(e ->
-                    System.out.println("EVENT: All permissions enabled!"));
-            permissionManager.setOnAllPermissionsDisabled(e ->
-                    System.out.println("EVENT: All permissions disabled!"));
-            EventHandler<PermissionEvent> permissionEnabled = e -> {
-                Permission permission = e.getPermission();
-                System.out.println("EVENT: Permission " + permission.getName() + " Enabled!");
-            };
-            EventHandler<PermissionEvent> permissionDisabled = e -> {
-                Permission permission = e.getPermission();
-                System.out.println("EVENT: Permission " + permission.getName() + " Disabled!");
-            };
-            permissionManager.getAdminPermission().setOnEnabled(permissionEnabled);
-            permissionManager.getAdminPermission().setOnDisabled(permissionDisabled);
-
-            permissionManager.getEditPermission().setOnEnabled(permissionEnabled);
-            permissionManager.getEditPermission().setOnDisabled(permissionDisabled);
-
-            permissionManager.getCreatePermission().setOnEnabled(permissionEnabled);
-            permissionManager.getCreatePermission().setOnDisabled(permissionDisabled);
-
-            permissionManager.getReadPermission().setOnEnabled(permissionEnabled);
-            permissionManager.getReadPermission().setOnDisabled(permissionDisabled);
-
-            userManager.getSessionManager().setOnLoginSuccess(e -> {
-                String username = e.getUser().getUsername();
-                System.out.println("EVENT: Access Granted " + username + '!');
-            });
-            userManager.getSessionManager().setOnLoginFailure(e ->
-                    MessageBox.show("EVENT: Invalid Username Or Password!"));
-            userManager.getSessionManager().setOnSessionOpened(e -> {
-                String username = e.getSession().getUsername();
-                System.out.println("EVENT: " + username + " Logged In Successfully!");
-            });
-            userManager.getSessionManager().setOnSessionClosed(e -> {
-                String username = e.getSession().getUsername();
-                System.out.println("EVENT: " + username + " Logged Out Successfully!");
-            });
-
-            permissionManager.loadPermissions(false);
+            userManager.getSessionManager().enableDebugLogging();
+            userManager.getSessionManager().enableDefaultErrorMessages();
 
             print("Attempting to login user...");
-            boolean result = userManager.getSessionManager().showLoginWindow(true);
+            final var result = userManager.getSessionManager().showLoginWindow(true);
             if(!result) print("Login Canceled!");
 
-            print("Attempting User Logout...");
+            print("Attempting to logout user...");
             if(userManager.getSessionManager().logoutUser()) print("Logout Succeeded!");
             else print("Logout Failed!");
 
-            print("Enabling \"admin\" Permission...");
-            permissionManager.setAdminPermission(true);
-            print("Adding Custom Permission \"change_settings\"...");
-            permissionManager.addCustomPermission("change_settings");
-            permissionManager.enablePermission("change_settings");
-            print("Adding \"change_settings\" as child to \"admin\" permission...");
-            permissionManager.addExistingChildPermission("change_settings", "admin");
-            print("Is \"change_settings\" enabled: "
-                    + permissionManager.isPermissionEnabled("change_settings"));
-            permissionManager.setPermissionOnEnabled("change_settings", e -> {
-                Permission permission = e.getPermission();
-                System.out.println("EVENT: Permission " + permission.getName() + " Enabled!");
-            });
-            permissionManager.setPermissionOnDisabled("change_settings", e -> {
-                Permission permission = e.getPermission();
-                System.out.println("EVENT: Permission " + permission.getName() + " Disabled!");
-            });
-
-            print("Disabling \"admin\" Permission...");
-            permissionManager.setAdminPermission(false);
-            print("Is change_settings enabled: " + permissionManager.isPermissionEnabled("change_settings"));
-
-            print("Initializing MultiSession Manager...");
-            MultiSessionManager multiSessionManager = new MultiSessionManager(userManager);
-
-            multiSessionManager.setOnSessionOpened(e -> {
-                String username = e.getSession().getUsername();
-                System.out.println("EVENT: " + username + " Logged In Successfully!");
-            });
-
-            multiSessionManager.setOnSessionClosed(e -> {
-                String username = e.getSession().getUsername();
-                System.out.println("EVENT: " + username + " Logged Out Successfully!");
-            });
-
-            print("Logging In \"admin\" and \"editor\" Users...");
-            multiSessionManager.loginUser("admin");
-            multiSessionManager.loginUser("editor");
-            print("Number Of Logged In Users: " + multiSessionManager.getSessionsCount());
-            print("Logging Out \"admin\" and \"editor\" Users...");
-            multiSessionManager.logoutUser("admin");
-            multiSessionManager.logoutUser("editor");
-            print("Number Of Logged In Users: " + multiSessionManager.getSessionsCount());
-
-            userManager.getSessionManager().setOnAdminOverrideStarted(e -> {
-                System.out.println("Requesting Admin Override...");
-            });
-
-            userManager.getSessionManager().setOnAdminOverrideSuccess(e -> {
-                System.out.println("Admin Permissions Granted! Continuing...");
-            });
-
-            userManager.getSessionManager().setOnAdminOverrideFailure(e -> {
-                System.out.println("Override Request Failed!");
-            });
-
-            userManager.getSessionManager().setOnUserVerifyStarted(e -> {
-                System.out.println("Requesting User Verification...");
-            });
-
-            userManager.getSessionManager().setOnUserVerifySuccess(e -> {
-                System.out.println("Account Verified! Continuing...");
-            });
-
-            userManager.getSessionManager().setOnUserVerifyFailure(e -> {
-                System.out.println("Verification Request Failed!");
-            });
+            print("Logging In \"admin\" and \"editor\" Users As MultiSession...");
+            userManager.getSessionManager().loginUser("admin", true);
+            userManager.getSessionManager().loginUser("editor", true);
+            print("Number Of Logged In Users: " + userManager.getSessionManager().getSessionsCount());
+            print("Logging Out \"admin\" and \"editor\" Users As MultiSession...");
+            userManager.getSessionManager().logoutUser("admin", true);
+            userManager.getSessionManager().logoutUser("editor", true);
+            print("Number Of Logged In Users: " + userManager.getSessionManager().getSessionsCount());
         }
         print("------------------------------------");
-
-        Platform.exit();
     }
 }
 

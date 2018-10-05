@@ -1,9 +1,11 @@
 package com.jgcomptech.tools;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Contains methods dealing with strings.
@@ -12,87 +14,71 @@ import java.util.Map;
 public final class StringUtils {
     /**
      * Converts a map into a delimited string value.
+     * A "{@literal =}" separates the keys and values and a "{@literal &}" separates the key pairs.
      * @param stringMap map to convert
      * @return string representation of map
      * @throws IllegalArgumentException if StringMap is null
      */
     public static String convertMapToString(final Map<String, String> stringMap) {
-        if(stringMap == null) throw new IllegalArgumentException("StringMap cannot be null!");
-        final StringBuilder sb = new StringBuilder();
-        final char keySeparator = '=';
-        final char pairSeparator = '&';
-        for(final Map.Entry<String, String> pair:stringMap.entrySet())
-        {
-            sb.append(pair.getKey());
-            sb.append(keySeparator);
-            sb.append(pair.getValue());
-            sb.append(pairSeparator);
-        }
-        return sb.toString().substring(0, sb.length() - 1);
+        return CollectionUtils.convertMapToString(stringMap);
     }
 
     /**
      * Converts a delimited string value into a map.
+     * <p>Expects that "{@literal =}" separates the keys and values and a "{@literal &}" separates the key pairs.</p>
      * @param value map to convert
      * @return string representation of map
      * @throws IllegalArgumentException if Value is null
+     * @since 1.5.0 now uses a stream to process the pairs
      */
     public static Map<String, String> convertStringToMap(final String value) {
-        if(value == null) throw new IllegalArgumentException("Value cannot be null!");
-        final Map<String, String> myMap = new HashMap<>();
-        final String keySeparator = "=";
-        final String pairSeparator = "&";
-        final String[] pairs = value.split(pairSeparator);
-        for(final String pair : pairs) {
-            final String[] keyValue = pair.split(keySeparator);
-            myMap.put(keyValue[0], keyValue[1]);
-        }
-        return myMap;
+        return CollectionUtils.convertStringToMap(value);
     }
 
     /**
-     * Converts an object to a byte array string.
-     * @param object to convert
-     * @return a byte array string
+     * Converts an object to a Base64 byte string to use for socket communication.
+     * @param object the object to convert to a Base64 byte string
+     * @return the Base64 byte string
      * @throws IllegalArgumentException if Object is null
-     * @throws IOException if conversion fails
+     * @throws IOException if the conversion fails
      */
-    public static String convertToBytes(final Object object) throws IOException {
+    public static String convertToByteString(final Object object) throws IOException {
         if(object == null) throw new IllegalArgumentException("Object cannot be null!");
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutput out = new ObjectOutputStream(bos)) {
+        try (final var bos = new ByteArrayOutputStream(); final ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(object);
-            final byte[] byteArray = bos.toByteArray();
-            return new String(byteArray);
+            final var byteArray = bos.toByteArray();
+            return Base64.getEncoder().encodeToString(byteArray);
         }
     }
 
     /**
      * Converts a byte array to an object.
-     * @param bytes byte array to convert
-     * @return the result object
+     * @param bytes the byte array to convert to an object
+     * @return the converted object
      * @throws IllegalArgumentException if Bytes is null
-     * @throws IOException if conversion fails
-     * @throws ClassNotFoundException if conversion fails
+     * @throws IOException if the conversion fails
+     * @throws ClassNotFoundException if the converted object doesn't match a found object type
      */
-    public static Object convertFromBytes(final byte[] bytes) throws IOException, ClassNotFoundException {
+    public static Object convertFromByteArray(final byte[] bytes) throws IOException, ClassNotFoundException {
         if(bytes == null) throw new IllegalArgumentException("Bytes cannot be null!");
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); ObjectInput in = new ObjectInputStream(bis)) {
+        try (final var bis = new ByteArrayInputStream(bytes); final ObjectInput in = new ObjectInputStream(bis)) {
             return in.readObject();
         }
     }
 
     /**
-     * Converts a byte string to an object.
-     * @param byteString byte string to convert
-     * @return the result object
+     * Converts a Base64 byte string to an object.
+     * @param byteString the Base64 byte string to convert to an object
+     * @return the converted object
      * @throws IllegalArgumentException if ByteString is null
-     * @throws IOException if conversion fails
-     * @throws ClassNotFoundException if conversion fails
+     * @throws IOException if the conversion fails
+     * @throws ClassNotFoundException if the converted object doesn't match a found object type
      */
-    public static Object convertFromBytes(final String byteString) throws IOException, ClassNotFoundException {
-        if(byteString == null) throw new IllegalArgumentException("ByteString cannot be null!");
-        final byte[] bytes = byteString.getBytes();
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); ObjectInput in = new ObjectInputStream(bis)) {
+    public static Object convertFromByteString(final String byteString)
+            throws IOException, ClassNotFoundException {
+        if(byteString == null) throw new IllegalArgumentException("Byte String cannot be null!");
+        final var bytes = Base64.getDecoder().decode(byteString);
+        try (final var bis = new ByteArrayInputStream(bytes); final ObjectInput in = new ObjectInputStream(bis)) {
             return in.readObject();
         }
     }
@@ -116,8 +102,8 @@ public final class StringUtils {
      */
     public static String unquoteString(final String input) {
         if(input == null) throw new IllegalArgumentException("String cannot be null!");
-        return input.startsWith("\"") && input.endsWith("\"")
-                || input.startsWith("'") && input.endsWith("'")
+        return (input.startsWith("\"") && input.endsWith("\""))
+                || (input.startsWith("'") && input.endsWith("'"))
                 ? input.substring(1, input.length() - 1) : input;
 
     }
@@ -125,12 +111,13 @@ public final class StringUtils {
     /**
      * Converts a string to a Boolean.
      * @param input String to check
-     * @throws IllegalArgumentException if string does not match a boolean value or is null
      * @return true if string does matches a boolean
+     * @throws IllegalArgumentException if string does not match a boolean value or is null
+     * @since 1.5.0 added "enabled" returns true and "disabled" returns false
      */
     public static Boolean toBoolean(final String input) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
-        final String value = input.toLowerCase(Locale.ENGLISH).trim();
+        final var value = input.toLowerCase(Locale.ENGLISH).trim();
         switch(value)
         {
             case "true":
@@ -140,6 +127,7 @@ public final class StringUtils {
             case "1":
             case "succeeded":
             case "succeed":
+            case "enabled":
                 return true;
             case "false":
             case "f":
@@ -149,6 +137,7 @@ public final class StringUtils {
             case "-1":
             case "failed":
             case "fail":
+            case "disabled":
                 return false;
             default:
                 throw new IllegalArgumentException("Input is not a boolean value.");
@@ -175,7 +164,7 @@ public final class StringUtils {
      */
     public static Boolean isValidUrl(final String input) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
-        return input.matches("/^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/");
+        return input.matches("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     }
 
     /**
@@ -209,7 +198,7 @@ public final class StringUtils {
     public static boolean isValidEmailAddress(final String input,
                                               final boolean allowQuotedIdentifiers, final boolean allowDomainLiterals) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
-        final EmailValidator validator = new EmailValidator(allowQuotedIdentifiers, allowDomainLiterals);
+        final var validator = new EmailValidator(allowQuotedIdentifiers, allowDomainLiterals);
         return validator.validPattern.matcher(input).matches();
     }
 
@@ -224,7 +213,7 @@ public final class StringUtils {
     public static String ensureStartsWith(final String input, final String prefix, final Boolean ignoreCase) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
         if(prefix == null) throw new IllegalArgumentException("Prefix cannot be null!");
-        boolean startsWith = input.startsWith(prefix);
+        var startsWith = input.startsWith(prefix);
         if(!startsWith && ignoreCase) startsWith = input.startsWith(prefix.toUpperCase(Locale.ENGLISH));
         if(!startsWith && ignoreCase) startsWith = input.startsWith(prefix.toLowerCase(Locale.ENGLISH));
         return startsWith ? input : prefix + input;
@@ -241,7 +230,7 @@ public final class StringUtils {
     public static String ensureEndsWith(final String input, final String suffix, final Boolean ignoreCase) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
         if(suffix == null) throw new IllegalArgumentException("Suffix cannot be null!");
-        boolean endsWith = input.endsWith(suffix);
+        var endsWith = input.endsWith(suffix);
         if(!endsWith && ignoreCase) endsWith = input.startsWith(suffix.toUpperCase(Locale.ENGLISH));
         if(!endsWith && ignoreCase) endsWith = input.startsWith(suffix.toLowerCase(Locale.ENGLISH));
         return endsWith ? input : input + suffix;
@@ -258,7 +247,7 @@ public final class StringUtils {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
         if(suffix == null) throw new IllegalArgumentException("Suffix cannot be null!");
         return input.endsWith(suffix)
-                || input.length() >= suffix.length() && input.toLowerCase().endsWith(suffix.toLowerCase());
+                || (input.length() >= suffix.length() && input.toLowerCase().endsWith(suffix.toLowerCase()));
     }
 
     /**
@@ -272,7 +261,7 @@ public final class StringUtils {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
         if(prefix == null) throw new IllegalArgumentException("Suffix cannot be null!");
         return input.startsWith(prefix)
-                || input.length() >= prefix.length() && input.toLowerCase().startsWith(prefix.toLowerCase());
+                || (input.length() >= prefix.length() && input.toLowerCase().startsWith(prefix.toLowerCase()));
     }
 
     /**
@@ -373,7 +362,7 @@ public final class StringUtils {
      */
     public static String reverse(final String input) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
-        return new StringBuffer(input).reverse().toString();
+        return new StringBuilder(input).reverse().toString();
     }
 
     /**
@@ -386,7 +375,7 @@ public final class StringUtils {
      */
     public static String leftOf(final String input, final char c) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
-        final int index = input.indexOf(c);
+        final var index = input.indexOf(c);
         if (index >= 0) return input.substring(0, index);
         return input;
     }
@@ -401,7 +390,7 @@ public final class StringUtils {
      */
     public static String rightOf(final String input, final char c) {
         if(input == null) throw new IllegalArgumentException("Input cannot be null!");
-        final int index = input.indexOf(c);
+        final var index = input.indexOf(c);
         if (index >= 0) return input.substring(index + 1);
         return input;
     }
@@ -459,7 +448,7 @@ public final class StringUtils {
      * @throws IllegalArgumentException if Input is null or empty
      */
     public static String uppercaseFirst(final String input) {
-        if(input == null || input.isEmpty()) throw new IllegalArgumentException("Input cannot be null or empty!");
+        if(input == null || input.trim().isEmpty()) throw new IllegalArgumentException("Input cannot be null or empty!");
         return input.length() > 1
                 ? input.substring(0, 1).toUpperCase(Locale.ENGLISH) + input.substring(1)
                 : input.toUpperCase(Locale.ENGLISH);
@@ -472,7 +461,7 @@ public final class StringUtils {
      * @throws IllegalArgumentException if Input is null or empty
      */
     public static String lowercaseFirst(final String input) {
-        if(input == null || input.isEmpty()) throw new IllegalArgumentException("Input cannot be null or empty!");
+        if(input == null || input.trim().isEmpty()) throw new IllegalArgumentException("Input cannot be null or empty!");
         return input.length() > 1
                 ? input.substring(0, 1).toLowerCase(Locale.ENGLISH) + input.substring(1)
                 : input.toLowerCase(Locale.ENGLISH);
@@ -485,15 +474,12 @@ public final class StringUtils {
      * @throws IllegalArgumentException if Input is null or empty
      */
     public static String toTitleCase(final String input) {
-        if(input == null || input.isEmpty()) throw new IllegalArgumentException("Input cannot be null or empty!");
-        final String[] words = input.trim().split(" ");
-        final StringBuilder sb = new StringBuilder();
-
-        for(final String word : words) {
-            sb.append(Character.toUpperCase(word.charAt(0)))
-                    .append(word.substring(1)).append(' ');
-        }
-        return sb.toString().trim();
+        if(input == null || input.trim().isEmpty()) throw new IllegalArgumentException("Input cannot be null or empty!");
+        final var words = input.trim().split(" ");
+        return Arrays.stream(words)
+                .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1) + ' ')
+                .collect(Collectors.joining())
+                .trim();
     }
 
     /**

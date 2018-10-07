@@ -1,5 +1,6 @@
 package com.jgcomptech.tools.demo;
 
+import com.jgcomptech.tools.ComputerInfo;
 import com.jgcomptech.tools.authc.AuthManager;
 import com.jgcomptech.tools.authc.UserManager;
 import com.jgcomptech.tools.authc.UserRoleManager;
@@ -63,20 +64,20 @@ public class Main extends Application {
         print("-----Java Ultimate Tools " + model.getVersion() + "------");
         print("-------Created by " + model.getOrganization().getName() + "------");
         print("------------------------------------");
-            /*print("Loading Computer Info Please Wait...");
-            final ComputerInfo compInfo = new ComputerInfo();
-            print("");
-            print(compInfo.OS.InstallInfo().NameExpandedFromRegistry());*/
-        //print("------------------------------------");
+        print("Loading Computer Info Please Wait...");
+        final var compInfo = new ComputerInfo();
+        print("");
+        print(compInfo.OS.InstallInfo().NameExpandedFromRegistry());
+        print("------------------------------------");
         print("");
         print("Creating New Database userdb.db...");
         print("------------------------------------");
 
         permissionsManager();
 
-        subjectAuth();
-
         basicAuth();
+
+        subjectAuth();
 
         Platform.exit();
     }
@@ -104,12 +105,12 @@ public class Main extends Application {
 
         print("Is \"admin:change_settings\" enabled: " + permissionManager.isPermissionEnabled(custom));
 
-//        permissionManager.setPermissionOnEnabled(custom, e -> {
-//            System.out.println("EVENT: Permission " + e.getPermission().getName() + " Enabled!");
-//        });
-//        permissionManager.setPermissionOnDisabled(custom, e -> {
-//            System.out.println("EVENT: Permission " + e.getPermission().getName() + " Disabled!");
-//        });
+        permissionManager.setPermissionOnEnabled(custom, e -> {
+            System.out.println("EVENT: Permission " + e.getPermission().getName() + " Enabled!");
+        });
+        permissionManager.setPermissionOnDisabled(custom, e -> {
+            System.out.println("EVENT: Permission " + e.getPermission().getName() + " Disabled!");
+        });
 
         print("Disabling \"admin\" Permission...");
         permissionManager.setAdminPermission(false);
@@ -118,6 +119,10 @@ public class Main extends Application {
     }
 
     private void subjectAuth() throws SQLException {
+        print("");
+        print("Running Subject Auth Demo...");
+        print("------------------------------------");
+
         try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
             final var manager =
                     AuthManager.getNewInstance(db, null, "Java Ultimate Tools");
@@ -140,6 +145,7 @@ public class Main extends Application {
 
             //manager.setPasswordExpirationDate("admin", LocalDateTime.now());
             manager.disablePasswordExpiration("admin");
+            //manager.lockUser("admin");
             manager.unlockUser("admin");
 
             print("Admin Password Expired: " + manager.isPasswordExpired("admin"));
@@ -157,7 +163,7 @@ public class Main extends Application {
             final var result = subject.login(token);
             if(!result) print("Login Failed!");
             else {
-                //print("Changed Admin Password To \"pass\": " + subject.setPassword("pass"));
+                print("Changed Admin Password To \"pass\": " + subject.setPassword("pass"));
 
                 print("Attempting to logout user...");
                 if(subject.logout()) print("Logout Succeeded!");
@@ -189,6 +195,8 @@ public class Main extends Application {
 
             print(String.valueOf(subject.getUserRole().getPermissions()));
 
+            print("Changed Admin Password To \"1234\": " + subject.setPassword("1234"));
+
             print("Attempting to logout user...");
             if(subject.logout()) print("Logout Succeeded!");
             else print("Logout Failed!");
@@ -202,6 +210,10 @@ public class Main extends Application {
     }
 
     private void basicAuth() throws SQLException {
+        print("");
+        print("Running Basic Auth Demo with Login Dialog...");
+        print("------------------------------------");
+
         try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
             final var userManager = new UserManager(db, null, "Java Ultimate Tools");
             userManager.createUser("admin", "1234", UserRoleManager.SystemUserRoles.ADMIN);
@@ -213,9 +225,6 @@ public class Main extends Application {
             print("Admin User Role: " + userManager.getUserRole("admin"));
             print("Admin Password Matches \"1234\": "
                     + userManager.checkPasswordMatches("admin", "1234"));
-
-            print("Changed Admin Password To \"pass\": "
-                    + userManager.setPassword("admin", "pass"));
 
             userManager.getSessionManager().enableDebugLogging();
             userManager.getSessionManager().enableDefaultErrorMessages();

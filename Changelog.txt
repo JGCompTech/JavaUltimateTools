@@ -1,3 +1,19 @@
+Version 1.5.0 changes (10/07/2018):
+* Updated JDK to Java 10
+* Login Dialogs now don't require the use of Platform.runLater()
+* Message Boxes now don't require the use of Platform.runLater()
+* Message Box Default button is now in the right order.
+* Massive changes to authentication and permissions system
+* Renamed jbdc to jdbc
+* Removed all deprecated methods from 1.4.0
+* Updated javadoc
+* Replaced some loops with streams
+* Added trim to all string isEmpty checks
+* Added UTF_8 protection
+* Added ExceptionUtils class for use in junit tests
+* All password hashing now uses BCrypt replacing SHA-512
+* Other minor fixes
+
 Version 1.4.2 changes (1/23/2018):
 * Fixed fatal error with isUserLoggedIn method
 

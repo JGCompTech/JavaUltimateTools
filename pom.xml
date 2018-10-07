@@ -154,13 +154,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <doclet>ch.raffael.doclets.pegdown.PegdownDoclet</doclet>
-                    <docletArtifact>
-                        <groupId>ch.raffael.pegdown-doclet</groupId>
-                        <artifactId>pegdown-doclet</artifactId>
-                        <version>1.3</version>
-                    </docletArtifact>
-                    <useStandardDocletOptions>true</useStandardDocletOptions>
                     <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
                     <overview>${basedir}//src/main/javadoc/overview.html</overview>
                 </configuration>

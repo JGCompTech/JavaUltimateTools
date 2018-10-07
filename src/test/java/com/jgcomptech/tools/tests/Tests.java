@@ -54,6 +54,7 @@ public class Tests {
     }
 
     /** Tests the {@link PermissionManager} class. */
+    @Test
     public void TestPermissionManager() {
         final var manager = PermissionManager.getInstance();
 
@@ -171,7 +172,7 @@ public class Tests {
     /** Tests the {@link SessionManager} class and runs {@link Tests#TestPermissionManager}. */
     @Test
     public void TestSessionManager() {
-        TestPermissionManager();
+        //TestPermissionManager();
 
         try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
             final var userManager = new UserManager(db);

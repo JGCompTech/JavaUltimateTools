@@ -3,4 +3,9 @@ language: java
 jdk:
   - oraclejdk10
 
+script: "mvn cobertura:cobertura"
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+
 install: mvn install -Dgpg.skip

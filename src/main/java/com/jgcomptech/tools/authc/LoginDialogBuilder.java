@@ -131,7 +131,7 @@ final class LoginDialogBuilder {
      * @param loginError the error to set
      */
     private void requestDialog(final LoginErrors loginError) {
-        //Save previous tital and icon path
+        //Save previous title and icon path
         var dialogTitle = "";
         var dialogIconPath = "";
         if(dialog != null) {

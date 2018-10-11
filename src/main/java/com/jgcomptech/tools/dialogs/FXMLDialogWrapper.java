@@ -121,7 +121,7 @@ public final class FXMLDialogWrapper<ReturnType, Controller extends Initializabl
             if(title.trim().isEmpty()) throw new IllegalArgumentException("Title cannot be an empty string.");
             else dialogStage.setTitle(title);
         }
-        if(title != null) {
+        if(title != null && icon != null) {
             if(icon.isError()) throw new IllegalArgumentException("Icon cannot have loading errors.");
             else dialogStage.getIcons().add(icon);
         }

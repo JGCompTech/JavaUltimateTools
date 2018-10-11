@@ -229,15 +229,14 @@ public final class Permission extends EventTarget<PermissionEvent> implements Se
      */
     public boolean copyToNewParent(final String newParentName) {
         final var baseName = getBaseName(name.get());
-        if(!manager.getPermissions().containsKey(newParentName + ":" + baseName)) {
-            if(manager.addCustomPermission(baseName, newParentName)) {
-                final var newPermission = manager.getPermission(newParentName + ":" + baseName);
-                newPermission.setOnEnabled(getOnEnabled());
-                newPermission.setOnDisabled(getOnDisabled());
-                copyChildPermissions(newParentName + ":" + baseName,
-                        childPermissions, newPermission.childPermissions);
-                return true;
-            }
+        if(!manager.getPermissions().containsKey(newParentName + ":" + baseName)
+        && manager.addCustomPermission(baseName, newParentName)) {
+            final var newPermission = manager.getPermission(newParentName + ":" + baseName);
+            newPermission.setOnEnabled(getOnEnabled());
+            newPermission.setOnDisabled(getOnDisabled());
+            copyChildPermissions(newParentName + ":" + baseName,
+                    childPermissions, newPermission.childPermissions);
+            return true;
         }
         return false;
     }

@@ -172,7 +172,7 @@ public class Event implements Cloneable, Serializable {
             return super.clone();
         } catch (final CloneNotSupportedException e) {
             // we implement Cloneable, this shouldn't happen
-            throw new RuntimeException("Can't clone Event");
+            throw new IllegalStateException("Can't clone Event");
         }
     }
 

@@ -2,7 +2,6 @@ package com.jgcomptech.tools.tests;
 
 import com.jgcomptech.tools.ExceptionUtils;
 import com.jgcomptech.tools.Misc;
-import com.jgcomptech.tools.SecurityTools;
 import com.jgcomptech.tools.authc.SessionManager;
 import com.jgcomptech.tools.authc.UserManager;
 import com.jgcomptech.tools.authc.UserRoleManager;
@@ -16,8 +15,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 import static com.jgcomptech.tools.SecurityTools.RSAHashes.*;
 import static org.junit.Assert.*;
@@ -25,7 +22,7 @@ import static org.junit.Assert.*;
 public class Tests {
     /** Tests the {@link Misc#ConvertBytes(double)} method. */
     @Test
-    public void TestConvertBytes() {
+    public void testConvertBytes() {
         var result = Misc.ConvertBytes(107374182400d);
         assertEquals(result, "100 GB");
 
@@ -37,11 +34,12 @@ public class Tests {
     }
 
     /**
-     * Tests the {@link SecurityTools.RSAHashes#encryptToString(PublicKey, String)} and
-     * {@link SecurityTools.RSAHashes#decryptFromString(PrivateKey, String)} methods.
+     * Tests the {@link com.jgcomptech.tools.SecurityTools.RSAHashes#encryptToString(java.security.PublicKey, String)}
+     * and {@link com.jgcomptech.tools.SecurityTools.RSAHashes#decryptFromString(java.security.PrivateKey, String)}
+     * methods.
      */
     @Test
-    public void TestRSAEncryptDecrypt() {
+    public void testRSAEncryptDecrypt() {
         try {
             final var pair = generateKeyPair();
             final var message = "Hello World";
@@ -55,7 +53,7 @@ public class Tests {
 
     /** Tests the {@link PermissionManager} class. */
     @Test
-    public void TestPermissionManager() {
+    public void testPermissionManager() {
         final var manager = PermissionManager.getInstance();
 
         try {
@@ -169,9 +167,9 @@ public class Tests {
 //        assertTrue(manager.isPermissionDisabled("1"));
     }
 
-    /** Tests the {@link SessionManager} class and runs {@link Tests#TestPermissionManager}. */
+    /** Tests the {@link SessionManager} class and runs {@link Tests#testPermissionManager}. */
     @Test
-    public void TestSessionManager() {
+    public void testSessionManager() {
         //TestPermissionManager();
 
         try(final var db = new Database("./userdb.db", DatabaseType.H2)) {

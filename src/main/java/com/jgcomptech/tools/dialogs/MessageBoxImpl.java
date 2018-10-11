@@ -336,10 +336,8 @@ final class MessageBoxImpl {
         alert.setHeaderText(headerText);
         alert.setTitle(title);
         result = alert.showAndWait();
-        if(result.isPresent()) {
-            if(result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                return DialogResult.OK;
-            }
+        if(result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+            return DialogResult.OK;
         }
 
         return DialogResult.NONE;
@@ -523,7 +521,7 @@ final class MessageBoxImpl {
     private static Alert setDefaultButton(final Alert alert, final ButtonType type) {
         final var pane = alert.getDialogPane();
         for (final var t : alert.getButtonTypes())
-            ((Button) pane.lookupButton(t)).setDefaultButton(t == type);
+            ((Button) pane.lookupButton(t)).setDefaultButton(t.equals(type));
         return alert;
     }
 

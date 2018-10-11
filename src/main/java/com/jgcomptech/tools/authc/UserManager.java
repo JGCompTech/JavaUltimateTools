@@ -240,7 +240,7 @@ public final class UserManager {
             if(db.getInfo().tableExists(TABLE_NAME)) {
                 try (final var rs = TypedStatement.newQuery().SELECT_ALL().FROM(TABLE_NAME).buildAndExecute(db)) {
                     while(rs.next()) {
-                        if (rs.getString(USERNAME_FIELD).toLowerCase().equals(username)) return true;
+                        if (rs.getString(USERNAME_FIELD).equalsIgnoreCase(username)) return true;
                     }
                 }
             } else throw new TableNotFoundException(TABLE_NAME);

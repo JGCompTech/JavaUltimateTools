@@ -75,7 +75,7 @@ public final class HWInfo {
         public static String getInternalIPAddress() {
             try {
                 final var ip = (InetAddress.getLocalHost().getHostAddress()).trim();
-                return ip.equals("127.0.0.1") ? "N/A" : ip;
+                return "127.0.0.1".equals(ip) ? "N/A" : ip;
             } catch(final UnknownHostException ex) { return ex.getMessage(); }
         }
 
@@ -189,10 +189,8 @@ public final class HWInfo {
                         if(line.contains("Socket(s):")) {
                             sockets = Integer.parseInt(line.split("\\s+")[line.split("\\s+").length - 1]);
                         }
-                    } else if(isWindows()) {
-                        if(line.contains("NumberOfCores")) {
-                            numberOfCores = Integer.parseInt(line.split("=")[1]);
-                        }
+                    } else if(isWindows() && line.contains("NumberOfCores")) {
+                        numberOfCores = Integer.parseInt(line.split("=")[1]);
                     }
                 }
             }

@@ -17,7 +17,7 @@ public class UserManagerTest {
         try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
             final var userManager = new UserManager(db);
             userManager.createUser("jlgager", "1234", UserRoleManager.SystemUserRoles.EDITOR);
-            final var account = userManager.getUser("jlgager");
+            userManager.getUser("jlgager");
             assertTrue(userManager.userExists("jlgager"));
             assertTrue(userManager.getUsernameList().contains("jlgager"));
             assertTrue(CollectionUtils.doesItemExistInCollection(userManager.getUsersList(),

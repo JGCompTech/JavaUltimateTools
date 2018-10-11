@@ -664,27 +664,25 @@ public final class SessionManager extends EventTarget<SessionEvent> {
             throw new IllegalArgumentException("Username cannot be null or empty!");
         }
 
-        if(isNewSessionAllowed(username, multiSession)) {
-            if (userManager.userExists(username)) {
-                final var account = userManager.getUser(username);
-                if(!account.isLocked()) {
-                    if(!account.isPasswordExpired()) {
-                        eventLoginSuccess.fireEvent(this, account);
-                        final var role = userManager.getUserRole(username);
-                        if (role.isEnabled()) {
-                            final var newSession = new Session(username, role);
-                            if (multiSession) multiUserSessions.put(username, newSession);
-                            else {
-                                PermissionManager.getInstance().loadPermissions(role);
-                                currentSession = newSession;
-                            }
-                            if (multiSession) eventMultiSessionOpened.fireEvent(this, account, newSession);
-                            else eventSessionOpened.fireEvent(this, account, newSession);
-                            return true;
-                        } else throw new IllegalStateException("User Role " + role + " Is Disabled!");
-                    } else throw new ExpiredCredentialsException("User " + username + "'s password has expired!");
-                } else throw new LockedAccountException("User " + username + " is locked!");
-            }
+        if(isNewSessionAllowed(username, multiSession) && userManager.userExists(username)) {
+            final var account = userManager.getUser(username);
+            if(!account.isLocked()) {
+                if(!account.isPasswordExpired()) {
+                    eventLoginSuccess.fireEvent(this, account);
+                    final var role = userManager.getUserRole(username);
+                    if (role.isEnabled()) {
+                        final var newSession = new Session(username, role);
+                        if (multiSession) multiUserSessions.put(username, newSession);
+                        else {
+                            PermissionManager.getInstance().loadPermissions(role);
+                            currentSession = newSession;
+                        }
+                        if (multiSession) eventMultiSessionOpened.fireEvent(this, account, newSession);
+                        else eventSessionOpened.fireEvent(this, account, newSession);
+                        return true;
+                    } else throw new IllegalStateException("User Role " + role + " Is Disabled!");
+                } else throw new ExpiredCredentialsException("User " + username + "'s password has expired!");
+            } else throw new LockedAccountException("User " + username + " is locked!");
         }
         return false;
     }

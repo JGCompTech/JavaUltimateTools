@@ -23,18 +23,6 @@ public final class EventManager {
         return instance;
     }
 
-    private Event registerNewEvent(final String eventName,
-                                   final EventTarget<? extends Event> target) {
-        if (eventName == null || eventName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Event name cannot be null!");
-        }
-        if (target == null) {
-            throw new IllegalArgumentException("Event target cannot be null!");
-        }
-
-        return events.put(eventName, new Event(target));
-    }
-
     public <T extends Event> T registerNewEvent(final String eventName,
                                                 final Class<T> classRef,
                                                 final EventType<? extends T> eventType)

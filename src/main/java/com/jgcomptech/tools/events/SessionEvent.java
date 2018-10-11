@@ -10,10 +10,6 @@ import java.util.List;
  * @since 1.4.0
  */
 public class SessionEvent extends Event {
-    private Session session;
-    public Session getSession() { return session; }
-    private UserAccount user;
-    public UserAccount getUser() { return user; }
     /** Common supertype for all permission event types. */
     public static final EventType<SessionEvent> ANY = new EventType<>(Event.ANY, "SESSION");
 
@@ -46,6 +42,13 @@ public class SessionEvent extends Event {
 
     public static final EventType<SessionEvent> SESSION_USER_VERIFY_FAILURE
             = ANY.createSubType("SESSION_USER_VERIFY_FAILURE");
+
+
+    private Session session;
+    private UserAccount user;
+
+    public Session getSession() { return session; }
+    public UserAccount getUser() { return user; }
 
     /**
      * Construct a new {@code Event} with the specified event target and type.

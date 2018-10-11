@@ -60,16 +60,16 @@ public final class Subject {
         if(authManager.userExists(token.getUsername())) {
             final var account = authManager.getUser(token.getUsername());
             username = token.getUsername();
+            final var password = token.getPassword();
             if (getSession(multiSession) == null) {
-                if (authManager.checkPasswordMatches(token.getUsername(), new String(token.getPassword()))) {
-                    if(authManager.loginUser(token.getUsername())) {
-                        if(token.isRememberMe()) {
-                            remembered = true;
-                            this.token = new UsernamePasswordToken(token.getUsername(), token.getPassword());
-                        }
-                        token.clear();
-                        return true;
+                if (authManager.checkPasswordMatches(username, new String(password))
+                        && authManager.loginUser(username)) {
+                    if(token.isRememberMe()) {
+                        remembered = true;
+                        this.token = new UsernamePasswordToken(username, password);
                     }
+                    token.clear();
+                    return true;
                 }
                 authManager.getSessionManager().getEvents().getEventLoginFailure().fireEvent(this, account);
                 token.clear();

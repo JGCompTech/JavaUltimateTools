@@ -9,8 +9,6 @@ import java.util.List;
  * @since 1.4.0
  */
 public class PermissionEvent extends Event {
-    private Permission permission;
-    public Permission getPermission() { return permission; }
     /** Common supertype for all permission event types. */
     public static final EventType<PermissionEvent> ANY = new EventType<>(Event.ANY, "PERMISSION");
 
@@ -25,6 +23,9 @@ public class PermissionEvent extends Event {
 
     public static final EventType<PermissionEvent> PERMISSIONS_ALL_DISABLED =
             ANY.createSubType("PERMISSIONS_ALL_DISABLED");
+
+    private Permission permission;
+    public Permission getPermission() { return permission; }
 
     /**
      * Construct a new {@code Event} with the specified event target, type and args.

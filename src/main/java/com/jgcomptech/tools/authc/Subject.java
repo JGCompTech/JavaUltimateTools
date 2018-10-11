@@ -210,7 +210,7 @@ public final class Subject {
     public String getUsername() { return username; }
 
     /**
-     * Sets a new password for the user using SHA-512 password hashing.
+     * Sets a new password for the user using BCrypt password hashing.
      * @param password the new password
      * @return true if password is changed successfully
      */
@@ -224,7 +224,7 @@ public final class Subject {
 
     /**
      * Returns the user role of the currently assigned username.
-     * @return the user type of the currently assigned username
+     * @return the user role of the currently assigned username
      */
     public UserRole getUserRole() {
         assertNotAnonymous();

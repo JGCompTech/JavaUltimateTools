@@ -657,6 +657,7 @@ public final class SessionManager extends EventTarget<SessionEvent> {
      * @throws LockedAccountException if the user account is locked
      * @since 1.5.0
      */
+    //TODO create a method for multi-user context that accepts a UsernameLoginToken
     public boolean loginUser(final String username, final boolean multiSession)
             throws IllegalStateException, ExpiredCredentialsException, LockedAccountException {
         if(username == null || username.trim().isEmpty()) {

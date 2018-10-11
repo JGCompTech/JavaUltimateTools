@@ -439,13 +439,13 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
     }
 
     /**
-     * Sets the correct permissions according to the specified user type.
+     * Sets the correct permissions according to the specified user role.
      * @param userRole the user role to use to set permissions
      */
     public void loadPermissions(final UserRoleManager.SystemUserRoles userRole) { loadPermissions(userRole.getRole()); }
 
     /**
-     * Sets the correct permissions according to the specified user type.
+     * Sets the correct permissions according to the specified user role.
      * @param userRole the user role to use to set permissions
      * @since 1.5.0 now uses a parallel stream allowing a large list of permissions
      */

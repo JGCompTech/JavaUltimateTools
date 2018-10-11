@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+//TODO Create resetInstance() method to allow a new instance to be initialized.
+
 /**
  * Manages all tasks related to a user account including sessions and user roles.
  * @since 1.5.0
@@ -84,7 +86,7 @@ public final class AuthManager {
 
     //region User Manager Methods
     /**
-     * Creates a new user in the database using SHA-512 password hashing.
+     * Creates a new user in the database using BCrypt password hashing.
      * @param username the username to add
      * @param password the password for the new user
      * @param userRole the system user role for the new user
@@ -101,7 +103,7 @@ public final class AuthManager {
     }
 
     /**
-     * Creates a new user in the database using SHA-512 password hashing.
+     * Creates a new user in the database using BCrypt password hashing.
      * @param username the username to add
      * @param password the password for the new user
      * @param userRole the name of the user role for the new user
@@ -169,6 +171,7 @@ public final class AuthManager {
      * @throws TableNotFoundException if users table is missing
      * @throws UserManagerException if an error occurs during lookup
      */
+    //TODO create UserManager implementation to reduce database activity
     public boolean isUserLocked(final String username) { return getUser(username).isLocked(); }
 
     /**
@@ -212,6 +215,7 @@ public final class AuthManager {
      * @throws TableNotFoundException if users table is missing
      * @throws UserManagerException if an error occurs during lookup
      */
+    //TODO create UserManager implementation to reduce database activity
     public boolean isPasswordExpired(final String username) { return getUser(username).isPasswordExpired(); }
 
     /**
@@ -222,6 +226,7 @@ public final class AuthManager {
      * @throws TableNotFoundException if users table is missing
      * @throws UserManagerException if an error occurs during lookup
      */
+    //TODO create UserManager implementation to reduce database activity
     public boolean isPasswordSetToExpire(final String username) { return getUser(username).hasPasswordExpiration(); }
 
     /**
@@ -232,6 +237,7 @@ public final class AuthManager {
      * @throws TableNotFoundException if users table is missing
      * @throws UserManagerException if an error occurs during lookup
      */
+    //TODO create UserManager implementation to reduce database activity
     public LocalDateTime getPasswordExpirationDate(final String username) {
         return getUser(username).getPasswordExpirationDate();
     }
@@ -245,6 +251,7 @@ public final class AuthManager {
      * @throws TableNotFoundException if users table is missing
      * @throws UserManagerException if an error occurs during lookup
      */
+    //TODO create UserManager implementation to reduce database activity
     public String getPasswordExpirationDate(final String username, final String format) {
         if(format == null || format.trim().isEmpty()) {
             throw new IllegalArgumentException("Format Cannot Be Null Or Empty!");
@@ -304,7 +311,7 @@ public final class AuthManager {
      * @return true if no errors occurred
      * @throws IllegalArgumentException if values are null or empty
      * @throws TableNotFoundException if users table is missing
-     * @throws UserManagerException if an error occurs while changing user type
+     * @throws UserManagerException if an error occurs while changing user role
      */
     public boolean setUserRole(final String username,
                                final UserRoleManager.SystemUserRoles userRole) {
@@ -318,14 +325,14 @@ public final class AuthManager {
      * @return true if no errors occurred
      * @throws IllegalArgumentException if values are null or empty
      * @throws TableNotFoundException if users table is missing
-     * @throws UserManagerException if an error occurs while changing user type
+     * @throws UserManagerException if an error occurs while changing user role
      */
     public boolean setUserRole(final String username, final String userRole) {
         return userManager.setUserRole(username, userRole);
     }
 
     /**
-     * Sets a new password for an existing user using SHA-512 password hashing.
+     * Sets a new password for an existing user using BCrypt password hashing.
      * @param username the username to change
      * @param password the new password
      * @return true if password is changed successfully
@@ -361,8 +368,8 @@ public final class AuthManager {
     public HashSet<UserAccount> getUsersList() { return userManager.getUsersList(); }
 
     /**
-     * Returns a list of the user names in the database.
-     * @return a list of the user names in the database
+     * Returns a list of the usernames in the database.
+     * @return a list of the usernames in the database
      * @throws TableNotFoundException if users table is missing
      */
     public HashSet<String> getUsernameList() { return userManager.getUsernameList(); }

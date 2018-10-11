@@ -71,6 +71,7 @@ public final class UserManager {
         try {
             if(!db.getInfo().tableExists(TABLE_NAME)) {
                 //The password field is 150 chars in length due to the length of a SHA-512 hash
+                //TODO check if 150 chars is too excessive since changing to BCrypt
                 TypedStatement.newTable()
                         .CREATE(TABLE_NAME, db)
                         .addColumn(new ColumnBuilder(ID_FIELD, DataTypes.INTEGER).notNull().primaryKey().autoIncrement())
@@ -93,7 +94,7 @@ public final class UserManager {
     }
 
     /**
-     * Creates a new user in the database using SHA-512 password hashing.
+     * Creates a new user in the database using BCrypt password hashing.
      * @param username the username to add
      * @param password the password for the new user
      * @param userRole the system user role for the new user
@@ -119,7 +120,7 @@ public final class UserManager {
     }
 
     /**
-     * Creates a new user in the database using SHA-512 password hashing.
+     * Creates a new user in the database using BCrypt password hashing.
      * @param username the username to add
      * @param password the password for the new user
      * @param userRole the name of the user role for the new user
@@ -248,9 +249,9 @@ public final class UserManager {
     }
 
     /**
-     * Returns userType for the specified username.
+     * Returns user role for the specified username.
      * @param username the username to lookup
-     * @return the userType
+     * @return the user role
      * @throws IllegalArgumentException if username is null or empty or if username does not exist
      * @throws TableNotFoundException if users table is missing
      * @throws UserManagerException if error occurs during lookup
@@ -278,13 +279,13 @@ public final class UserManager {
     }
 
     /**
-     * Sets the user type of the specified user.
+     * Sets the user role of the specified user.
      * @param username the username of the user to update
      * @param userRole the system user role to change to
      * @return true if no errors occurred
      * @throws IllegalArgumentException if values are null or empty
      * @throws TableNotFoundException if users table is missing
-     * @throws UserManagerException if an error occurs while changing user type
+     * @throws UserManagerException if an error occurs while changing user role
      */
     public boolean setUserRole(final String username,
                                final UserRoleManager.SystemUserRoles userRole) {
@@ -298,13 +299,13 @@ public final class UserManager {
     }
 
     /**
-     * Sets the user type of the specified user.
+     * Sets the user role of the specified user.
      * @param username the username of the user to update
      * @param userRole the name of the user role to change to
      * @return true if no errors occurred
      * @throws IllegalArgumentException if values are null or empty
      * @throws TableNotFoundException if users table is missing
-     * @throws UserManagerException if an error occurs while changing user type
+     * @throws UserManagerException if an error occurs while changing user role
      */
     public boolean setUserRole(final String username, final String userRole) {
         if(username == null || username.trim().isEmpty()) {
@@ -327,7 +328,7 @@ public final class UserManager {
     }
 
     /**
-     * Sets a new password for an existing user using SHA-512 password hashing.
+     * Sets a new password for an existing user using BCrypt password hashing.
      * @param username the username to change
      * @param password the new password
      * @return true if password is changed successfully

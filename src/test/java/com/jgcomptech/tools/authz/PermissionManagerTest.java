@@ -58,31 +58,31 @@ public class PermissionManagerTest {
         assertTrue(manager.isCreatePermissionEnabled());
         assertTrue(manager.isReadPermissionEnabled());
 
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.NONE);
-        assertFalse(manager.isAdminPermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isCreatePermissionEnabled());
-        assertFalse(manager.isReadPermissionEnabled());
         manager.loadPermissions(UserRoleManager.SystemUserRoles.ADMIN);
+        assertTrue(manager.isReadPermissionEnabled());
+        assertTrue(manager.isCreatePermissionEnabled());
+        assertTrue(manager.isEditPermissionEnabled());
         assertTrue(manager.isAdminPermissionEnabled());
-        assertTrue(manager.isEditPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isReadPermissionEnabled());
         manager.loadPermissions(UserRoleManager.SystemUserRoles.EDITOR);
-        assertFalse(manager.isAdminPermissionEnabled());
+        assertTrue(manager.isReadPermissionEnabled());
+        assertTrue(manager.isCreatePermissionEnabled());
         assertTrue(manager.isEditPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isReadPermissionEnabled());
+        assertFalse(manager.isAdminPermissionEnabled());
         manager.loadPermissions(UserRoleManager.SystemUserRoles.AUTHOR);
-        assertFalse(manager.isAdminPermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
+        assertTrue(manager.isReadPermissionEnabled());
         assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isReadPermissionEnabled());
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.BASIC);
-        assertFalse(manager.isAdminPermissionEnabled());
         assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isCreatePermissionEnabled());
+        assertFalse(manager.isAdminPermissionEnabled());
+        manager.loadPermissions(UserRoleManager.SystemUserRoles.BASIC);
         assertTrue(manager.isReadPermissionEnabled());
+        assertFalse(manager.isCreatePermissionEnabled());
+        assertFalse(manager.isEditPermissionEnabled());
+        assertFalse(manager.isAdminPermissionEnabled());
+        manager.loadPermissions(UserRoleManager.SystemUserRoles.NONE);
+        assertFalse(manager.isReadPermissionEnabled());
+        assertFalse(manager.isCreatePermissionEnabled());
+        assertFalse(manager.isEditPermissionEnabled());
+        assertFalse(manager.isAdminPermissionEnabled());
 
         assertEquals(4, manager.getPermissionsNames().size());
 

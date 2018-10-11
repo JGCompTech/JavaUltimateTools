@@ -2,9 +2,7 @@ package com.jgcomptech.tools.authc;
 
 import com.jgcomptech.tools.authz.PermissionManager;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -40,10 +38,10 @@ public final class UserRoleManager {
         SystemUserRoles.BASIC.getRole().modify().add(Read);
 
         addExistingUserRole(SystemUserRoles.ADMIN.getRole());
-        addExistingUserRole(SystemUserRoles.EDITOR.role);
-        addExistingUserRole(SystemUserRoles.AUTHOR.role);
-        addExistingUserRole(SystemUserRoles.BASIC.role);
-        addExistingUserRole(SystemUserRoles.NONE.role);
+        addExistingUserRole(SystemUserRoles.EDITOR.getRole());
+        addExistingUserRole(SystemUserRoles.AUTHOR.getRole());
+        addExistingUserRole(SystemUserRoles.BASIC.getRole());
+        addExistingUserRole(SystemUserRoles.NONE.getRole());
     }
 
     /** A List of the implemented system user roles. */
@@ -109,7 +107,7 @@ public final class UserRoleManager {
      * Returns a list of the current existing user roles.
      * @return a list of the current existing user roles
      */
-    public HashMap<String, UserRole> getUserRoles() { return userRoles; }
+    public Map<String, UserRole> getUserRoles() { return Collections.unmodifiableMap(userRoles); }
 
     /**
      * Returns the specified user role.

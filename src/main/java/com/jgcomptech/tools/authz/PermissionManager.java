@@ -7,10 +7,7 @@ import com.jgcomptech.tools.events.EventManager;
 import com.jgcomptech.tools.events.EventTarget;
 import com.jgcomptech.tools.events.PermissionEvent;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,10 +35,10 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
         if(instance == null) {
             instance = new PermissionManager();
             instance.permissions = new HashMap<>();
-            instance.addCustomPermission(SystemPermissions.Admin.name, null);
-            instance.addCustomPermission(SystemPermissions.Edit.name, null);
-            instance.addCustomPermission(SystemPermissions.Create.name, null);
-            instance.addCustomPermission(SystemPermissions.Read.name, null);
+            instance.addCustomPermission(SystemPermissions.Admin.getName(), null);
+            instance.addCustomPermission(SystemPermissions.Edit.getName(), null);
+            instance.addCustomPermission(SystemPermissions.Create.getName(), null);
+            instance.addCustomPermission(SystemPermissions.Read.getName(), null);
 
             try {
                 instance.eventPermissionsApplied =
@@ -162,68 +159,68 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * Returns true if Admin permission is enabled.
      * @return true if Admin permission is enabled
      */
-    public boolean isAdminPermissionEnabled() { return permissions.get(SystemPermissions.Admin.name).isEnabled(); }
+    public boolean isAdminPermissionEnabled() { return permissions.get(SystemPermissions.Admin.getName()).isEnabled(); }
     /**
      * Returns true if Edit permission is enabled.
      * @return true if Edit permission is enabled
      */
-    public boolean isEditPermissionEnabled() { return permissions.get(SystemPermissions.Edit.name).isEnabled(); }
+    public boolean isEditPermissionEnabled() { return permissions.get(SystemPermissions.Edit.getName()).isEnabled(); }
     /**
      * Returns true if Create permission is enabled.
      * @return true if Create permission is enabled
      */
-    public boolean isCreatePermissionEnabled() { return permissions.get(SystemPermissions.Create.name).isEnabled(); }
+    public boolean isCreatePermissionEnabled() { return permissions.get(SystemPermissions.Create.getName()).isEnabled(); }
     /**
      * Returns true if Read permission is enabled.
      * @return true if Read permission is enabled
      */
-    public boolean isReadPermissionEnabled() { return permissions.get(SystemPermissions.Read.name).isEnabled(); }
+    public boolean isReadPermissionEnabled() { return permissions.get(SystemPermissions.Read.getName()).isEnabled(); }
 
     /**
      * Manually sets the status of the Admin permission.
      * @param value the value to set
      */
     public void setAdminPermission(final boolean value) {
-        permissions.get(SystemPermissions.Admin.name).setEnabled(value); }
+        permissions.get(SystemPermissions.Admin.getName()).setEnabled(value); }
     /**
      * Manually sets the status of the Edit permission.
      * @param value the value to set
      */
     public void setEditPermission(final boolean value) {
-        permissions.get(SystemPermissions.Edit.name).setEnabled(value); }
+        permissions.get(SystemPermissions.Edit.getName()).setEnabled(value); }
     /**
      * Manually sets the status of the Create permission.
      * @param value the value to set
      */
     public void setCreatePermission(final boolean value) {
-        permissions.get(SystemPermissions.Create.name).setEnabled(value); }
+        permissions.get(SystemPermissions.Create.getName()).setEnabled(value); }
     /**
      * Manually sets the status of the Read permission.
      * @param value the value to set
      */
     public void setReadPermission(final boolean value) {
-        permissions.get(SystemPermissions.Read.name).setEnabled(value); }
+        permissions.get(SystemPermissions.Read.getName()).setEnabled(value); }
 
     /**
      * Returns the Admin permission.
      * @return the permission object
      */
-    public Permission getAdminPermission() { return permissions.get(SystemPermissions.Admin.name); }
+    public Permission getAdminPermission() { return permissions.get(SystemPermissions.Admin.getName()); }
     /**
      * Returns the Edit permission.
      * @return the permission object
      */
-    public Permission getEditPermission() { return permissions.get(SystemPermissions.Edit.name); }
+    public Permission getEditPermission() { return permissions.get(SystemPermissions.Edit.getName()); }
     /**
      * Returns the Create permission.
      * @return the permission object
      */
-    public Permission getCreatePermission() { return permissions.get(SystemPermissions.Create.name); }
+    public Permission getCreatePermission() { return permissions.get(SystemPermissions.Create.getName()); }
     /**
      * Returns the Read permission.
      * @return the permission object
      */
-    public Permission getReadPermission() { return permissions.get(SystemPermissions.Read.name); }
+    public Permission getReadPermission() { return permissions.get(SystemPermissions.Read.getName()); }
 
     //endregion System Permissions
 
@@ -231,7 +228,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * Returns a HashMap of all existing permission objects.
      * @return a HashMap of all existing permission objects
      */
-    public HashMap<String, Permission> getPermissions() { return permissions; }
+    public Map<String, Permission> getPermissions() { return permissions; }
 
     /**
      * Returns a list of names of existing permissions.
@@ -450,10 +447,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * @since 1.5.0 now uses a parallel stream allowing a large list of permissions
      */
     public void loadPermissions(final UserRole userRole) {
-        getAdminPermission().disable();
-        getEditPermission().disable();
-        getCreatePermission().disable();
-        getReadPermission().disable();
+        permissions.values().parallelStream().forEach(Permission::disable);
         userRole.getPermissions().parallelStream().forEach(this::enablePermission);
         eventPermissionsApplied.fireEvent(this, userRole);
     }

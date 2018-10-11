@@ -664,7 +664,7 @@ public final class AuthManager {
      * Returns a list of the current existing roles.
      * @return a list of the current existing roles
      */
-    public HashMap<String, UserRole> getRoles() { return userRoleManager.getUserRoles(); }
+    public Map<String, UserRole> getRoles() { return userRoleManager.getUserRoles(); }
 
     /**
      * Returns the specified role.

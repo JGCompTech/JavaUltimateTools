@@ -234,7 +234,7 @@ public class DeleteBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if any record exists in the sub query
      * and if this is not the first WHERE added it is separated by AND.
-     * @param builder the {@link DeleteBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code DeleteBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public DeleteBuilder WHERE_EXISTS(final QueryBuilder builder) {
@@ -246,7 +246,7 @@ public class DeleteBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if any record exists in the sub query
      * and if this is not the first WHERE added it is separated by OR.
-     * @param builder the {@link DeleteBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code DeleteBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public DeleteBuilder WHERE_EXISTS_OR(final QueryBuilder builder) {
@@ -258,7 +258,7 @@ public class DeleteBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if no records exist in the sub query
      * and if this is not the first WHERE added it is separated by AND.
-     * @param builder the {@link DeleteBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code DeleteBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public DeleteBuilder WHERE_NOT_EXISTS(final QueryBuilder builder) {
@@ -270,7 +270,7 @@ public class DeleteBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if no records exist in the sub query
      * and if this is not the first WHERE added it is separated by OR.
-     * @param builder the {@link DeleteBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code DeleteBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public DeleteBuilder WHERE_NOT_EXISTS_OR(final QueryBuilder builder) {

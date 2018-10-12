@@ -78,7 +78,7 @@ public final class UserRoleManager {
      * @return the new role as a UserRole object
      */
     public UserRole createUserRole(final String name) {
-        if(name == null || name.trim().trim().isEmpty()) {
+        if(name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name Cannot Be Empty!");
         }
 
@@ -115,4 +115,25 @@ public final class UserRoleManager {
      * @return the specified user role
      */
     public UserRole getUserRole(final String name) { return userRoles.get(name); }
+
+    /**
+     * Removes the specified user role.
+     * @param name the name of the user role to remove
+     * @return true if no errors occurred
+     * @since 1.5.1
+     */
+    public boolean removeUserRole(final String name) {
+        if(name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name Cannot Be Empty!");
+        }
+
+        if(SystemUserRoles.getRoles().contains(name)) {
+            throw new IllegalArgumentException(name + " Is A System Role And Cannot Be Removed!");
+        }
+
+        if(userRoles.containsKey(name)) {
+            userRoles.remove(name);
+            return true;
+        } else return false;
+    }
 }

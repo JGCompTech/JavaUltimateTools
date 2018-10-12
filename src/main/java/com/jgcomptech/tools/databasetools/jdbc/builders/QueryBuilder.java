@@ -36,7 +36,7 @@ public class QueryBuilder extends SQLBuilder {
     /**
      * This statement counts all rows in all columns from the result of the the specified query.
      * The result table will have the column name "FinalCount".
-     * @param builder the {@link QueryBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code QueryBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      * @throws IllegalStateException if a select statement has already been specified
      */
@@ -428,7 +428,7 @@ public class QueryBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if any record exists in the sub query
      * and if this is not the first WHERE added it is separated by AND.
-     * @param builder the {@link QueryBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code QueryBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public QueryBuilder WHERE_EXISTS(final QueryBuilder builder) {
@@ -440,7 +440,7 @@ public class QueryBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if any record exists in the sub query
      * and if this is not the first WHERE added it is separated by OR.
-     * @param builder the {@link QueryBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code QueryBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public QueryBuilder WHERE_EXISTS_OR(final QueryBuilder builder) {
@@ -452,7 +452,7 @@ public class QueryBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if no records exist in the sub query
      * and if this is not the first WHERE added it is separated by AND.
-     * @param builder the {@link QueryBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code QueryBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public QueryBuilder WHERE_NOT_EXISTS(final QueryBuilder builder) {
@@ -464,7 +464,7 @@ public class QueryBuilder extends SQLBuilder {
      * Specifies a condition to constrain the SELECT statement that checks
      * if no records exist in the sub query
      * and if this is not the first WHERE added it is separated by OR.
-     * @param builder the {@link QueryBuilder} containing the sql statement to retrieve results from
+     * @param builder the {@code QueryBuilder} containing the sql statement to retrieve results from
      * @return the instance of the builder to continue building
      */
     public QueryBuilder WHERE_NOT_EXISTS_OR(final QueryBuilder builder) {

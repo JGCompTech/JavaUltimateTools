@@ -24,8 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -191,7 +189,7 @@ public class Main extends Application {
             print("Admin has admin:change_settings permission: " +
                     subject.hasPermission("admin:change_settings"));
 
-            print(subject.hasPermissions(new HashSet<>(Arrays.asList("admin", "admin:change_settings"))));
+            print(subject.hasPermissions("admin", "admin:change_settings"));
 
             print(String.valueOf(subject.getUserRole().getPermissions()));
 

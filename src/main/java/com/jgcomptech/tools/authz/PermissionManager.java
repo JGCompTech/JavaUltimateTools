@@ -228,7 +228,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * Returns a HashMap of all existing permission objects.
      * @return a HashMap of all existing permission objects
      */
-    public Map<String, Permission> getPermissions() { return permissions; }
+    public Map<String, Permission> getPermissions() { return Collections.unmodifiableMap(permissions); }
 
     /**
      * Returns a list of names of existing permissions.
@@ -248,7 +248,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
 
     /**
      * Checks if the specified permission exists.
-     * @param name the name of the permisssion to check
+     * @param name the name of the permission to check
      * @return true if the specified permission exists
      * @since 1.5.0
      */
@@ -322,7 +322,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * @return a list of child permissions of the specified permission.
      * Returns null if the permission does not exist.
      */
-    public HashSet<String> getPermissionChildren(final String name) {
+    public Set<String> getPermissionChildren(final String name) {
         return permissions.containsKey(name) ? permissions.get(name).getChildPermissions() : null;
     }
 
@@ -332,6 +332,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * @param parentName the name of the parent permission, null or empty string if none
      * @return false if permission already exists
      */
+    //TODO: Add root permission overload
     public boolean addCustomPermission(final String name, final String parentName) {
         if(name.equals(parentName)) return false;
         else if(parentName == null || parentName.trim().isEmpty()) {
@@ -361,6 +362,7 @@ public final class PermissionManager extends EventTarget<PermissionEvent> {
      * @param parentName the name of the parent permission, null or empty string if none
      * @return false if permission already exists
      */
+    //TODO: Add root permission overload
     public boolean addAndEnableCustomPermission(final String name, final String parentName) {
         if(addCustomPermission(name, parentName)) {
             return parentName == null || parentName.trim().isEmpty()

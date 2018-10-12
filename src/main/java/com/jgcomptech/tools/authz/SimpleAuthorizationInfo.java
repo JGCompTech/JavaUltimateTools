@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ public class SimpleAuthorizationInfo implements AuthorizationInfo {
     @Override
     public Set<String> getRoles() {
         if (roles == null) roles = new HashSet<>();
-        return roles;
+        return Collections.unmodifiableSet(roles);
     }
 
 //    /**

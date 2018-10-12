@@ -7,8 +7,6 @@ import com.jgcomptech.tools.databasetools.jdbc.DatabaseType;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
@@ -90,7 +88,7 @@ public class SubjectTest {
 
             assertTrue(subject.hasPermission("admin:ban_user"));
 
-            assertTrue(subject.hasPermissions(new HashSet<>(Arrays.asList("admin", "admin:ban_user"))));
+            assertTrue(subject.hasPermissions("admin", "admin:ban_user"));
 
             assertTrue(subject.setPassword("1234"));
 

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * An object representing a permission.
@@ -169,7 +170,7 @@ public final class Permission extends EventTarget<PermissionEvent> implements Se
      * Returns a list of child permissions.
      * @return a list of child permissions
      */
-    public HashSet<String> getChildPermissions() { return childPermissions; }
+    public Set<String> getChildPermissions() { return childPermissions; }
 
     /**
      * Checks if the permission has the specified child permission.
@@ -242,8 +243,8 @@ public final class Permission extends EventTarget<PermissionEvent> implements Se
     }
 
     private void copyChildPermissions(final String newParentName,
-                                      final HashSet<String> oldL,
-                                      final HashSet<String> newL) {
+                                      final Set<String> oldL,
+                                      final Set<String> newL) {
         if(!oldL.isEmpty()) {
             for (final var permission : oldL) {
                 newL.add(newParentName + ":" + getBaseName(permission));

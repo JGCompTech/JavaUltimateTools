@@ -8,6 +8,7 @@ import com.jgcomptech.tools.events.SessionEvent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -571,7 +572,7 @@ public final class SessionManager extends EventTarget<SessionEvent> {
      * Returns the current logged in sessions under the multi session context.
      * @return the current logged in sessions under the multi session context
      */
-    public Map<String, Session> getSessions() { return multiUserSessions; }
+    public Map<String, Session> getSessions() { return Collections.unmodifiableMap(multiUserSessions); }
 
     /** Returns the username of the currently logged in user under the single session context.
      * @return the username of the currently logged in user under the single session context

@@ -27,21 +27,44 @@ public final class Subject {
      * Attempts to login the specified user account from the specified token under the single-session context.
      * @param token the username and password token to use for login
      * @return true if login succeeds, false if login fails
+     * @throws CredentialsException if the token is null, if the username or password in the specified token are null
+     * or if the username in the specified token is an empty string
+     * @throws ConcurrentAccessException if user is already logged in under the specified context
      */
     @Contract("null -> fail")
-    public boolean login(final UsernamePasswordToken token) { return login(token, false); }
+    public boolean login(final UsernamePasswordToken token)
+            throws CredentialsException, ConcurrentAccessException { return login(token, false); }
 
     /**
      * Attempts to login the specified user account from the previously saved token under the single-session context.
      * The token is only saved if the previously supplied token had rememberMe set to true.
      * @return true if login succeeds, false if login fails
-     * @throws CredentialsException if no token was previously saved
+     * @throws CredentialsException if no token was previously saved, if the token is null,
+     * if the username or password in the specified token are null
+     * or if the username in the specified token is an empty string
+     * @throws ConcurrentAccessException if user is already logged in under the specified context
      */
-    public boolean login() {
+    public boolean login() throws CredentialsException, ConcurrentAccessException {
+        return login(false);
+    }
+
+    /**
+     * Attempts to login the specified user account from the previously saved token under the single-session context.
+     * The token is only saved if the previously supplied token had rememberMe set to true.
+     * @param multiSession if true, logs in the user under the multi-session context,
+     *                     or if false, under the single-session context
+     * @return true if login succeeds, false if login fails
+     * @throws CredentialsException if no token was previously saved, if the token is null,
+     * if the username or password in the specified token are null
+     * or if the username in the specified token is an empty string
+     * @throws ConcurrentAccessException if user is already logged in under the specified context
+     * @since 1.5.1 new overload
+     */
+    public boolean login(final boolean multiSession) throws CredentialsException, ConcurrentAccessException {
         if(token == null || token.getUsername() == null || token.getPassword() == null) {
             throw new CredentialsException("Subject Credential Token Not Saved!");
         }
-        return login(token, false);
+        return login(token, multiSession);
     }
 
     /**
@@ -50,12 +73,19 @@ public final class Subject {
      * @param multiSession if true, logs in the user under the multi-session context,
      *                     or if false, under the single-session context
      * @return true if login succeeds, false if login fails
+     * @throws CredentialsException if the token is null, if the username or password in the specified token are null
+     * or if the username in the specified token is an empty string
+     * @throws ConcurrentAccessException if user is already logged in under the specified context
      */
     @Contract("null, _ -> fail")
-    public boolean login(final UsernamePasswordToken token, final boolean multiSession) {
+    public boolean login(final UsernamePasswordToken token, final boolean multiSession)
+            throws CredentialsException, ConcurrentAccessException {
         if(token == null) throw new CredentialsException("Login Token cannot be null!");
         if(token.getUsername() == null || token.getPassword() == null) {
             throw new CredentialsException("Login Token Username and Password cannot be null!");
+        }
+        if(token.getUsername().trim().isEmpty()) {
+            throw new CredentialsException("Login Token Username cannot be empty!");
         }
         if(authManager.userExists(token.getUsername())) {
             final var account = authManager.getUser(token.getUsername());
@@ -63,7 +93,7 @@ public final class Subject {
             final var password = token.getPassword();
             if (getSession(multiSession) == null) {
                 if (authManager.checkPasswordMatches(username, new String(password))
-                        && authManager.loginUser(username)) {
+                        && authManager.loginUser(username, multiSession)) {
                     if(token.isRememberMe()) {
                         remembered = true;
                         this.token = new UsernamePasswordToken(username, password);
@@ -166,7 +196,7 @@ public final class Subject {
      * Checks if the subject's assigned username is currently logged in.
      * @return true if the subject's assigned username is currently logged in
      */
-    public boolean isAuthenticated() { return username != null && getSession() != null; }
+    public boolean isAuthenticated() { return !isAnonymous() && getSession() != null; }
 
     /**
      * Checks if the subject's assigned username is currently logged in.
@@ -215,7 +245,7 @@ public final class Subject {
      * @return true if password is changed successfully
      */
     public boolean setPassword(final String password) {
-        assertAuthenticated();
+        assertNotAnonymous();
         if (password == null) {
             throw new IllegalArgumentException("Password cannot be null!");
         }
@@ -247,6 +277,18 @@ public final class Subject {
      * @return true if the currently assigned username has ALL the specified permissions
      */
     public boolean hasPermissions(final HashSet<String> permissionNames) {
+        assertNotAnonymous();
+        return authManager.userHasPermissions(username, permissionNames);
+    }
+
+    /**
+     * Checks if the currently assigned username has ALL the specified permissions.
+     * @param permissionNames a list of all the names of the permissions to check
+     * @return true if the currently assigned username has ALL the specified permissions
+     * @since 1.5.1 new overload
+     */
+    public boolean hasPermissions(final String... permissionNames) {
+        assertNotAnonymous();
         return authManager.userHasPermissions(username, permissionNames);
     }
 
@@ -383,10 +425,12 @@ public final class Subject {
     }
 
     /** Throws an UnknownAccountException if the Subject is anonymous. */
-    private void assertNotAnonymous() { if(isAnonymous()) throw new UnknownAccountException("Subject is anonymous!"); }
+    private void assertNotAnonymous() throws UnknownAccountException {
+        if(isAnonymous()) throw new UnknownAccountException("Subject is anonymous!");
+    }
 
     /** Throws an UnauthenticatedException if the Subject is not authenticated. */
-    private void assertAuthenticated() {
+    private void assertAuthenticated() throws UnauthenticatedException {
         if(!isAuthenticated(false) && !isAuthenticated(true)) {
             throw new UnauthenticatedException("Subject is not authenticated!");
         }

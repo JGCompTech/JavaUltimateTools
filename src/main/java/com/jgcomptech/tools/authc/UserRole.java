@@ -6,7 +6,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An object representing a user account role.
@@ -59,7 +61,7 @@ public class UserRole {
      * Returns a list of permissions assigned to the user role.
      * @return a list of permissions assigned to the user role
      */
-    public HashSet<String> getPermissions() { return permissions; }
+    public Set<String> getPermissions() { return Collections.unmodifiableSet(permissions); }
 
     /**
      * Checks if the user role has the specified permission.
@@ -209,7 +211,7 @@ public class UserRole {
             final var result = role.addPermission(name);
             if(!result) throw new IllegalStateException(
                     "Modification Failed! Could Not Add Permission \""
-                            + name + "\" to user role \"" + role.name + "\"!");
+                            + name + "\" to user role \"" + role.getName() + "\"!");
             return this;
         }
 
@@ -224,7 +226,7 @@ public class UserRole {
             final var result = Arrays.stream(names).allMatch(role::addPermission);
             if(!result) throw new IllegalStateException(
                     "Modification Failed! Could Not Add Permissions \""
-                            + name + "\" to user role \"" + role.name + "\"!");
+                            + name + "\" to user role \"" + role.getName() + "\"!");
             return this;
         }
 
@@ -240,7 +242,7 @@ public class UserRole {
             final var result = role.addImplicitPermission(name);
             if(!result) throw new IllegalStateException(
                     "Modification Failed! Could Not Add Implicit Permission \""
-                            + name + "\" to user role \"" + role.name + "\"!");
+                            + name + "\" to user role \"" + role.getName() + "\"!");
             return this;
         }
 
@@ -256,7 +258,7 @@ public class UserRole {
             final var result = Arrays.stream(names).allMatch(role::addImplicitPermission);
             if(!result) throw new IllegalStateException(
                     "Modification Failed! Could Not Add Implicit Permissions \""
-                            + name + "\" to user role \"" + role.name + "\"!");
+                            + name + "\" to user role \"" + role.getName() + "\"!");
             return this;
         }
 
@@ -270,7 +272,7 @@ public class UserRole {
             final var result = role.removePermission(name);
             if(!result) throw new IllegalStateException(
                     "Modification Failed! Could Not Remove Permission \""
-                            + name + "\" from user role \"" + role.name + "\"!");
+                            + name + "\" from user role \"" + role.getName() + "\"!");
             return this;
         }
 
@@ -284,7 +286,7 @@ public class UserRole {
             final var result = Arrays.stream(names).allMatch(role::removePermission);
             if (!result) throw new IllegalStateException(
                     "Modification Failed! Could Not Remove Permissions \""
-                            + name + "\" from user role \"" + role.name + "\"!");
+                            + name + "\" from user role \"" + role.getName() + "\"!");
             return this;
         }
 

@@ -16,21 +16,6 @@ public class PermissionManagerTest {
             fail( "This method should have thrown CloneNotSupportedException!" );
         } catch (final CloneNotSupportedException ignore) { }
 
-        manager.getPermissions().clear();
-
-        assertTrue(manager.addCustomPermission("admin", null));
-        assertTrue(manager.addCustomPermission("edit", null));
-        assertTrue(manager.addCustomPermission("create", null));
-        assertTrue(manager.addCustomPermission("read", null));
-
-        assertFalse(manager.removePermission("admin"));
-        assertFalse(manager.removePermission("edit"));
-        assertFalse(manager.removePermission("create"));
-        assertFalse(manager.removePermission("read"));
-        assertFalse(manager.addCustomPermission("admin", null));
-        assertFalse(manager.addCustomPermission("edit", null));
-        assertFalse(manager.addCustomPermission("create", null));
-        assertFalse(manager.addCustomPermission("read", null));
         assertNotNull(manager.getReadPermission());
         assertNotNull(manager.getEditPermission());
         assertNotNull(manager.getCreatePermission());
@@ -84,11 +69,8 @@ public class PermissionManagerTest {
         assertFalse(manager.isEditPermissionEnabled());
         assertFalse(manager.isAdminPermissionEnabled());
 
-        assertEquals(4, manager.getPermissionsNames().size());
-
         final var name = "custom_1";
         assertTrue(manager.addCustomPermission(name, null));
-        assertEquals(5, manager.getPermissionsNames().size());
         assertTrue(manager.isPermissionDisabled(name));
         assertFalse(manager.isPermissionEnabled(name));
         assertTrue(manager.enablePermission(name));

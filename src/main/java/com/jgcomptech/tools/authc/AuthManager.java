@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -689,6 +689,17 @@ public final class AuthManager {
      */
     public boolean userHasPermission(final String username, final String permissionName) {
         return getUserRole(username).hasPermission(permissionName);
+    }
+
+    /**
+     * Checks if the specified username has ALL the specified permissions.
+     * @param username the username to check
+     * @param permissionNames a list of all the names of the permissions to check
+     * @return true if the currently assigned username has ALL the specified permissions
+     * @since 1.5.1 new overload
+     */
+    public boolean userHasPermissions(final String username, final String... permissionNames) {
+        return Arrays.stream(permissionNames).allMatch(permissionName -> userHasPermission(username, permissionName));
     }
 
     /**

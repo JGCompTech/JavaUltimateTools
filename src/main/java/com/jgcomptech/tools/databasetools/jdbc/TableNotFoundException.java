@@ -10,7 +10,7 @@ import static org.junit.Assert.fail;
  */
 public class TableNotFoundException extends RuntimeException {
     /**
-     * Constructs an {@link TableNotFoundException} with the specified table name.
+     * Constructs an {@code TableNotFoundException} with the specified table name.
      * @param tableName the table name
      */
     public TableNotFoundException(final String tableName) { super('"' + tableName + "\" Table Not Found!"); }

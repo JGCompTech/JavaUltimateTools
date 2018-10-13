@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class UserManagerTest {
     /** Tests the {@link UserManager} class. */
     @Test
-    public void TestUserManager() {
+    public void testUserManager() {
         try(final var db = new Database("./userdb.db", DatabaseType.H2)) {
             final var userManager = new UserManager(db);
             userManager.createUser("jlgager", "1234", UserRoleManager.SystemUserRoles.EDITOR);

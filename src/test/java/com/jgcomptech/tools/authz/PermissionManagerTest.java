@@ -1,106 +1,106 @@
-package com.jgcomptech.tools.authz;
-
-import com.jgcomptech.tools.authc.UserRoleManager;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-public class PermissionManagerTest {
-    /** Tests the {@link PermissionManager} class. */
-    @Test
-    public void testPermissionManager() {
-        final var manager = PermissionManager.getInstance();
-
-        try {
-            manager.clone();
-            fail( "This method should have thrown CloneNotSupportedException!" );
-        } catch (final CloneNotSupportedException ignore) { }
-
-        assertNotNull(manager.getReadPermission());
-        assertNotNull(manager.getEditPermission());
-        assertNotNull(manager.getCreatePermission());
-        assertNotNull(manager.getReadPermission());
-        assertFalse(manager.isAdminPermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isCreatePermissionEnabled());
-        assertFalse(manager.isReadPermissionEnabled());
-        manager.setAdminPermission(true);
-        manager.setEditPermission(true);
-        manager.setCreatePermission(true);
-        manager.setReadPermission(true);
-        assertTrue(manager.isAdminPermissionEnabled());
-        assertTrue(manager.isEditPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isReadPermissionEnabled());
-        manager.loadPermissions(false);
-        assertFalse(manager.isAdminPermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isCreatePermissionEnabled());
-        assertFalse(manager.isReadPermissionEnabled());
-        manager.loadPermissions(true);
-        assertTrue(manager.isAdminPermissionEnabled());
-        assertTrue(manager.isEditPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isReadPermissionEnabled());
-
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.ADMIN);
-        assertTrue(manager.isReadPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isEditPermissionEnabled());
-        assertTrue(manager.isAdminPermissionEnabled());
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.EDITOR);
-        assertTrue(manager.isReadPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertTrue(manager.isEditPermissionEnabled());
-        assertFalse(manager.isAdminPermissionEnabled());
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.AUTHOR);
-        assertTrue(manager.isReadPermissionEnabled());
-        assertTrue(manager.isCreatePermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isAdminPermissionEnabled());
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.BASIC);
-        assertTrue(manager.isReadPermissionEnabled());
-        assertFalse(manager.isCreatePermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isAdminPermissionEnabled());
-        manager.loadPermissions(UserRoleManager.SystemUserRoles.NONE);
-        assertFalse(manager.isReadPermissionEnabled());
-        assertFalse(manager.isCreatePermissionEnabled());
-        assertFalse(manager.isEditPermissionEnabled());
-        assertFalse(manager.isAdminPermissionEnabled());
-
-        final var name = "custom_1";
-        assertTrue(manager.addCustomPermission(name, null));
-        assertTrue(manager.isPermissionDisabled(name));
-        assertFalse(manager.isPermissionEnabled(name));
-        assertTrue(manager.enablePermission(name));
-        assertFalse(manager.isPermissionDisabled(name));
-        assertTrue(manager.isPermissionEnabled(name));
-        assertTrue(manager.disablePermission(name));
-        assertTrue(manager.isPermissionDisabled(name));
-        assertFalse(manager.isPermissionEnabled(name));
-
-//        String name2 = "custom_2";
-//        assertTrue(manager.addAndEnableCustomPermission(name2, null));
-//        assertTrue(manager.addExistingChildPermission(name2, name));
-//        assertTrue(manager.getPermissionChildren(name).size() ==1);
-//        assertTrue(manager.getPermissionsNames().size() == 6);
+//package com.jgcomptech.tools.authz;
 //
-//        assertTrue(manager.removePermission(name2));
-//        assertTrue(manager.getPermissionsNames().size() == 5);
+//import com.jgcomptech.tools.authc.UserRoleManager;
+//import org.junit.Test;
 //
-//        assertTrue(manager.removePermission(name));
-//        assertTrue(manager.getPermissionsNames().size() == 4);
+//import static org.junit.Assert.*;
 //
-//        assertTrue(manager.setPermissionOnEnabled("admin", e -> {}));
-//        assertTrue(manager.setPermissionOnDisabled("admin", e -> {}));
-//        assertFalse(manager.setPermissionOnEnabled("1", e -> {}));
-//        assertFalse(manager.setPermissionOnDisabled("1", e -> {}));
-//        manager.setOnPermissionsApplied(e -> {});
-//        manager.setOnAllPermissionsEnabled(e -> {});
-//        manager.setOnAllPermissionsDisabled(e -> {});
+//public class PermissionManagerTest {
+//    /** Tests the {@link PermissionManager} class. */
+//    @Test
+//    public void testPermissionManager() {
+////        final var manager = PermissionManager.getInstance();
+////
+////        try {
+////            manager.clone();
+////            fail( "This method should have thrown CloneNotSupportedException!" );
+////        } catch (final CloneNotSupportedException ignore) { }
+////
+////        assertNotNull(manager.getReadPermission());
+////        assertNotNull(manager.getEditPermission());
+////        assertNotNull(manager.getCreatePermission());
+////        assertNotNull(manager.getReadPermission());
+////        assertFalse(manager.isAdminPermissionEnabled());
+////        assertFalse(manager.isEditPermissionEnabled());
+////        assertFalse(manager.isCreatePermissionEnabled());
+////        assertFalse(manager.isReadPermissionEnabled());
+////        manager.setAdminPermission(true);
+////        manager.setEditPermission(true);
+////        manager.setCreatePermission(true);
+////        manager.setReadPermission(true);
+////        assertTrue(manager.isAdminPermissionEnabled());
+////        assertTrue(manager.isEditPermissionEnabled());
+////        assertTrue(manager.isCreatePermissionEnabled());
+////        assertTrue(manager.isReadPermissionEnabled());
+////        manager.loadPermissions(false);
+////        assertFalse(manager.isAdminPermissionEnabled());
+////        assertFalse(manager.isEditPermissionEnabled());
+////        assertFalse(manager.isCreatePermissionEnabled());
+////        assertFalse(manager.isReadPermissionEnabled());
+////        manager.loadPermissions(true);
+////        assertTrue(manager.isAdminPermissionEnabled());
+////        assertTrue(manager.isEditPermissionEnabled());
+////        assertTrue(manager.isCreatePermissionEnabled());
+////        assertTrue(manager.isReadPermissionEnabled());
+////
+////        manager.loadPermissions(UserRoleManager.SystemUserRoles.ADMIN);
+////        assertTrue(manager.isReadPermissionEnabled());
+////        assertTrue(manager.isCreatePermissionEnabled());
+////        assertTrue(manager.isEditPermissionEnabled());
+////        assertTrue(manager.isAdminPermissionEnabled());
+////        manager.loadPermissions(UserRoleManager.SystemUserRoles.EDITOR);
+////        assertTrue(manager.isReadPermissionEnabled());
+////        assertTrue(manager.isCreatePermissionEnabled());
+////        assertTrue(manager.isEditPermissionEnabled());
+////        assertFalse(manager.isAdminPermissionEnabled());
+////        manager.loadPermissions(UserRoleManager.SystemUserRoles.AUTHOR);
+////        assertTrue(manager.isReadPermissionEnabled());
+////        assertTrue(manager.isCreatePermissionEnabled());
+////        assertFalse(manager.isEditPermissionEnabled());
+////        assertFalse(manager.isAdminPermissionEnabled());
+////        manager.loadPermissions(UserRoleManager.SystemUserRoles.BASIC);
+////        assertTrue(manager.isReadPermissionEnabled());
+////        assertFalse(manager.isCreatePermissionEnabled());
+////        assertFalse(manager.isEditPermissionEnabled());
+////        assertFalse(manager.isAdminPermissionEnabled());
+////        manager.loadPermissions(UserRoleManager.SystemUserRoles.NONE);
+////        assertFalse(manager.isReadPermissionEnabled());
+////        assertFalse(manager.isCreatePermissionEnabled());
+////        assertFalse(manager.isEditPermissionEnabled());
+////        assertFalse(manager.isAdminPermissionEnabled());
+////
+////        final var name = "custom_1";
+////        assertTrue(manager.addCustomPermission(name, null));
+////        assertTrue(manager.isPermissionDisabled(name));
+////        assertFalse(manager.isPermissionEnabled(name));
+////        assertTrue(manager.enablePermission(name));
+////        assertFalse(manager.isPermissionDisabled(name));
+////        assertTrue(manager.isPermissionEnabled(name));
+////        assertTrue(manager.disablePermission(name));
+////        assertTrue(manager.isPermissionDisabled(name));
+////        assertFalse(manager.isPermissionEnabled(name));
 //
-//        assertFalse(manager.isPermissionEnabled("1"));
-//        assertTrue(manager.isPermissionDisabled("1"));
-    }
-}
+////        String name2 = "custom_2";
+////        assertTrue(manager.addAndEnableCustomPermission(name2, null));
+////        assertTrue(manager.addExistingChildPermission(name2, name));
+////        assertTrue(manager.getPermissionChildren(name).size() ==1);
+////        assertTrue(manager.getPermissionsNames().size() == 6);
+////
+////        assertTrue(manager.removePermission(name2));
+////        assertTrue(manager.getPermissionsNames().size() == 5);
+////
+////        assertTrue(manager.removePermission(name));
+////        assertTrue(manager.getPermissionsNames().size() == 4);
+////
+////        assertTrue(manager.setPermissionOnEnabled("admin", e -> {}));
+////        assertTrue(manager.setPermissionOnDisabled("admin", e -> {}));
+////        assertFalse(manager.setPermissionOnEnabled("1", e -> {}));
+////        assertFalse(manager.setPermissionOnDisabled("1", e -> {}));
+////        manager.setOnPermissionsApplied(e -> {});
+////        manager.setOnAllPermissionsEnabled(e -> {});
+////        manager.setOnAllPermissionsDisabled(e -> {});
+////
+////        assertFalse(manager.isPermissionEnabled("1"));
+////        assertTrue(manager.isPermissionDisabled("1"));
+//    }
+//}

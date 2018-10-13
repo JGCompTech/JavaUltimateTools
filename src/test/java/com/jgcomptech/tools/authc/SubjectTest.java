@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class SubjectTest {
     @Test
-    public void subjectTest() {
+    public void testSubject() {
         try (final var db = new Database("./userdb.db", DatabaseType.H2)) {
             final var manager = AuthManager.getNewInstance(db, null, "Java Ultimate Tools");
             final var subject = manager.getSubject();

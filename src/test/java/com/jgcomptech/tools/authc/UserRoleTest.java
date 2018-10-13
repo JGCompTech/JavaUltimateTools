@@ -10,7 +10,7 @@ public class UserRoleTest {
 
     /** Tests the {@link UserRole} object. */
     @Test
-    public void TestUserRole() {
+    public void testUserRole() {
         ExceptionUtils.assertThrownIllegalArgumentException(() -> new UserRole(null));
         ExceptionUtils.assertThrownIllegalArgumentException(() -> new UserRole(""));
 

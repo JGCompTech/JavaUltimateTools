@@ -1,3 +1,10 @@
+Version 1.5.1 changes (10/13/2018):
+* Added new userHasPermissions method overload to AuthManager
+* Added new userHasPermissions method overload to Subject
+* Fixed bugs and missing methods in Subject
+* Fixed deprecated methods in NativeMethods
+* Fixed other small bugs
+
 Version 1.5.0 changes (10/07/2018):
 * Updated JDK to Java 10
 * Login Dialogs now don't require the use of Platform.runLater()
@@ -14,10 +21,10 @@ Version 1.5.0 changes (10/07/2018):
 * All password hashing now uses BCrypt replacing SHA-512
 * Other minor fixes
 
-Version 1.4.2 changes (1/23/2018):
+Version 1.4.2 changes (01/23/2018):
 * Fixed fatal error with isUserLoggedIn method
 
-Version 1.4.1 changes (1/22/2018):
+Version 1.4.1 changes (01/22/2018):
 * Added UserManagerException
 * Added PasswordHashingFailedException
 * Added isAdminLoggedIn method
@@ -29,7 +36,7 @@ Version 1.4.1 changes (1/22/2018):
 * Limited number of SQLException and GeneralSecurityException checked exceptions
 * Changed Session Manager dialogs to use instance vars for parameters(old methods deprecated)
 
-Version 1.4.0 changes (1/19/2018):
+Version 1.4.0 changes (01/19/2018):
 * Added User Management Classes (UserManager, UserAccount, UserRoleManager and UserRole)
 * Added Permission Management Classes (Permission Manager and Permission)
 * Added Session Management Classes (Session Manager, MultiSessionManager and Session)
@@ -49,13 +56,13 @@ NOTE: Some API changes have occurred:
 * Renamed ReInitalizeHW to ReInitializeHW
 * Renamed ReInitalizeOS to ReInitializeOS
 
-Version 1.3.1 changes (4/5/2017):
+Version 1.3.1 changes (04/05/2017):
 * Added FXML Dialog Wrapper
 * JavaDocs documentation is improved
 * Pom file is improved and updated
 * Now hosted on Maven Central
 
-Version 1.3.0 changes (3/31/2017):
+Version 1.3.0 changes (03/31/2017):
 * Added MessageBox and Login dialog objects
 * Added Static Class Instantiation Protection
 * Added Database Tools classes (Includes SQLite and H2 databases)

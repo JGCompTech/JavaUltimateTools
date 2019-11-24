@@ -23,7 +23,7 @@ Any help with development is greatly appreciated. If you want to add something o
 
 # Documentation
 The documentation for JUT is currently a work in progress and new changes will be occurring soon.
-To access the documentation site go to: [https://jut-docs.jgcomptech.com](https://javatools.jgcomptech.com).
+To access the documentation site go to: [https://javatools.jgcomptech.com](https://javatools.jgcomptech.com).
 If you would like to view the JavaDoc info, it is hosted at [github.io(Current GitHub Branch)](https://jgcomptech.github.io/JavaUltimateTools/) and at [javadoc.io(Current Maven Release)](http://www.javadoc.io/doc/com.jgcomptech.tools/java-ultimate-tools). The github.io version is what is stored in the doc folder in the project.
 
 # Download

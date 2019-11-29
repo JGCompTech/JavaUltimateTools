@@ -332,7 +332,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.11</version>
+            <version>1.13</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform -->
         <dependency>
